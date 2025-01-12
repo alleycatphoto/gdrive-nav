@@ -70,9 +70,10 @@
 
         .breadcrumb-item.active {
             color: var(--custom-icon);
-            background-color: var(--custom-bg-darker);
             padding: 0.25rem 0.5rem;
+            background-color: var(--custom-bg-darker);
             border-radius: 0.25rem;
+            margin: 0;
         }
 
         @keyframes fadeIn {
@@ -227,9 +228,15 @@
                     }
 
                     $cardLink = $file['isFolder'] ? '/?folder=' . htmlspecialchars($file['id']) : 'javascript:void(0);';
+                    $isPreviewable = !$file['isFolder'] && (strpos($file['mimeType'], 'image/') === 0);
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="card h-100 file-card" <?php if ($file['isFolder']): ?>onclick="window.location='<?php echo $cardLink; ?>'"<?php endif; ?>>
+                        <div class="card h-100 file-card" 
+                             <?php if ($file['isFolder']): ?>
+                             onclick="window.location='<?php echo $cardLink; ?>'"
+                             <?php elseif ($isPreviewable): ?>
+                             onclick="previewImage('<?php echo htmlspecialchars($file['webViewLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>')"
+                             <?php endif; ?>>
                             <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
                             <div class="thumbnail-container">
                                 <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
@@ -252,15 +259,7 @@
                                        title="View">
                                         <i class="fas fa-external-link-alt"></i>
                                     </a>
-                                    <?php if (strpos($file['mimeType'], 'image/') === 0): ?>
-                                    <button type="button"
-                                            class="action-btn"
-                                            title="Preview"
-                                            onclick="previewImage('<?php echo htmlspecialchars($file['webViewLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>')">
-                                        <i class="fas fa-search-plus"></i>
-                                    </button>
-                                    <?php endif; ?>
-                                    <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>&export=download" 
+                                    <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
                                        class="action-btn"
                                        title="Download"
                                        download>
@@ -314,6 +313,12 @@
                 <div class="modal-body text-center p-0">
                     <img id="previewImage" src="" alt="" class="img-fluid">
                 </div>
+                <div class="modal-footer border-secondary">
+                    <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
+                        <i class="fas fa-download me-2"></i> Download
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -323,12 +328,14 @@
         // Initialize preview modal
         const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
 
-        function previewImage(src, title) {
+        function previewImage(src, title, downloadUrl) {
             const modalTitle = document.getElementById('previewModalLabel');
             const modalImage = document.getElementById('previewImage');
+            const downloadLink = document.getElementById('modalDownloadLink');
 
             modalTitle.textContent = title;
             modalImage.src = src;
+            downloadLink.href = downloadUrl;
             previewModal.show();
         }
     </script>

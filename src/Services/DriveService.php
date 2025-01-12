@@ -51,13 +51,11 @@ class DriveService {
                 $parents = $file->getParents();
                 $currentId = !empty($parents) ? $parents[0] : null;
 
-                // Stop if we reach the root folder
                 if ($currentId === $this->defaultFolderId) {
                     break;
                 }
             }
 
-            // Add root folder
             array_unshift($breadcrumbs, [
                 'id' => $this->defaultFolderId,
                 'name' => 'Home'
@@ -72,7 +70,6 @@ class DriveService {
 
     public function listFiles($folderId = null) {
         try {
-            // Use default folder ID if none provided
             if ($folderId === null || empty($folderId)) {
                 $folderId = $this->defaultFolderId;
             }
@@ -81,7 +78,7 @@ class DriveService {
 
             $optParams = [
                 'pageSize' => 1000,
-                'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
+                'fields' => 'files(id, name, mimeType, thumbnailLink)',
                 'supportsAllDrives' => true,
                 'includeItemsFromAllDrives' => true,
                 'orderBy' => 'folder,name',
@@ -96,12 +93,16 @@ class DriveService {
             $files = [];
 
             foreach ($results->getFiles() as $file) {
+                $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
+                $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
+
                 $files[] = [
                     'id' => $file->getId(),
                     'name' => $file->getName(),
                     'mimeType' => $file->getMimeType(),
                     'thumbnailLink' => $file->getThumbnailLink(),
-                    'webViewLink' => $file->getWebViewLink(),
+                    'downloadUrl' => $downloadUrl,
+                    'webViewLink' => $viewUrl,
                     'isFolder' => $file->getMimeType() === 'application/vnd.google-apps.folder'
                 ];
             }
