@@ -116,34 +116,38 @@
             object-fit: cover;
         }
 
-        .file-actions {
-            position: absolute;
-            right: 0.5rem;
-            bottom: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .card:hover .file-actions {
-            opacity: 1;
-        }
-
+        /* Action buttons styling */
         .action-btn {
             padding: 0.5rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--custom-bg-darker);
-            border: none;
+            background-color: transparent;
+            border: 1px solid var(--custom-icon);
             color: var(--custom-icon);
             text-decoration: none;
+            margin-right: 0.5rem;
         }
 
         .action-btn:hover {
-            background-color: var(--custom-bg);
-            color: var(--custom-icon);
+            background-color: var(--custom-icon);
+            color: var(--custom-bg-darker);
+        }
+
+        /* File card layout */
+        .card-body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            margin-bottom: 1rem;
+        }
+
+        .file-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 0.5rem;
         }
 
         /* Mobile optimizations */
@@ -153,15 +157,16 @@
                 margin-top: 1rem;
             }
 
-            .file-actions {
-                opacity: 1;
-            }
             .breadcrumb {
                 padding: 0.5rem;
             }
 
             .breadcrumb-item {
                 font-size: 0.8rem;
+            }
+
+            .file-actions {
+                opacity: 1;
             }
         }
     </style>
@@ -250,7 +255,6 @@
                                     <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
                                     <?php echo htmlspecialchars($file['name']); ?>
                                 </h6>
-
                                 <?php if (!$file['isFolder']): ?>
                                 <div class="file-actions">
                                     <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
