@@ -312,6 +312,19 @@
             padding: 0;
         }
 
+        .modal-body video {
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
         .modal-footer {
             border-top-color: var(--custom-primary);
             background-color: var(--custom-bg);
@@ -341,11 +354,6 @@
         }
         .btn-close-white {
             filter: invert(1);
-        }
-        .modal-body img {
-            max-width: 100%;
-            max-height: 80vh;
-            object-fit: contain;
         }
     </style>
 </head>
@@ -418,10 +426,8 @@
                         <div class="card h-100"> 
                             <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
                             <div class="thumbnail-container" 
-                                 <?php if ($isPreviewable): ?>
-                                 onclick="previewImage('<?php echo htmlspecialchars($file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>')"
-                                 style="cursor: pointer;"
-                                 <?php endif; ?>>
+                                 onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                                 style="cursor: pointer;">
                                 <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
                                      alt="<?php echo htmlspecialchars($file['name']); ?>"
                                      class="card-img-top">
@@ -429,25 +435,20 @@
                             <?php endif; ?>
 
                             <div class="card-body">
-                                <h6 class="card-title">
-                                    <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
-                                    <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
-                                        <?php echo htmlspecialchars($file['name']); ?>
-                                    </span>
-                                </h6>
+                                <?php if (!$file['isFolder']): ?>
+                                    <h6 class="card-title">
+                                        <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
+                                        <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                            <?php echo htmlspecialchars($file['name']); ?>
+                                        </span>
+                                    </h6>
 
-                                <?php if ($file['isFolder']): ?>
-                                    <a href="<?php echo $cardLink; ?>" class="folder-link">
-                                        <i class="fas fa-folder-open"></i> Open
-                                    </a>
-                                <?php else: ?>
                                     <div class="file-actions">
-                                        <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
-                                           target="_blank"
-                                           class="action-btn"
-                                           title="View">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </a>
+                                        <button onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                                                class="action-btn"
+                                                title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
                                         <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
                                            class="action-btn"
                                            title="Download"
@@ -455,6 +456,16 @@
                                             <i class="fas fa-download"></i>
                                         </a>
                                     </div>
+                                <?php else: ?>
+                                    <h6 class="card-title">
+                                        <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
+                                        <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                            <?php echo htmlspecialchars($file['name']); ?>
+                                        </span>
+                                    </h6>
+                                    <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link">
+                                        <i class="fas fa-folder-open"></i> Open
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -477,16 +488,16 @@
                 </div>
                 <div class="card-body">
                     <pre id="debug-output" class="mb-0 text-light">
-<?php
-    echo json_encode([
-        'current_folder' => $currentFolderId,
-        'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
-        'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
-        'request_uri' => $_SERVER['REQUEST_URI'],
-        'get_params' => $_GET,
-        'production_mode' => $_ENV['PRODUCTION'] ?? false,
-    ], JSON_PRETTY_PRINT);
-?>
+                    <?php
+                        echo json_encode([
+                            'current_folder' => $currentFolderId,
+                            'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
+                            'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
+                            'request_uri' => $_SERVER['REQUEST_URI'],
+                            'get_params' => $_GET,
+                            'production_mode' => $_ENV['PRODUCTION'] ?? false,
+                        ], JSON_PRETTY_PRINT);
+                    ?>
                     </pre>
                 </div>
             </div>
@@ -497,15 +508,30 @@
     <!-- Preview Modal -->
     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="previewModalLabel">Preview</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-0">
-                    <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 100%; width: auto; height: auto; object-fit: contain;">
+                    <!-- Image preview -->
+                    <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 100%; width: auto; height: auto; object-fit: contain; display: none;">
+                    <!-- Video preview -->
+                    <video id="previewVideo" controls style="max-height: 80vh; max-width: 100%; display: none;">
+                        <source src="" type="">
+                        Your browser does not support the video player.
+                    </video>
+                    <!-- PDF preview -->
+                    <iframe id="previewPdf" src="" frameborder="0" style="width: 100%; height: 80vh; display: none;"></iframe>
+                    <!-- Fallback message -->
+                    <div id="previewFallback" class="p-4" style="display: none;">
+                        <p>This file type cannot be previewed directly.</p>
+                        <a id="fallbackLink" href="#" target="_blank" class="btn btn-primary">
+                            <i class="fas fa-external-link-alt me-2"></i> Open in Google Drive
+                        </a>
+                    </div>
                 </div>
-                <div class="modal-footer border-secondary">
+                <div class="modal-footer">
                     <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
                         <i class="fas fa-download me-2"></i> Download
                     </a>
@@ -520,18 +546,43 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize preview modal
             const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            const previewImage = document.getElementById('previewImage');
+            const previewVideo = document.getElementById('previewVideo');
+            const previewPdf = document.getElementById('previewPdf');
+            const previewFallback = document.getElementById('previewFallback');
+            const fallbackLink = document.getElementById('fallbackLink');
 
-            // Function to preview image
-            window.previewImage = function(src, title, downloadUrl) {
+            // Function to preview file
+            window.previewFile = function(src, title, downloadUrl, mimeType, webViewLink) {
                 const modalTitle = document.getElementById('previewModalLabel');
-                const modalImage = document.getElementById('previewImage');
                 const downloadLink = document.getElementById('modalDownloadLink');
 
                 modalTitle.textContent = title;
-                // Use high-res thumbnail for preview
-                const highResThumbnail = src.replace(/=s\d+$/, '=s1024');
-                modalImage.src = highResThumbnail;
                 downloadLink.href = downloadUrl;
+
+                // Reset all preview elements
+                previewImage.style.display = 'none';
+                previewVideo.style.display = 'none';
+                previewPdf.style.display = 'none';
+                previewFallback.style.display = 'none';
+
+                // Handle different file types
+                if (mimeType.startsWith('image/')) {
+                    previewImage.src = src;
+                    previewImage.style.display = 'block';
+                } else if (mimeType.startsWith('video/')) {
+                    const videoSource = previewVideo.querySelector('source');
+                    videoSource.src = downloadUrl;
+                    videoSource.type = mimeType;
+                    previewVideo.load(); // Reload the video with new source
+                    previewVideo.style.display = 'block';
+                } else if (mimeType === 'application/pdf') {
+                    previewPdf.src = webViewLink;
+                    previewPdf.style.display = 'block';
+                } else {
+                    previewFallback.style.display = 'block';
+                    fallbackLink.href = webViewLink;
+                }
 
                 previewModal.show();
             }
