@@ -2,3 +2,9 @@
 .env
 composer.lock
 .DS_Store
+*.pyc
+__pycache__/
+.pytest_cache/
+uv.lock
+app.py
+drive_service.py

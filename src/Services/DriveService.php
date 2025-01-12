@@ -30,8 +30,8 @@ class DriveService {
 
     public function listFiles($folderId = null) {
         try {
-            if ($folderId === null) {
-                $folderId = $_ENV['GOOGLE_DRIVE_FOLDER_ID'];
+            if ($folderId === null || empty($folderId)) {
+                $folderId = $this->driveId;
             }
 
             error_log("Listing files for folder: " . $folderId);
@@ -44,7 +44,7 @@ class DriveService {
                 'orderBy' => 'folder,name',
                 'driveId' => $this->driveId,
                 'corpora' => 'drive',
-                'q' => "'{$folderId}' in parents and trashed = false"
+                'q' => "'$folderId' in parents and trashed = false"
             ];
 
             error_log("API Request parameters: " . json_encode($optParams));
