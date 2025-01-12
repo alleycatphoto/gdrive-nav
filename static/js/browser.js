@@ -1,46 +1,50 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filesContainer = document.getElementById('files-container');
     const breadcrumbContainer = document.getElementById('breadcrumb-container');
-    const selectAllBtn = document.getElementById('select-all');
-    const downloadSelectedBtn = document.getElementById('download-selected');
 
-    function loadFiles(folderId = null) {
-        // Show loading spinner
+    // Create page transition overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'page-transition-overlay';
+    document.body.appendChild(overlay);
+
+    function showLoadingState() {
+        overlay.classList.add('active');
         filesContainer.innerHTML = `
-            <div class="col-12">
-                <div class="text-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
+            <div class="loading-spinner">
+                <span class="visually-hidden">Loading...</span>
             </div>
         `;
+    }
 
-        console.log("Loading files for folder:", folderId);
+    function hideLoadingState() {
+        overlay.classList.remove('active');
+    }
 
-        // Construct the URL with the folder parameter
+    function loadFiles(folderId = null) {
+        showLoadingState();
+
         const url = '/list' + (folderId ? `?folder=${encodeURIComponent(folderId)}` : '');
-        console.log("Fetching URL:", url);
 
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log("API Response:", data);
                 if (!data.success) {
                     throw new Error(data.error || 'Error loading files');
                 }
                 renderBreadcrumbs(data.breadcrumbs);
                 renderFiles(data.files);
+                hideLoadingState();
             })
             .catch(error => {
                 console.error('Error:', error);
                 filesContainer.innerHTML = `
                     <div class="col-12">
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger fade-transition">
                             ${error.message}
                         </div>
                     </div>
                 `;
+                hideLoadingState();
             });
     }
 
@@ -51,7 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     ${breadcrumbs.map((item, index) => `
-                        <li class="breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}">
+                        <li class="breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}"
+                            style="--animation-order: ${index};">
                             ${index === breadcrumbs.length - 1 ? 
                                 item.name :
                                 `<a href="#" data-folder="${item.id}">${item.name}</a>`
@@ -61,16 +66,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 </ol>
             </nav>
         `;
+
         breadcrumbContainer.innerHTML = html;
 
-        // Add click handlers for breadcrumb navigation
         breadcrumbContainer.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const folderId = e.currentTarget.dataset.folder;
-                console.log("Breadcrumb click - Loading folder:", folderId);
-                loadFiles(folderId);
-                updateUrl(folderId);
+                navigateToFolder(folderId);
             });
         });
     }
@@ -79,39 +82,42 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!files || files.length === 0) {
             filesContainer.innerHTML = `
                 <div class="col-12">
-                    <div class="alert alert-info">No files found in this folder</div>
+                    <div class="alert alert-info fade-transition show">
+                        No files found in this folder
+                    </div>
                 </div>
             `;
             return;
         }
 
-        filesContainer.innerHTML = files.map(file => `
-            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+        filesContainer.innerHTML = files.map((file, index) => `
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3" style="--animation-order: ${index}">
                 <div class="card h-100">
-                    <div class="card-body">
-                        <div class="text-center mb-3">
-                            ${file.isFolder ? 
-                                '<i class="fas fa-folder fa-3x text-warning"></i>' :
-                                '<i class="fas fa-file fa-3x text-info"></i>'
+                    ${file.isFolder ? 
+                        `<div class="card-body">
+                            <h5 class="card-title text-truncate" title="${file.name}">
+                                <i class="fas fa-folder fa-3x text-warning"></i>
+                            </h5>
+                            <button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
+                                    data-folder-id="${file.id}">
+                                <i class="fas fa-folder-open me-1"></i> Open
+                            </button>
+                        </div>` :
+                        `<div class="card-body">
+                            ${file.thumbnailLink ? 
+                                `<div class="thumbnail-container">
+                                    <img src="${file.thumbnailLink}" alt="${file.name}" class="card-img-top">
+                                </div>` : 
+                                `<i class="fas fa-file fa-3x text-info"></i>`
                             }
-                        </div>
-                        <h5 class="card-title text-truncate" title="${file.name}">
-                            ${file.name}
-                        </h5>
-                        <div class="mt-3">
-                            ${file.isFolder ? 
-                                `<button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
-                                         data-folder-id="${file.id}">
-                                    <i class="fas fa-folder-open me-1"></i> Open
-                                </button>` :
-                                `<a href="${file.webViewLink}" 
-                                    target="_blank" 
-                                    class="btn btn-info btn-sm w-100">
-                                    <i class="fas fa-external-link-alt me-1"></i> View
-                                </a>`
-                            }
-                        </div>
-                    </div>
+                            <h5 class="card-title text-truncate" title="${file.name}">
+                                ${file.name}
+                            </h5>
+                            <a href="${file.webViewLink}" target="_blank" class="btn btn-info btn-sm w-100">
+                                <i class="fas fa-external-link-alt me-1"></i> View
+                            </a>
+                        </div>`
+                    }
                 </div>
             </div>
         `).join('');
@@ -120,11 +126,29 @@ document.addEventListener('DOMContentLoaded', function() {
         filesContainer.querySelectorAll('.folder-link').forEach(button => {
             button.addEventListener('click', function(e) {
                 const folderId = this.dataset.folderId;
-                console.log("Folder button click - Loading folder:", folderId);
-                loadFiles(folderId);
-                updateUrl(folderId);
+                navigateToFolder(folderId);
             });
         });
+    }
+
+    function navigateToFolder(folderId) {
+        // Add slide-out animation
+        filesContainer.classList.add('folder-transition', 'slide-left');
+
+        setTimeout(() => {
+            loadFiles(folderId);
+            updateUrl(folderId);
+
+            // Reset container for slide-in animation
+            filesContainer.classList.remove('slide-left');
+            filesContainer.classList.add('slide-right');
+
+            // Trigger reflow
+            void filesContainer.offsetWidth;
+
+            // Remove slide-right class to animate in
+            filesContainer.classList.remove('slide-right');
+        }, 300);
     }
 
     function updateUrl(folderId) {
@@ -136,13 +160,11 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('popstate', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const folderId = urlParams.get('folder');
-        console.log("Popstate - Loading folder:", folderId);
         loadFiles(folderId);
     });
 
     // Initial load
     const urlParams = new URLSearchParams(window.location.search);
     const initialFolderId = urlParams.get('folder');
-    console.log("Initial load - Folder ID:", initialFolderId);
     loadFiles(initialFolderId);
 });

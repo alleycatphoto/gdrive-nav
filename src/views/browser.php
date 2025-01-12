@@ -201,6 +201,92 @@
                 font-size: 0.8rem;
             }
         }
+
+        /* Animation and transition styles */
+        .fade-transition {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .fade-transition.show {
+            opacity: 1;
+        }
+
+        /* Loading animation */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .loading-spinner::after {
+            content: '';
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--custom-icon);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Card animations */
+        .card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardAppear 0.3s ease-out forwards;
+        }
+
+        @keyframes cardAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Folder transition animations */
+        .folder-transition {
+            position: relative;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .folder-transition.slide-left {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+
+        .folder-transition.slide-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+
+        /* Stagger card animations */
+        .col-sm-6 {
+            animation-delay: calc(var(--animation-order) * 0.1s);
+        }
+
+        /* Page transition overlay */
+        .page-transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--custom-bg-darker);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+            z-index: 9999;
+        }
+
+        .page-transition-overlay.active {
+            opacity: 0.5;
+            pointer-events: all;
+        }
     </style>
 </head>
 <body>
