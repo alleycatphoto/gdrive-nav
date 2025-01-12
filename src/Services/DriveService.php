@@ -10,7 +10,7 @@ class DriveService {
 
     public function __construct() {
         $client = new Client();
-        $client->setAuthConfig($_ENV['GOOGLE_APPLICATION_CREDENTIALS']);
+        $client->setDeveloperKey($_ENV['GOOGLE_API_KEY']);
         $client->addScope(Drive::DRIVE_READONLY);
 
         $this->service = new Drive($client);
