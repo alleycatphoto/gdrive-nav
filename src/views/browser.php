@@ -197,6 +197,14 @@
             object-fit: cover;
         }
 
+        .thumbnail-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
         .file-actions {
             margin-top: auto;
             display: flex;
@@ -464,18 +472,25 @@
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <div class="card h-100"> 
-                            <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
-                            <div class="thumbnail-container" 
-                                 onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
-                                 style="cursor: pointer;">
-                                <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
-                                     alt="<?php echo htmlspecialchars($file['name']); ?>"
-                                     class="card-img-top">
-                            </div>
-                            <?php endif; ?>
+                            <?php if (!$file['isFolder']): ?>
+                                <div class="card-body">
+                                    <?php if (strpos($file['mimeType'], 'video/') === 0): ?>
+                                        <div class="thumbnail-container">
+                                            <video controls class="w-100 h-100" style="position: absolute; top: 0; left: 0;">
+                                                <source src="/proxy/<?php echo htmlspecialchars($file['id']); ?>" type="<?php echo htmlspecialchars($file['mimeType']); ?>">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                        </div>
+                                    <?php elseif ($file['thumbnailLink']): ?>
+                                        <div class="thumbnail-container" 
+                                             onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                                             style="cursor: pointer;">
+                                            <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
+                                                 alt="<?php echo htmlspecialchars($file['name']); ?>"
+                                                 class="card-img-top">
+                                        </div>
+                                    <?php endif; ?>
 
-                            <div class="card-body">
-                                <?php if (!$file['isFolder']): ?>
                                     <h6 class="card-title" 
                                         onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
                                         style="cursor: pointer;">
@@ -498,22 +513,22 @@
                                             <i class="fas fa-download"></i>
                                         </a>
                                     </div>
-                                <?php else: ?>
-                                    <h6 class="card-title">
-                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
-                                           class="d-flex align-items-center gap-2 text-decoration-none text-truncate" 
-                                           style="color: inherit; width: 100%;">
-                                            <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
-                                            <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
-                                                <?php echo htmlspecialchars($file['name']); ?>
-                                            </span>
-                                        </a>
-                                    </h6>
-                                    <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link">
-                                        <i class="fas fa-folder-open"></i> Open
+                                </div>
+                            <?php else: ?>
+                                <h6 class="card-title">
+                                    <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
+                                       class="d-flex align-items-center gap-2 text-decoration-none text-truncate" 
+                                       style="color: inherit; width: 100%;">
+                                        <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
+                                        <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                            <?php echo htmlspecialchars($file['name']); ?>
+                                        </span>
                                     </a>
-                                <?php endif; ?>
-                            </div>
+                                </h6>
+                                <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link">
+                                    <i class="fas fa-folder-open"></i> Open
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <?php
