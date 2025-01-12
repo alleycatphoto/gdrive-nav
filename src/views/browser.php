@@ -120,6 +120,10 @@
             color: var(--custom-icon);
             cursor: pointer;
             transition: color 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%; /* Ensure title takes full width */
         }
 
         .card-title:hover {
@@ -135,6 +139,8 @@
         .card-title span {
             flex: 1;
             min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* Action buttons styling */
@@ -307,7 +313,7 @@
             pointer-events: all;
         }
 
-        /* Modal styles - Edited styles */
+        /* Modal styles - Updated for better centering */
         .modal-content {
             max-width: 90vw;
             margin: 0 auto;
@@ -323,8 +329,8 @@
         .modal-body {
             background-color: #000;
             padding: 0;
-            max-height: calc(90vh - 120px); /* Account for header and footer */
-            overflow: auto;
+            max-height: calc(90vh - 120px);
+            overflow: hidden; /* Changed from auto to hidden */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -335,12 +341,14 @@
             max-height: 80vh;
             width: auto;
             height: auto;
+            margin: auto; /* Added for centering */
         }
 
         .modal-body img {
             max-width: 100%;
             max-height: 80vh;
             object-fit: contain;
+            margin: auto; /* Added for centering */
         }
 
         .modal-footer {
@@ -380,6 +388,9 @@
             width: 100%;
             height: calc(90vh - 120px);
             background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Adjust object tag for PDFs */
