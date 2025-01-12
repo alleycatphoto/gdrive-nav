@@ -7,11 +7,16 @@ header('Content-Type: application/json');
 
 try {
     $driveService = new DriveService();
-    // Get folder ID from query parameters
-    $folderId = $_GET['folder'] ?? null;
+
+    // Get folder ID from query parameters, properly handle both GET and URL parameters
+    $folderId = null;
+    if (isset($_GET['folder']) && !empty($_GET['folder'])) {
+        $folderId = trim($_GET['folder']);
+    }
 
     error_log("ListController: Processing request");
-    error_log("Folder ID: " . ($folderId ?? 'null'));
+    error_log("Raw folder parameter: " . print_r($_GET, true));
+    error_log("Processed Folder ID: " . ($folderId ?? 'null'));
     error_log("Is Shared Drive: " . $_ENV['GOOGLE_DRIVE_IS_SHARED']);
     error_log("Drive ID: " . $_ENV['GOOGLE_DRIVE_ROOT_FOLDER']);
 
@@ -25,6 +30,7 @@ try {
         'breadcrumbs' => $breadcrumbs,
         'debug' => [
             'request_folder_id' => $folderId,
+            'raw_get_params' => $_GET,
             'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'],
             'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
             'files_count' => count($files),
