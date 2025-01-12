@@ -16,6 +16,7 @@
             --custom-secondary: #493849;
             --custom-secondary-hover: #5a495a;
             --custom-icon: #b996b9;
+            --custom-icon-hover: #d2b9d2; /* Added hover color */
         }
 
         body {
@@ -115,13 +116,25 @@
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             color: var(--custom-icon);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .card-title:hover {
+            color: var(--custom-icon-hover);
         }
 
         .file-icon {
-            font-size: 1.25rem;
-            color: var(--custom-icon);
+            font-size: 1rem;
+            color: inherit;
+            flex-shrink: 0;
+        }
+
+        .card-title span {
+            flex: 1;
+            min-width: 0;
         }
 
         /* Action buttons styling */
@@ -310,6 +323,8 @@
         .modal-body {
             background-color: #000;
             padding: 0;
+            max-height: calc(90vh - 120px); /* Account for header and footer */
+            overflow: auto;
         }
 
         .modal-body video {
@@ -349,6 +364,21 @@
             background-color: var(--custom-secondary-hover);
             border-color: var(--custom-secondary-hover);
         }
+
+        /* Update modal dialog size */
+        .modal-dialog {
+            max-width: 90vw;
+            max-height: 90vh;
+            margin: 0.5rem auto;
+        }
+
+
+        /* Adjust iframe for PDFs */
+        .modal-body iframe {
+            max-height: calc(90vh - 120px);
+            width: 100%;
+        }
+
         .navbar-brand {
             font-size: 0.8rem;
         }
@@ -436,7 +466,9 @@
 
                             <div class="card-body">
                                 <?php if (!$file['isFolder']): ?>
-                                    <h6 class="card-title">
+                                    <h6 class="card-title" 
+                                        onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                                        style="cursor: pointer;">
                                         <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
                                         <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
                                             <?php echo htmlspecialchars($file['name']); ?>
@@ -458,10 +490,14 @@
                                     </div>
                                 <?php else: ?>
                                     <h6 class="card-title">
-                                        <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
-                                        <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
-                                            <?php echo htmlspecialchars($file['name']); ?>
-                                        </span>
+                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
+                                           class="d-flex align-items-center gap-2 text-decoration-none" 
+                                           style="color: inherit;">
+                                            <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
+                                            <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                                <?php echo htmlspecialchars($file['name']); ?>
+                                            </span>
+                                        </a>
                                     </h6>
                                     <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link">
                                         <i class="fas fa-folder-open"></i> Open
