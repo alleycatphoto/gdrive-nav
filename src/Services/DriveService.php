@@ -37,7 +37,8 @@ class DriveService {
             $breadcrumbs = [];
             $currentId = $folderId;
 
-            while ($currentId && $currentId !== $this->driveId) {
+            // Don't traverse beyond the default folder
+            while ($currentId && $currentId !== $this->defaultFolderId) {
                 $file = $this->service->files->get($currentId, [
                     'supportsAllDrives' => true,
                     'fields' => 'id, name, parents'
@@ -50,12 +51,9 @@ class DriveService {
 
                 $parents = $file->getParents();
                 $currentId = !empty($parents) ? $parents[0] : null;
-
-                if ($currentId === $this->defaultFolderId) {
-                    break;
-                }
             }
 
+            // Always add home as the first breadcrumb
             array_unshift($breadcrumbs, [
                 'id' => $this->defaultFolderId,
                 'name' => 'Home'
@@ -80,12 +78,16 @@ class DriveService {
                 'pageSize' => 1000,
                 'fields' => 'files(id, name, mimeType, thumbnailLink)',
                 'supportsAllDrives' => true,
-                'includeItemsFromAllDrives' => true,
+                'includeItemsFromAllDrives' => $this->isSharedDrive,
                 'orderBy' => 'folder,name',
-                'driveId' => $this->driveId,
-                'corpora' => 'drive',
                 'q' => "'$folderId' in parents and trashed = false"
             ];
+
+            // Only add driveId for shared drives
+            if ($this->isSharedDrive) {
+                $optParams['driveId'] = $this->driveId;
+                $optParams['corpora'] = 'drive';
+            }
 
             error_log("API Request parameters: " . json_encode($optParams));
 
