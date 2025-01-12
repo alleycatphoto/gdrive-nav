@@ -26,7 +26,10 @@ try {
     $query = parse_url($request, PHP_URL_QUERY);
 
     // Parse query parameters
-    parse_str($query ?? '', $queryParams);
+    $queryParams = [];
+    if ($query) {
+        parse_str($query, $queryParams);
+    }
     $_GET = array_merge($_GET, $queryParams);
 
     // Only log in non-production
@@ -39,9 +42,10 @@ try {
 
     // Extract file ID from proxy route
     if (preg_match('/^\/proxy\/([^\/]+)/', $path, $matches)) {
+        require_once __DIR__ . '/src/controllers/ProxyController.php';
         $fileId = $matches[1];
-        $proxyController = new \App\Controllers\ProxyController();
-        $proxyController->streamFile($fileId);
+        $controller = new \App\Controllers\ProxyController();
+        $controller->streamFile($fileId);
         exit;
     }
 
