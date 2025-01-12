@@ -604,10 +604,23 @@
             const previewFallback = document.getElementById('previewFallback');
             const fallbackLink = document.getElementById('fallbackLink');
 
+            // Function to get proxy URL for a file
+            function getProxyUrl(fileId) {
+                return `/proxy/${fileId}`;
+            }
+
+            // Function to extract file ID from Google Drive URL
+            function extractFileId(url) {
+                const match = url.match(/[-\w]{25,}/);
+                return match ? match[0] : null;
+            }
+
             // Function to preview file
             window.previewFile = function(src, title, downloadUrl, mimeType, webViewLink) {
                 const modalTitle = document.getElementById('previewModalLabel');
                 const downloadLink = document.getElementById('modalDownloadLink');
+                const fileId = extractFileId(downloadUrl);
+                const proxyUrl = fileId ? getProxyUrl(fileId) : downloadUrl;
 
                 modalTitle.textContent = title;
                 downloadLink.href = downloadUrl;
@@ -624,12 +637,12 @@
                     previewImage.style.display = 'block';
                 } else if (mimeType.startsWith('video/')) {
                     const videoSource = previewVideo.querySelector('source');
-                    videoSource.src = downloadUrl;
+                    videoSource.src = proxyUrl;
                     videoSource.type = mimeType;
                     previewVideo.load(); // Reload the video with new source
                     previewVideo.style.display = 'block';
                 } else if (mimeType === 'application/pdf') {
-                    previewPdf.data = downloadUrl;
+                    previewPdf.data = proxyUrl;
                     pdfDownloadLink.href = downloadUrl;
                     pdfContainer.style.display = 'block';
                 } else {

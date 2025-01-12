@@ -37,6 +37,14 @@ try {
         error_log("GET params: " . print_r($_GET, true));
     }
 
+    // Extract file ID from proxy route
+    if (preg_match('/^\/proxy\/([^\/]+)/', $path, $matches)) {
+        $fileId = $matches[1];
+        $proxyController = new \App\Controllers\ProxyController();
+        $proxyController->streamFile($fileId);
+        exit;
+    }
+
     switch ($path) {
         case '/':
             require __DIR__ . '/src/views/browser.php';
