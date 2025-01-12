@@ -311,6 +311,42 @@
         .btn-close-white {
             filter: invert(1);
         }
+
+        /* Modal styles - Edited styles */
+        .modal-content {
+            background-color: var(--custom-bg-darker) !important;
+            border: 1px solid var(--custom-primary);
+        }
+
+        .modal-header {
+            border-bottom-color: var(--custom-primary);
+            background-color: var(--custom-bg);
+        }
+
+        .modal-footer {
+            border-top-color: var(--custom-primary);
+            background-color: var(--custom-bg);
+        }
+
+        .modal .btn-primary {
+            background-color: var(--custom-primary);
+            border-color: var(--custom-primary);
+        }
+
+        .modal .btn-primary:hover {
+            background-color: var(--custom-primary-hover);
+            border-color: var(--custom-primary-hover);
+        }
+
+        .modal .btn-secondary {
+            background-color: var(--custom-secondary);
+            border-color: var(--custom-secondary);
+        }
+
+        .modal .btn-secondary:hover {
+            background-color: var(--custom-secondary-hover);
+            border-color: var(--custom-secondary-hover);
+        }
     </style>
 </head>
 <body>
