@@ -14,20 +14,16 @@ class DriveService {
             $client = new Client();
             $client->setApplicationName("Drive Browser");
             $client->setScopes([Drive::DRIVE_READONLY]);
-            $client->setAccessType('offline');
-            $client->setDeveloperKey($_ENV['GOOGLE_API_KEY']);
 
-            // Configure OAuth 2.0 access token
-            if (!empty($_ENV['SHARED_DRIVE_ACCESS_TOKEN'])) {
-                $client->setAccessToken($_ENV['SHARED_DRIVE_ACCESS_TOKEN']);
-            }
+            // Use service account credentials
+            $client->setAuthConfig(__DIR__ . '/../../attached_assets/dna-distribution-portal-444605-8de102eaeb67.json');
+            $client->setAccessType('offline');
 
             $this->service = new Drive($client);
             $this->isSharedDrive = filter_var($_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false, FILTER_VALIDATE_BOOLEAN);
             $this->driveId = $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'];
 
             error_log("DriveService initialized with:");
-            error_log("API Key: " . substr($_ENV['GOOGLE_API_KEY'], 0, 10) . "...");
             error_log("Drive ID: " . $this->driveId);
             error_log("Is Shared Drive: " . ($this->isSharedDrive ? 'true' : 'false'));
         } catch (\Exception $e) {
@@ -39,7 +35,7 @@ class DriveService {
     public function listFiles($folderId = null) {
         try {
             if ($folderId === null) {
-                $folderId = $_ENV['GOOGLE_DRIVE_FOLDER_ID'] ?? $this->driveId;
+                $folderId = $_ENV['GOOGLE_DRIVE_FOLDER_ID'];
             }
 
             error_log("Listing files for folder: " . $folderId);
@@ -49,17 +45,11 @@ class DriveService {
                 'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
                 'supportsAllDrives' => true,
                 'includeItemsFromAllDrives' => true,
-                'orderBy' => 'folder,name desc'
+                'orderBy' => 'folder,name desc',
+                'driveId' => $this->driveId,
+                'corpora' => 'drive',
+                'q' => sprintf("'%s' in parents and trashed = false", $folderId)
             ];
-
-            // Handle shared drive access
-            if ($this->isSharedDrive) {
-                $params['driveId'] = $this->driveId;
-                $params['corpora'] = 'drives';
-                $params['q'] = sprintf("'%s' in parents and trashed = false", $folderId);
-            } else {
-                $params['q'] = sprintf("'%s' in parents and trashed = false", $folderId);
-            }
 
             error_log("API Request parameters: " . json_encode($params));
 
