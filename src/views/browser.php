@@ -325,6 +325,9 @@
             padding: 0;
             max-height: calc(90vh - 120px); /* Account for header and footer */
             overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .modal-body video {
@@ -372,11 +375,18 @@
             margin: 0.5rem auto;
         }
 
-
-        /* Adjust iframe for PDFs */
-        .modal-body iframe {
-            max-height: calc(90vh - 120px);
+        /* PDF preview container */
+        .pdf-container {
             width: 100%;
+            height: calc(90vh - 120px);
+            background: #000;
+        }
+
+        /* Adjust object tag for PDFs */
+        .modal-body object {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .navbar-brand {
@@ -491,8 +501,8 @@
                                 <?php else: ?>
                                     <h6 class="card-title">
                                         <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
-                                           class="d-flex align-items-center gap-2 text-decoration-none" 
-                                           style="color: inherit;">
+                                           class="d-flex align-items-center gap-2 text-decoration-none text-truncate" 
+                                           style="color: inherit; width: 100%;">
                                             <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
                                             <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
                                                 <?php echo htmlspecialchars($file['name']); ?>
@@ -549,7 +559,7 @@
                     <h5 class="modal-title" id="previewModalLabel">Preview</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body text-center p-0">
+                <div class="modal-body text-center">
                     <!-- Image preview -->
                     <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 100%; width: auto; height: auto; object-fit: contain; display: none;">
                     <!-- Video preview -->
@@ -558,7 +568,11 @@
                         Your browser does not support the video player.
                     </video>
                     <!-- PDF preview -->
-                    <iframe id="previewPdf" src="" frameborder="0" style="width: 100%; height: 80vh; display: none;"></iframe>
+                    <div id="pdfContainer" class="pdf-container" style="display: none;">
+                        <object id="previewPdf" data="" type="application/pdf">
+                            <p>Unable to display PDF file. <a id="pdfDownloadLink" href="#" target="_blank">Download</a> instead.</p>
+                        </object>
+                    </div>
                     <!-- Fallback message -->
                     <div id="previewFallback" class="p-4" style="display: none;">
                         <p>This file type cannot be previewed directly.</p>
@@ -584,7 +598,9 @@
             const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
             const previewImage = document.getElementById('previewImage');
             const previewVideo = document.getElementById('previewVideo');
+            const pdfContainer = document.getElementById('pdfContainer');
             const previewPdf = document.getElementById('previewPdf');
+            const pdfDownloadLink = document.getElementById('pdfDownloadLink');
             const previewFallback = document.getElementById('previewFallback');
             const fallbackLink = document.getElementById('fallbackLink');
 
@@ -599,7 +615,7 @@
                 // Reset all preview elements
                 previewImage.style.display = 'none';
                 previewVideo.style.display = 'none';
-                previewPdf.style.display = 'none';
+                pdfContainer.style.display = 'none';
                 previewFallback.style.display = 'none';
 
                 // Handle different file types
@@ -613,8 +629,9 @@
                     previewVideo.load(); // Reload the video with new source
                     previewVideo.style.display = 'block';
                 } else if (mimeType === 'application/pdf') {
-                    previewPdf.src = webViewLink;
-                    previewPdf.style.display = 'block';
+                    previewPdf.data = downloadUrl;
+                    pdfDownloadLink.href = downloadUrl;
+                    pdfContainer.style.display = 'block';
                 } else {
                     previewFallback.style.display = 'block';
                     fallbackLink.href = webViewLink;
