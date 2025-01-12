@@ -429,28 +429,8 @@
         }
         ?>
 
-        <!-- Preview Modal -->
-        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content bg-dark">
-                    <div class="modal-header border-secondary">
-                        <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center p-0">
-                        <img id="previewImage" src="" alt="" class="img-fluid">
-                    </div>
-                    <div class="modal-footer border-secondary">
-                        <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
-                            <i class="fas fa-download me-2"></i> Download
-                        </a>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Debug Information Section -->
+        <?php if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)): ?>
+        <!-- Debug Information Section (Only shown in non-production) -->
         <div id="debug-section" class="mt-4">
             <div class="card bg-dark">
                 <div class="card-header">
@@ -461,16 +441,18 @@
 <?php
     echo json_encode([
         'current_folder' => $currentFolderId,
-        'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'],
+        'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
         'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
         'request_uri' => $_SERVER['REQUEST_URI'],
         'get_params' => $_GET,
+        'production_mode' => $_ENV['PRODUCTION'] ?? false,
     ], JSON_PRETTY_PRINT);
 ?>
                     </pre>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

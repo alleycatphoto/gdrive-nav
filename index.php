@@ -1,7 +1,12 @@
 <?php
-// Enable error reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Enable error reporting only in non-production
+if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+} else {
+    error_reporting(0);
+    ini_set('display_errors', 0);
+}
 
 // Check if vendor directory exists
 if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
@@ -24,10 +29,13 @@ try {
     parse_str($query ?? '', $queryParams);
     $_GET = array_merge($_GET, $queryParams);
 
-    error_log("Request URI: " . $request);
-    error_log("Path: " . $path);
-    error_log("Query: " . $query);
-    error_log("GET params: " . print_r($_GET, true));
+    // Only log in non-production
+    if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
+        error_log("Request URI: " . $request);
+        error_log("Path: " . $path);
+        error_log("Query: " . $query);
+        error_log("GET params: " . print_r($_GET, true));
+    }
 
     switch ($path) {
         case '/':
@@ -44,5 +52,9 @@ try {
 } catch (Exception $e) {
     error_log("Error: " . $e->getMessage());
     http_response_code(500);
-    echo "Internal Server Error: " . htmlspecialchars($e->getMessage());
+    if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
+        echo "Internal Server Error: " . htmlspecialchars($e->getMessage());
+    } else {
+        echo "Internal Server Error";
+    }
 }
