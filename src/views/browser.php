@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drive Browser</title>
+    <title>DNA Distribution : Customer Resources</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
     <style>
@@ -24,6 +24,12 @@
 
         .navbar {
             background-color: var(--custom-bg-darker) !important;
+        }
+
+        .navbar-brand img {
+            height: 30px;
+            width: auto;
+            margin-right: 10px;
         }
 
         .container {
@@ -287,13 +293,26 @@
             opacity: 0.5;
             pointer-events: all;
         }
+
+        /* Modal styles */
+        .modal-content {
+            max-width: 90vw;
+            margin: 0 auto;
+        }
+
+        .modal-body img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <i class="fas fa-folder-open"></i> Drive Browser
+                <img src="/attached_assets/Cryoskin White Transparent.png" alt="Cryoskin Logo">
+                DNA Distribution : Customer Resources
             </a>
         </div>
     </nav>
@@ -407,6 +426,27 @@
         }
         ?>
 
+        <!-- Preview Modal -->
+        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content bg-dark">
+                    <div class="modal-header border-secondary">
+                        <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center p-0">
+                        <img id="previewImage" src="" alt="" class="img-fluid">
+                    </div>
+                    <div class="modal-footer border-secondary">
+                        <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
+                            <i class="fas fa-download me-2"></i> Download
+                        </a>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Debug Information Section -->
         <div id="debug-section" class="mt-4">
             <div class="card bg-dark">
@@ -425,27 +465,6 @@
     ], JSON_PRETTY_PRINT);
 ?>
                     </pre>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Preview Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center p-0">
-                    <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 90vw; width: auto; height: auto; object-fit: contain;">
-                </div>
-                <div class="modal-footer border-secondary">
-                    <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
-                        <i class="fas fa-download me-2"></i> Download
-                    </a>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
