@@ -35,13 +35,5 @@ args = "php -S 0.0.0.0:8000"
 waitForPort = 8000
 
 [[ports]]
-localPort = 80
-externalPort = 3000
-
-[[ports]]
-localPort = 5000
-externalPort = 80
-
-[[ports]]
 localPort = 8000
-externalPort = 8000
+externalPort = 80

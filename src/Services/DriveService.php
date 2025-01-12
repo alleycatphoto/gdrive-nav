@@ -8,19 +8,23 @@ class DriveService {
     private $service;
     private $isSharedDrive;
     private $driveId;
+    private $defaultFolderId;
 
     public function __construct() {
         try {
             $client = new Client();
             $client->setApplicationName("Drive Browser");
-            $client->setDeveloperKey($_ENV['GOOGLE_API_KEY']);
+            $client->setAuthConfig($_ENV['GOOGLE_APPLICATION_CREDENTIALS']);
+            $client->addScope(Drive::DRIVE_READONLY);
 
             $this->service = new Drive($client);
             $this->isSharedDrive = filter_var($_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false, FILTER_VALIDATE_BOOLEAN);
             $this->driveId = $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'];
+            $this->defaultFolderId = $_ENV['GOOGLE_DRIVE_FOLDER_ID'] ?? "1EWkdMmyFUdX7rui-ZzaP6lHWfM10SNAk";
 
             error_log("DriveService initialized with:");
             error_log("Drive ID: " . $this->driveId);
+            error_log("Default Folder ID: " . $this->defaultFolderId);
             error_log("Is Shared Drive: " . ($this->isSharedDrive ? 'true' : 'false'));
         } catch (\Exception $e) {
             error_log("Error initializing DriveService: " . $e->getMessage());
@@ -28,10 +32,49 @@ class DriveService {
         }
     }
 
+    public function getBreadcrumbs($folderId) {
+        try {
+            $breadcrumbs = [];
+            $currentId = $folderId;
+
+            while ($currentId && $currentId !== $this->driveId) {
+                $file = $this->service->files->get($currentId, [
+                    'supportsAllDrives' => true,
+                    'fields' => 'id, name, parents'
+                ]);
+
+                array_unshift($breadcrumbs, [
+                    'id' => $file->getId(),
+                    'name' => $file->getName()
+                ]);
+
+                $parents = $file->getParents();
+                $currentId = !empty($parents) ? $parents[0] : null;
+
+                // Stop if we reach the root folder
+                if ($currentId === $this->defaultFolderId) {
+                    break;
+                }
+            }
+
+            // Add root folder
+            array_unshift($breadcrumbs, [
+                'id' => $this->defaultFolderId,
+                'name' => 'Home'
+            ]);
+
+            return $breadcrumbs;
+        } catch (\Exception $e) {
+            error_log("Error getting breadcrumbs: " . $e->getMessage());
+            return [['id' => $this->defaultFolderId, 'name' => 'Home']];
+        }
+    }
+
     public function listFiles($folderId = null) {
         try {
+            // Use default folder ID if none provided
             if ($folderId === null || empty($folderId)) {
-                $folderId = $this->driveId;
+                $folderId = $this->defaultFolderId;
             }
 
             error_log("Listing files for folder: " . $folderId);

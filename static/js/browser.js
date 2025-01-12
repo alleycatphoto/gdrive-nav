@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         showDebugToast('Fetching files...', { folderId });
 
-        fetch(`/list?folder_id=${folderId}`)
+        fetch(`/list?folder=${folderId || ''}`)
             .then(response => response.json())
             .then(data => {
                 showDebugToast('API Response', data);
@@ -59,14 +59,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const html = `
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    ${breadcrumbs.map((item, index) => `
+                    ${breadcrumbs ? breadcrumbs.map((item, index) => `
                         <li class="breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}">
                             ${index === breadcrumbs.length - 1 ? 
                                 item.name :
-                                `<a href="#" data-folder-id="${item.id}">${item.name}</a>`
+                                `<a href="#" data-folder="${item.id}">${item.name}</a>`
                             }
                         </li>
-                    `).join('')}
+                    `).join('') : ''}
                 </ol>
             </nav>
         `;
@@ -75,15 +75,15 @@ document.addEventListener('DOMContentLoaded', function() {
         breadcrumbContainer.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const folderId = e.target.dataset.folderId;
-                history.pushState({}, '', `/?folder_id=${folderId}`);
+                const folderId = e.target.dataset.folder;
+                history.pushState({}, '', `/?folder=${folderId}`);
                 loadFiles(folderId);
             });
         });
     }
 
     function renderFiles(files) {
-        if (files.length === 0) {
+        if (!files || files.length === 0) {
             filesContainer.innerHTML = `
                 <div class="col-12">
                     <div class="alert alert-info">This folder is empty</div>
@@ -114,14 +114,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="btn-group w-100">
                             ${file.isFolder ?
                                 `<button class="btn btn-secondary btn-sm folder-link" 
-                                         data-folder-id="${file.id}">
+                                         data-folder="${file.id}">
                                     Open
                                 </button>` :
                                 `<button class="btn btn-primary btn-sm preview-link" 
                                          data-file-id="${file.id}">
                                     Preview
                                 </button>
-                                <a href="/download?file_id=${file.id}&file_name=${encodeURIComponent(file.name)}" 
+                                <a href="/download?file=${file.id}&name=${encodeURIComponent(file.name)}" 
                                    class="btn btn-success btn-sm">
                                     Download
                                 </a>`
@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         filesContainer.querySelectorAll('.folder-link').forEach(link => {
             link.addEventListener('click', (e) => {
-                const folderId = e.target.dataset.folderId;
-                history.pushState({}, '', `/?folder_id=${folderId}`);
+                const folderId = e.target.dataset.folder;
+                history.pushState({}, '', `/?folder=${folderId}`);
                 loadFiles(folderId);
             });
         });
@@ -190,10 +190,12 @@ document.addEventListener('DOMContentLoaded', function() {
     downloadSelectedBtn.addEventListener('click', () => {
         selectedFiles.forEach(fileId => {
             const fileName = document.querySelector(`label[for="check-${fileId}"]`).textContent.trim();
-            window.open(`/download?file_id=${fileId}&file_name=${encodeURIComponent(fileName)}`);
+            window.open(`/download?file=${fileId}&name=${encodeURIComponent(fileName)}`);
         });
     });
 
     // Initial load
-    loadFiles(FOLDER_ID);
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialFolderId = urlParams.get('folder');
+    loadFiles(initialFolderId);
 });

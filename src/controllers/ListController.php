@@ -1,22 +1,27 @@
 <?php
+namespace App\Controllers;
+
 use App\Services\DriveService;
 
 header('Content-Type: application/json');
 
 try {
     $driveService = new DriveService();
-    $folderId = $_GET['folder_id'] ?? null;
+    $folderId = isset($_GET['folder']) ? $_GET['folder'] : null;
 
     error_log("ListController: Processing request");
     error_log("Folder ID: " . ($folderId ?? 'null'));
     error_log("Is Shared Drive: " . $_ENV['GOOGLE_DRIVE_IS_SHARED']);
     error_log("Drive ID: " . $_ENV['GOOGLE_DRIVE_ROOT_FOLDER']);
 
+    // List files in the requested folder
     $files = $driveService->listFiles($folderId);
+    $breadcrumbs = $driveService->getBreadcrumbs($folderId);
 
     echo json_encode([
         'success' => true,
         'files' => $files,
+        'breadcrumbs' => $breadcrumbs,
         'debug' => [
             'request_folder_id' => $folderId,
             'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'],
@@ -33,7 +38,7 @@ try {
         'success' => false,
         'error' => $e->getMessage(),
         'debug' => [
-            'request_folder_id' => $_GET['folder_id'] ?? null,
+            'request_folder_id' => $_GET['folder'] ?? null,
             'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
             'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
             'timestamp' => date('c'),
