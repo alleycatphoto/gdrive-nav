@@ -53,16 +53,79 @@
     </nav>
 
     <div class="container">
-        <div id="breadcrumb-container" class="mb-3"></div>
-        <div id="files-container" class="row g-3">
-            <div class="col-12">
-                <div class="text-center">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
+        <?php
+        // Initialize DriveService
+        try {
+            $driveService = new \App\Services\DriveService();
+
+            // Get current folder ID from query parameters
+            $currentFolderId = isset($_GET['folder']) ? $_GET['folder'] : null;
+
+            // Get breadcrumbs for current folder
+            $breadcrumbs = $driveService->getBreadcrumbs($currentFolderId);
+
+            // Display breadcrumbs
+            if (!empty($breadcrumbs)) {
+                echo '<nav aria-label="breadcrumb" class="mb-3">';
+                echo '<ol class="breadcrumb">';
+                foreach ($breadcrumbs as $index => $crumb) {
+                    if ($index === count($breadcrumbs) - 1) {
+                        echo '<li class="breadcrumb-item active">' . htmlspecialchars($crumb['name']) . '</li>';
+                    } else {
+                        echo '<li class="breadcrumb-item"><a href="/?folder=' . htmlspecialchars($crumb['id']) . '">' . htmlspecialchars($crumb['name']) . '</a></li>';
+                    }
+                }
+                echo '</ol>';
+                echo '</nav>';
+            }
+
+            // List files in current folder
+            $files = $driveService->listFiles($currentFolderId);
+
+            if (empty($files)) {
+                echo '<div class="alert alert-info">No files found in this folder</div>';
+            } else {
+                echo '<div class="row g-3">';
+                foreach ($files as $file) {
+                    ?>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="text-center mb-3">
+                                    <?php if ($file['isFolder']): ?>
+                                        <i class="fas fa-folder fa-3x text-warning"></i>
+                                    <?php else: ?>
+                                        <i class="fas fa-file fa-3x text-info"></i>
+                                    <?php endif; ?>
+                                </div>
+                                <h5 class="card-title text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                    <?php echo htmlspecialchars($file['name']); ?>
+                                </h5>
+                                <div class="mt-3">
+                                    <?php if ($file['isFolder']): ?>
+                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
+                                           class="btn btn-primary btn-sm w-100">
+                                            <i class="fas fa-folder-open me-1"></i> Open
+                                        </a>
+                                    <?php else: ?>
+                                        <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
+                                           target="_blank" 
+                                           class="btn btn-info btn-sm w-100">
+                                            <i class="fas fa-external-link-alt me-1"></i> View
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                    <?php
+                }
+                echo '</div>';
+            }
+        } catch (Exception $e) {
+            echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($e->getMessage()) . '</div>';
+        }
+        ?>
 
         <!-- Debug Information Section -->
         <div id="debug-section" class="mt-4">
@@ -71,73 +134,22 @@
                     Debug Information
                 </div>
                 <div class="card-body">
-                    <pre id="debug-output" class="mb-0 text-light"></pre>
+                    <pre id="debug-output" class="mb-0 text-light">
+<?php
+    echo json_encode([
+        'current_folder' => $currentFolderId,
+        'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'],
+        'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
+        'request_uri' => $_SERVER['REQUEST_URI'],
+        'get_params' => $_GET,
+    ], JSON_PRETTY_PRINT);
+?>
+                    </pre>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Fetch files from the API
-        fetch('/list')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('debug-output').textContent = JSON.stringify(data, null, 2);
-
-                if (!data.success) {
-                    document.getElementById('files-container').innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-danger">
-                                ${data.error || 'Error loading files'}
-                            </div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Handle files display here
-                const filesContainer = document.getElementById('files-container');
-                if (!data.files || data.files.length === 0) {
-                    filesContainer.innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-info">No files found</div>
-                        </div>
-                    `;
-                    return;
-                }
-
-                filesContainer.innerHTML = data.files.map(file => `
-                    <div class="col-md-4 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">
-                                    ${file.isFolder ? 
-                                        '<i class="fas fa-folder text-warning"></i>' : 
-                                        '<i class="fas fa-file text-info"></i>'} 
-                                    ${file.name}
-                                </h5>
-                                <p class="card-text small text-muted">${file.mimeType}</p>
-                            </div>
-                            <div class="card-footer">
-                                ${file.isFolder ? 
-                                    `<a href="/?folder=${file.id}" class="btn btn-primary btn-sm">Open</a>` :
-                                    `<a href="${file.webViewLink}" target="_blank" class="btn btn-primary btn-sm">View</a>`}
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            })
-            .catch(error => {
-                document.getElementById('debug-output').textContent = JSON.stringify({error: error.message}, null, 2);
-                document.getElementById('files-container').innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-danger">
-                            Error: ${error.message}
-                        </div>
-                    </div>
-                `;
-            });
-    </script>
 </body>
 </html>
