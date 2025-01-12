@@ -305,14 +305,17 @@
             max-height: 80vh;
             object-fit: contain;
         }
+        .navbar-brand {
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
+        <div class="container-fluid" style="justify-content: center;">
             <a class="navbar-brand" href="/">
                 <img src="/attached_assets/Cryoskin White Transparent.png" alt="Cryoskin Logo">
-                DNA Distribution : Customer Resources
+                CUSTOMER RESOURCES
             </a>
         </div>
     </nav>
