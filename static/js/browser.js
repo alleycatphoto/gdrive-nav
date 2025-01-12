@@ -7,24 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let selectedFiles = new Set();
 
-    // Debug toast functionality
-    function showDebugToast(message, data = null) {
-        const toast = document.getElementById('debug-toast');
-        const toastBody = toast.querySelector('.toast-body');
-
-        let debugMessage = `<strong>${message}</strong>`;
-        if (data) {
-            debugMessage += '<pre class="mt-2 mb-0" style="max-height: 200px; overflow-y: auto;">';
-            debugMessage += JSON.stringify(data, null, 2);
-            debugMessage += '</pre>';
-        }
-
-        toastBody.innerHTML = debugMessage;
-        const bsToast = new bootstrap.Toast(toast, { autohide: false });
-        bsToast.show();
-    }
-
-    function loadFiles(folderId) {
+    function loadFiles(folderId = null) {
         filesContainer.innerHTML = `
             <div class="col-12">
                 <div class="text-center">
@@ -35,49 +18,60 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        showDebugToast('Fetching files...', { folderId });
+        // Construct the URL with the folder parameter
+        const url = new URL('/list', window.location.origin);
+        if (folderId) {
+            url.searchParams.append('folder', folderId);
+        }
 
-        fetch(`/list?folder=${folderId || ''}`)
+        fetch(url)
             .then(response => response.json())
             .then(data => {
-                showDebugToast('API Response', data);
+                if (!data.success) {
+                    throw new Error(data.error || 'Error loading files');
+                }
                 renderBreadcrumbs(data.breadcrumbs);
                 renderFiles(data.files);
             })
             .catch(error => {
                 console.error('Error:', error);
-                showDebugToast('Error loading files', { error: error.message });
                 filesContainer.innerHTML = `
                     <div class="col-12">
-                        <div class="alert alert-danger">Error loading files</div>
+                        <div class="alert alert-danger">
+                            ${error.message}
+                        </div>
                     </div>
                 `;
             });
     }
 
     function renderBreadcrumbs(breadcrumbs) {
+        if (!breadcrumbs) return;
+
         const html = `
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    ${breadcrumbs ? breadcrumbs.map((item, index) => `
+                    ${breadcrumbs.map((item, index) => `
                         <li class="breadcrumb-item ${index === breadcrumbs.length - 1 ? 'active' : ''}">
                             ${index === breadcrumbs.length - 1 ? 
                                 item.name :
                                 `<a href="#" data-folder="${item.id}">${item.name}</a>`
                             }
                         </li>
-                    `).join('') : ''}
+                    `).join('')}
                 </ol>
             </nav>
         `;
         breadcrumbContainer.innerHTML = html;
 
+        // Add click handlers for breadcrumb navigation
         breadcrumbContainer.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const folderId = e.target.dataset.folder;
-                history.pushState({}, '', `/?folder=${folderId}`);
                 loadFiles(folderId);
+                // Update URL without reloading the page
+                history.pushState({}, '', `/?folder=${folderId}`);
             });
         });
     }
@@ -86,44 +80,35 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!files || files.length === 0) {
             filesContainer.innerHTML = `
                 <div class="col-12">
-                    <div class="alert alert-info">This folder is empty</div>
+                    <div class="alert alert-info">No files found in this folder</div>
                 </div>
             `;
             return;
         }
 
         filesContainer.innerHTML = files.map(file => `
-            <div class="col-sm-6 col-md-4 col-lg-3">
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
                 <div class="card h-100">
                     <div class="card-body">
-                        <div class="form-check mb-2">
-                            <input class="form-check-input file-checkbox" type="checkbox" 
-                                   value="${file.id}" id="check-${file.id}"
-                                   ${file.isFolder ? 'disabled' : ''}>
-                            <label class="form-check-label" for="check-${file.id}">
-                                ${file.name}
-                            </label>
-                        </div>
-                        <div class="text-center mb-2">
-                            ${file.isFolder ?
-                                `<i class="fas fa-folder fa-3x text-warning"></i>` :
-                                `<img src="${file.thumbnailLink || '/static/img/file.png'}" 
-                                      class="img-thumbnail" alt="${file.name}">`
+                        <div class="text-center mb-3">
+                            ${file.isFolder ? 
+                                '<i class="fas fa-folder fa-3x text-warning"></i>' :
+                                '<i class="fas fa-file fa-3x text-info"></i>'
                             }
                         </div>
-                        <div class="btn-group w-100">
-                            ${file.isFolder ?
-                                `<button class="btn btn-secondary btn-sm folder-link" 
+                        <h5 class="card-title text-truncate" title="${file.name}">
+                            ${file.name}
+                        </h5>
+                        <div class="mt-3">
+                            ${file.isFolder ? 
+                                `<button class="btn btn-primary btn-sm w-100 folder-link" 
                                          data-folder="${file.id}">
-                                    Open
+                                    <i class="fas fa-folder-open me-1"></i> Open
                                 </button>` :
-                                `<button class="btn btn-primary btn-sm preview-link" 
-                                         data-file-id="${file.id}">
-                                    Preview
-                                </button>
-                                <a href="/download?file=${file.id}&name=${encodeURIComponent(file.name)}" 
-                                   class="btn btn-success btn-sm">
-                                    Download
+                                `<a href="${file.webViewLink}" 
+                                    target="_blank" 
+                                    class="btn btn-info btn-sm w-100">
+                                    <i class="fas fa-external-link-alt me-1"></i> View
                                 </a>`
                             }
                         </div>
@@ -132,23 +117,14 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
-        filesContainer.querySelectorAll('.folder-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                const folderId = e.target.dataset.folder;
-                history.pushState({}, '', `/?folder=${folderId}`);
+        // Add click handlers for folder navigation
+        filesContainer.querySelectorAll('.folder-link').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const folderId = e.target.closest('.folder-link').dataset.folder;
                 loadFiles(folderId);
+                // Update URL without reloading the page
+                history.pushState({}, '', `/?folder=${folderId}`);
             });
-        });
-
-        filesContainer.querySelectorAll('.preview-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                const fileId = e.target.dataset.fileId;
-                showPreview(fileId);
-            });
-        });
-
-        filesContainer.querySelectorAll('.file-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateSelectedFiles);
         });
     }
 
@@ -193,6 +169,14 @@ document.addEventListener('DOMContentLoaded', function() {
             window.open(`/download?file=${fileId}&name=${encodeURIComponent(fileName)}`);
         });
     });
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const folderId = urlParams.get('folder');
+        loadFiles(folderId);
+    });
+
 
     // Initial load
     const urlParams = new URLSearchParams(window.location.search);

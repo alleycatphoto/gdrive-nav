@@ -7,7 +7,8 @@ header('Content-Type: application/json');
 
 try {
     $driveService = new DriveService();
-    $folderId = isset($_GET['folder']) ? $_GET['folder'] : null;
+    // Get folder ID from query parameters
+    $folderId = $_GET['folder'] ?? null;
 
     error_log("ListController: Processing request");
     error_log("Folder ID: " . ($folderId ?? 'null'));
