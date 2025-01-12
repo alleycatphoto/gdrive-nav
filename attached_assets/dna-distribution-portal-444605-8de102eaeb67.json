@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "dna-distribution-portal-444605",
+  "private_key_id": "8de102eaeb67e5e8d0c8259164c7275550fc5063",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDN6keG14IJALiq\nRk8Xzyp81P11WOzSgIsjFfsJzMMV5IcF+p6yAVvC6l0hXrUb6XF3q/eITVHDjEGO\n6N5BzDwcBCwhNbDZbHqfZ/l7uobmLvbwXu3xWNteyosTmhboey4VzmLtXA6snt4O\nMDIvd8fvH+4a43Of62NddXDijPv6/qzyyZ6eokUc5HN6VDmIymd/EVXyklKpnxe6\nIHocIH+NxFQoiB/wOqpayznMAMV6x31koFY6yxF7Z8dr9jZeS/ZwRHSadQOZ2VXz\n6dJEY56US3sUKdKPiarCK4pmGjOiOVwF+CWHIuSCOOvPZEwQAeD3Dm/ctO94/iA1\nqHRcUFeRAgMBAAECggEADf/qJtBH60qTXSKt/1casxicaabtZWIChuGlMWVGNDRX\nCI1UzpLKEgZZS5ecf5sCl5mamQRzIfTktickVg8UXSFDFzggktlNvI29bm/GYSfI\nETXOPptSDglLC4ugsbCoqvUSHV1ZAA9GPWrocCxYH9L10mBf1mHfqq7j4sgMD7EZ\n4lRRnisELBO3bczz7wFwa07ZUyWLqtmKNGPeiTlwySkwy5MnOkY4Hk1S3ISKdYms\nTgjYm6C++b7A/v65VGew0truYN2oGit1Bxl70Z5NbreAjQESRd/6urXEsDE8Oe2B\nL5H84+FX1HxhKA12/CwQo75tqUPsDoaElI5NEna8awKBgQDzUuk8QJdQctY1g7sc\nbLMPYo4cYaVOpM4+PIiw6uOzEmvIlydkhj94OCaUiQBOk+iPhI4Nro/hAbIar2Wr\nct0/vATeCyaAFXouIrz9K/JcwlE214VojkCzkSsag0zFgLpw714o2ssB1AnVVe2t\nivnIdx4r7nvaQab2lpIZRelU2wKBgQDYpHeJ37LKG62kubQAHWWf4AVFb7xv5sFV\nb3pT1g2E1Ioi/b7pTptyxrJAvKldYbxDs0tQ5zUR/B5BvfQwuF2hfT/yunzLkEFw\nseJ/KSG4TUF3TVTdKI1aeqiT5pNsTlByxjZzCXyTSEmv0ZSBQA377tDpglAahynZ\nD2xl5wfbAwKBgGoNNQLB1DGIG7zvUVouNkz6U54jIP2J7ypJD/qsJdoiqT+gQdca\nfAdV0drja3LUHISQ7akg8CzNpGblE5cKVUw2EpkEmx8wPTRmh6CAyv2K5ALXJJpR\nhfm9x9+iYo+ib6BRc+Syl9CQLkkBTrpY3E13PXtAUlLqUm8faUYCppQJAoGBAM52\n3528XW4UNsa4XH2HhqR5IUztkg6rQjGkDlb7tuKSlBuI7Hr4+VjHWHYt1tMyI/P5\nWZv+3SsIteU9nQ0Zh9IxxdIUPH7cOiGmxg8eKg61QeDrCCfFUAGcyDA8HN+pOy5H\nDPlRXzIWQHOZLwiG/UzOardABAtkKVO+STZMmcX1AoGAZSkJSyLwPXww6p3PUwAL\np8Wv5T9LJkY8TXNpjedaAHVhxN3/kR1hlhhc5IwGjXhhTr3MlHYZMY4yJdeyPASg\nyPWzUR9DW9DI7oRounMzgpgXKFg+rFcjb1AEW/Tvf4jvD3WOmaM+jFhbAxdjEZ2L\nnSIdcttZw7tFOwjcl2bDCXQ=\n-----END PRIVATE KEY-----\n",
+  "client_email": "distribution-portal@dna-distribution-portal-444605.iam.gserviceaccount.com",
+  "client_id": "108186175314730426032",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/distribution-portal%40dna-distribution-portal-444605.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
