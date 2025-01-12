@@ -4,8 +4,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const selectAllBtn = document.getElementById('select-all');
     const downloadSelectedBtn = document.getElementById('download-selected');
     const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-    
+
     let selectedFiles = new Set();
+
+    // Debug toast functionality
+    function showDebugToast(message, data = null) {
+        const toast = document.getElementById('debug-toast');
+        const toastBody = toast.querySelector('.toast-body');
+
+        let debugMessage = `<strong>${message}</strong>`;
+        if (data) {
+            debugMessage += '<pre class="mt-2 mb-0" style="max-height: 200px; overflow-y: auto;">';
+            debugMessage += JSON.stringify(data, null, 2);
+            debugMessage += '</pre>';
+        }
+
+        toastBody.innerHTML = debugMessage;
+        const bsToast = new bootstrap.Toast(toast, { autohide: false });
+        bsToast.show();
+    }
 
     function loadFiles(folderId) {
         filesContainer.innerHTML = `
@@ -18,14 +35,18 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
+        showDebugToast('Fetching files...', { folderId });
+
         fetch(`/list?folder_id=${folderId}`)
             .then(response => response.json())
             .then(data => {
+                showDebugToast('API Response', data);
                 renderBreadcrumbs(data.breadcrumbs);
                 renderFiles(data.files);
             })
             .catch(error => {
                 console.error('Error:', error);
+                showDebugToast('Error loading files', { error: error.message });
                 filesContainer.innerHTML = `
                     <div class="col-12">
                         <div class="alert alert-danger">Error loading files</div>
@@ -51,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
         breadcrumbContainer.innerHTML = html;
 
-        // Add click events to breadcrumb links
         breadcrumbContainer.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -112,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
 
-        // Add click events
         filesContainer.querySelectorAll('.folder-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 const folderId = e.target.dataset.folderId;
@@ -134,14 +153,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showPreview(fileId) {
+        showDebugToast('Fetching preview...', { fileId });
+
         fetch(`/preview/${fileId}`)
             .then(response => response.json())
             .then(data => {
+                showDebugToast('Preview Response', data);
                 document.getElementById('preview-frame').src = data.preview_url;
                 previewModal.show();
             })
             .catch(error => {
                 console.error('Error:', error);
+                showDebugToast('Error loading preview', { error: error.message });
                 alert('Error loading preview');
             });
     }
@@ -157,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     selectAllBtn.addEventListener('click', () => {
         const checkboxes = document.querySelectorAll('.file-checkbox:not(:disabled)');
         const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-        
+
         checkboxes.forEach(checkbox => {
             checkbox.checked = !allChecked;
         });
