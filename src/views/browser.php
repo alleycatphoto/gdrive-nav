@@ -33,11 +33,46 @@
             margin-top: 2rem;
         }
 
-        /* Breadcrumb animations */
+        /* Breadcrumb styling */
+        .breadcrumb {
+            background-color: var(--custom-bg-darker);
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1.5rem;
+        }
+
         .breadcrumb-item {
             transition: opacity 0.3s ease-in-out;
             opacity: 0;
             animation: fadeIn 0.5s forwards;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: var(--custom-icon);
+            opacity: 0.5;
+        }
+
+        .breadcrumb-item a {
+            color: var(--custom-icon);
+            text-decoration: none;
+            padding: 0.25rem 0.5rem;
+            background-color: var(--custom-bg-darker);
+            border-radius: 0.25rem;
+            transition: background-color 0.2s;
+        }
+
+        .breadcrumb-item a:hover {
+            background-color: var(--custom-bg);
+            color: var(--custom-icon);
+        }
+
+        .breadcrumb-item.active {
+            color: var(--custom-icon);
+            background-color: var(--custom-bg-darker);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
         }
 
         @keyframes fadeIn {
@@ -119,6 +154,13 @@
 
             .file-actions {
                 opacity: 1;
+            }
+            .breadcrumb {
+                padding: 0.5rem;
+            }
+
+            .breadcrumb-item {
+                font-size: 0.8rem;
             }
         }
     </style>
