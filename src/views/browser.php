@@ -6,7 +6,6 @@
     <title>Drive Browser</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@5.4.2/dist/photoswipe.css">
     <style>
         :root {
             --custom-bg: #544055;
@@ -96,22 +95,19 @@
         }
 
         .action-btn {
-            width: 2.5rem;
-            height: 2.5rem;
-            padding: 0;
-            display: flex;
+            padding: 0.5rem;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 50%;
             background-color: var(--custom-bg-darker);
             border: none;
             color: var(--custom-icon);
-            transition: all 0.2s;
+            text-decoration: none;
         }
 
         .action-btn:hover {
             background-color: var(--custom-bg);
-            transform: scale(1.1);
+            color: var(--custom-icon);
         }
 
         /* Mobile optimizations */
@@ -196,10 +192,7 @@
                             <div class="thumbnail-container">
                                 <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
                                      alt="<?php echo htmlspecialchars($file['name']); ?>"
-                                     class="card-img-top"
-                                     <?php if (strpos($file['mimeType'], 'image/') === 0): ?>
-                                     data-pswp-src="<?php echo htmlspecialchars($file['webViewLink']); ?>"
-                                     <?php endif; ?>>
+                                     class="card-img-top">
                             </div>
                             <?php endif; ?>
 
@@ -219,13 +212,18 @@
                                     </a>
                                     <?php if (strpos($file['mimeType'], 'image/') === 0): ?>
                                     <button type="button"
-                                            class="action-btn preview-link"
+                                            class="action-btn"
                                             title="Preview"
-                                            data-pswp-src="<?php echo htmlspecialchars($file['webViewLink']); ?>"
-                                            data-pswp-title="<?php echo htmlspecialchars($file['name']); ?>">
+                                            onclick="previewImage('<?php echo htmlspecialchars($file['webViewLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>')">
                                         <i class="fas fa-search-plus"></i>
                                     </button>
                                     <?php endif; ?>
+                                    <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>&export=download" 
+                                       class="action-btn"
+                                       title="Download"
+                                       download>
+                                        <i class="fas fa-download"></i>
+                                    </a>
                                 </div>
                                 <?php endif; ?>
                             </div>
@@ -263,70 +261,34 @@
         </div>
     </div>
 
-    <!-- PhotoSwipe template -->
-    <div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="pswp__bg"></div>
-        <div class="pswp__scroll-wrap">
-            <div class="pswp__container">
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-            </div>
-            <div class="pswp__ui pswp__ui--hidden">
-                <div class="pswp__top-bar">
-                    <div class="pswp__counter"></div>
-                    <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-                    <button class="pswp__button pswp__button--share" title="Share"></button>
-                    <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-                    <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-                    <div class="pswp__preloader">
-                        <div class="pswp__preloader__icn">
-                            <div class="pswp__preloader__cut">
-                                <div class="pswp__preloader__donut"></div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                    <div class="pswp__share-tooltip"></div>
-                </div>
-                <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
-                <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button>
-                <div class="pswp__caption">
-                    <div class="pswp__caption__center"></div>
+                <div class="modal-body text-center p-0">
+                    <img id="previewImage" src="" alt="" class="img-fluid">
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/photoswipe@5.4.2/dist/photoswipe.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/photoswipe@5.4.2/dist/photoswipe-lightbox.umd.min.js"></script>
     <script>
-        // Initialize PhotoSwipe
-        const lightbox = new PhotoSwipeLightbox({
-            gallery: '.row',
-            children: 'a[data-pswp-src]',
-            pswpModule: PhotoSwipe
-        });
-        lightbox.init();
+        // Initialize preview modal
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
 
-        // Add click handler for preview links
-        document.querySelectorAll('.preview-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const options = {
-                    dataSource: [{
-                        src: link.dataset.pswpSrc,
-                        w: 1024,
-                        h: 768,
-                        title: link.dataset.pswpTitle
-                    }],
-                    index: 0
-                };
-                new PhotoSwipe(options).init();
-            });
-        });
+        function previewImage(src, title) {
+            const modalTitle = document.getElementById('previewModalLabel');
+            const modalImage = document.getElementById('previewImage');
+
+            modalTitle.textContent = title;
+            modalImage.src = src;
+            previewModal.show();
+        }
     </script>
 </body>
 </html>
