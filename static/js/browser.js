@@ -3,11 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const breadcrumbContainer = document.getElementById('breadcrumb-container');
     const selectAllBtn = document.getElementById('select-all');
     const downloadSelectedBtn = document.getElementById('download-selected');
-    const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
-
-    let selectedFiles = new Set();
 
     function loadFiles(folderId = null) {
+        // Show loading spinner
         filesContainer.innerHTML = `
             <div class="col-12">
                 <div class="text-center">
@@ -18,15 +16,16 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
+        console.log("Loading files for folder:", folderId);
+
         // Construct the URL with the folder parameter
-        const url = new URL('/list', window.location.origin);
-        if (folderId) {
-            url.searchParams.append('folder', folderId);
-        }
+        const url = '/list' + (folderId ? `?folder=${encodeURIComponent(folderId)}` : '');
+        console.log("Fetching URL:", url);
 
         fetch(url)
             .then(response => response.json())
             .then(data => {
+                console.log("API Response:", data);
                 if (!data.success) {
                     throw new Error(data.error || 'Error loading files');
                 }
@@ -68,10 +67,10 @@ document.addEventListener('DOMContentLoaded', function() {
         breadcrumbContainer.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const folderId = e.target.dataset.folder;
+                const folderId = e.currentTarget.dataset.folder;
+                console.log("Breadcrumb click - Loading folder:", folderId);
                 loadFiles(folderId);
-                // Update URL without reloading the page
-                history.pushState({}, '', `/?folder=${folderId}`);
+                updateUrl(folderId);
             });
         });
     }
@@ -101,8 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </h5>
                         <div class="mt-3">
                             ${file.isFolder ? 
-                                `<button class="btn btn-primary btn-sm w-100 folder-link" 
-                                         data-folder="${file.id}">
+                                `<button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
+                                         data-folder-id="${file.id}">
                                     <i class="fas fa-folder-open me-1"></i> Open
                                 </button>` :
                                 `<a href="${file.webViewLink}" 
@@ -119,67 +118,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add click handlers for folder navigation
         filesContainer.querySelectorAll('.folder-link').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const folderId = e.target.closest('.folder-link').dataset.folder;
+            button.addEventListener('click', function(e) {
+                const folderId = this.dataset.folderId;
+                console.log("Folder button click - Loading folder:", folderId);
                 loadFiles(folderId);
-                // Update URL without reloading the page
-                history.pushState({}, '', `/?folder=${folderId}`);
+                updateUrl(folderId);
             });
         });
     }
 
-    function showPreview(fileId) {
-        showDebugToast('Fetching preview...', { fileId });
-
-        fetch(`/preview/${fileId}`)
-            .then(response => response.json())
-            .then(data => {
-                showDebugToast('Preview Response', data);
-                document.getElementById('preview-frame').src = data.preview_url;
-                previewModal.show();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showDebugToast('Error loading preview', { error: error.message });
-                alert('Error loading preview');
-            });
+    function updateUrl(folderId) {
+        const newUrl = folderId ? `/?folder=${encodeURIComponent(folderId)}` : '/';
+        history.pushState({}, '', newUrl);
     }
-
-    function updateSelectedFiles() {
-        selectedFiles.clear();
-        document.querySelectorAll('.file-checkbox:checked').forEach(checkbox => {
-            selectedFiles.add(checkbox.value);
-        });
-        downloadSelectedBtn.disabled = selectedFiles.size === 0;
-    }
-
-    selectAllBtn.addEventListener('click', () => {
-        const checkboxes = document.querySelectorAll('.file-checkbox:not(:disabled)');
-        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = !allChecked;
-        });
-        updateSelectedFiles();
-    });
-
-    downloadSelectedBtn.addEventListener('click', () => {
-        selectedFiles.forEach(fileId => {
-            const fileName = document.querySelector(`label[for="check-${fileId}"]`).textContent.trim();
-            window.open(`/download?file=${fileId}&name=${encodeURIComponent(fileName)}`);
-        });
-    });
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const folderId = urlParams.get('folder');
+        console.log("Popstate - Loading folder:", folderId);
         loadFiles(folderId);
     });
-
 
     // Initial load
     const urlParams = new URLSearchParams(window.location.search);
     const initialFolderId = urlParams.get('folder');
+    console.log("Initial load - Folder ID:", initialFolderId);
     loadFiles(initialFolderId);
 });
