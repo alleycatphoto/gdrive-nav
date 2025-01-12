@@ -406,6 +406,35 @@
         .btn-close-white {
             filter: invert(1);
         }
+
+        /* Video thumbnail overlay */
+        .thumbnail-container.video-thumbnail {
+            position: relative;
+        }
+
+        .video-play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.5);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .video-play-overlay:hover {
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -475,20 +504,39 @@
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <div class="card h-100"> 
-                            <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
-                            <div class="thumbnail-container" 
-                                 onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                            <?php if (!$file['isFolder'] && ($file['thumbnailLink'] ?? null)): ?>
+                            <?php 
+                                $thumbnailLink = $file['thumbnailLink'] ?? null;
+                                $highResThumbnail = $file['highResThumbnail'] ?? null;
+                                $isVideo = strpos($file['mimeType'], 'video/') === 0;
+                                $previewProps = json_encode([
+                                    'thumbnail' => $highResThumbnail ?? $thumbnailLink,
+                                    'name' => $file['name'],
+                                    'downloadUrl' => $file['downloadUrl'],
+                                    'mimeType' => $file['mimeType'],
+                                    'webViewLink' => $file['webViewLink']
+                                ]);
+                            ?>
+                            <div class="thumbnail-container <?php echo $isVideo ? 'video-thumbnail' : ''; ?>"
+                                 onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
                                  style="cursor: pointer;">
-                                <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
-                                     alt="<?php echo htmlspecialchars($file['name']); ?>"
-                                     class="card-img-top">
+                                <?php if ($thumbnailLink): ?>
+                                    <img src="<?php echo htmlspecialchars($thumbnailLink); ?>" 
+                                         alt="<?php echo htmlspecialchars($file['name']); ?>"
+                                         class="card-img-top">
+                                    <?php if ($isVideo): ?>
+                                        <div class="video-play-overlay">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
                             </div>
                             <?php endif; ?>
 
                             <div class="card-body">
                                 <?php if (!$file['isFolder']): ?>
                                     <h6 class="card-title" 
-                                        onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                                        onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
                                         style="cursor: pointer;">
                                         <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
                                         <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
@@ -497,7 +545,7 @@
                                     </h6>
 
                                     <div class="file-actions">
-                                        <button onclick="previewFile('<?php echo htmlspecialchars($file['highResThumbnail'] ?? $file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>', '<?php echo htmlspecialchars($file['mimeType']); ?>', '<?php echo htmlspecialchars($file['webViewLink']); ?>')"
+                                        <button onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
                                                 class="action-btn"
                                                 title="View">
                                             <i class="fas fa-eye"></i>
@@ -627,13 +675,23 @@
             }
 
             // Function to preview file
-            window.previewFile = function(src, title, downloadUrl, mimeType, webViewLink) {
+            window.previewFile = function(props) {
+                if (typeof props === 'string') {
+                    try {
+                        props = JSON.parse(props);
+                    } catch (e) {
+                        console.error('Error parsing preview properties:', e);
+                        return;
+                    }
+                }
+
+                const { thumbnail, name, downloadUrl, mimeType, webViewLink } = props;
                 const modalTitle = document.getElementById('previewModalLabel');
                 const downloadLink = document.getElementById('modalDownloadLink');
                 const fileId = extractFileId(downloadUrl);
                 const proxyUrl = fileId ? getProxyUrl(fileId) : downloadUrl;
 
-                modalTitle.textContent = title;
+                modalTitle.textContent = name;
                 downloadLink.href = downloadUrl;
 
                 // Reset all preview elements
@@ -644,13 +702,13 @@
 
                 // Handle different file types
                 if (mimeType.startsWith('image/')) {
-                    previewImage.src = src;
+                    previewImage.src = thumbnail || '';
                     previewImage.style.display = 'block';
                 } else if (mimeType.startsWith('video/')) {
                     const videoSource = previewVideo.querySelector('source');
                     videoSource.src = proxyUrl;
                     videoSource.type = mimeType;
-                    previewVideo.load(); // Reload the video with new source
+                    previewVideo.load();
                     previewVideo.style.display = 'block';
                 } else if (mimeType === 'application/pdf') {
                     previewPdf.data = proxyUrl;
