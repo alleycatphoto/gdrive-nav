@@ -1,5 +1,21 @@
+:root {
+    --custom-bg: #544055;
+    --custom-bg-lighter: #654d66;
+    --custom-bg-darker: #443344;
+}
+
+body {
+    background-color: var(--custom-bg);
+}
+
+.navbar {
+    background-color: var(--custom-bg-darker) !important;
+}
+
 .card {
     transition: transform 0.2s;
+    background-color: var(--custom-bg-lighter);
+    border-color: var(--custom-bg-darker);
 }
 
 .card:hover {
@@ -9,10 +25,12 @@
 .img-thumbnail {
     max-height: 100px;
     width: auto;
+    background-color: var(--custom-bg);
+    border-color: var(--custom-bg-darker);
 }
 
 .breadcrumb {
-    background-color: var(--bs-dark);
+    background-color: var(--custom-bg-darker);
     padding: 0.75rem 1rem;
     border-radius: 0.25rem;
 }
@@ -32,7 +50,7 @@
 }
 
 .modal-content {
-    background-color: var(--bs-dark);
+    background-color: var(--custom-bg);
 }
 
 .card-body {
@@ -42,4 +60,11 @@
 
 .btn-group {
     margin-top: auto;
+}
+
+.container {
+    background-color: var(--custom-bg-lighter);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-top: 2rem;
 }
