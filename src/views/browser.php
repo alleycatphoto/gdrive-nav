@@ -294,26 +294,10 @@
             pointer-events: all;
         }
 
-        /* Modal styles */
+        /* Modal styles - Edited styles */
         .modal-content {
             max-width: 90vw;
             margin: 0 auto;
-        }
-
-        .modal-body img {
-            max-width: 100%;
-            max-height: 80vh;
-            object-fit: contain;
-        }
-        .navbar-brand {
-            font-size: 0.8rem;
-        }
-        .btn-close-white {
-            filter: invert(1);
-        }
-
-        /* Modal styles - Edited styles */
-        .modal-content {
             background-color: var(--custom-bg-darker) !important;
             border: 1px solid var(--custom-primary);
         }
@@ -321,6 +305,11 @@
         .modal-header {
             border-bottom-color: var(--custom-primary);
             background-color: var(--custom-bg);
+        }
+
+        .modal-body {
+            background-color: #000;
+            padding: 0;
         }
 
         .modal-footer {
@@ -346,6 +335,17 @@
         .modal .btn-secondary:hover {
             background-color: var(--custom-secondary-hover);
             border-color: var(--custom-secondary-hover);
+        }
+        .navbar-brand {
+            font-size: 0.8rem;
+        }
+        .btn-close-white {
+            filter: invert(1);
+        }
+        .modal-body img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
         }
     </style>
 </head>
