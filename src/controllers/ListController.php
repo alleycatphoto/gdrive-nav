@@ -10,6 +10,7 @@ try {
 
     // Get folder ID from query parameters, properly handle both GET and URL parameters
     $folderId = null;
+    //echo $_GET['folder'];
     if (isset($_GET['folder']) && !empty($_GET['folder'])) {
         $folderId = trim($_GET['folder']);
     }

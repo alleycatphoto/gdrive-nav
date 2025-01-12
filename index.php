@@ -18,6 +18,16 @@ try {
     // Basic routing
     $request = $_SERVER['REQUEST_URI'];
     $path = parse_url($request, PHP_URL_PATH);
+    $query = parse_url($request, PHP_URL_QUERY);
+
+    // Parse query parameters
+    parse_str($query ?? '', $queryParams);
+    $_GET = array_merge($_GET, $queryParams);
+
+    error_log("Request URI: " . $request);
+    error_log("Path: " . $path);
+    error_log("Query: " . $query);
+    error_log("GET params: " . print_r($_GET, true));
 
     switch ($path) {
         case '/':
