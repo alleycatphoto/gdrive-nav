@@ -450,8 +450,7 @@
             </div>
         </div>
 
-        <?php if (!filter_var($_ENV['PRODUCTION'] ?? false, FILTER_VALIDATE_BOOLEAN)): ?>
-        <!-- Debug Information Section (Only shown in non-production) -->
+        <!-- Debug Information Section -->
         <div id="debug-section" class="mt-4">
             <div class="card bg-dark">
                 <div class="card-header">
@@ -472,7 +471,6 @@
                 </div>
             </div>
         </div>
-        <?php endif; ?>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
