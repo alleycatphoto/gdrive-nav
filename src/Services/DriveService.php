@@ -13,11 +13,7 @@ class DriveService {
         try {
             $client = new Client();
             $client->setApplicationName("Drive Browser");
-            $client->setScopes([Drive::DRIVE_READONLY]);
-
-            // Use service account credentials
-            $client->setAuthConfig(__DIR__ . '/../../attached_assets/dna-distribution-portal-444605-8de102eaeb67.json');
-            $client->setAccessType('offline');
+            $client->setDeveloperKey($_ENV['GOOGLE_API_KEY']);
 
             $this->service = new Drive($client);
             $this->isSharedDrive = filter_var($_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false, FILTER_VALIDATE_BOOLEAN);
@@ -40,20 +36,20 @@ class DriveService {
 
             error_log("Listing files for folder: " . $folderId);
 
-            $params = [
+            $optParams = [
                 'pageSize' => 1000,
                 'fields' => 'files(id, name, mimeType, thumbnailLink, webViewLink)',
                 'supportsAllDrives' => true,
                 'includeItemsFromAllDrives' => true,
-                'orderBy' => 'folder,name desc',
+                'orderBy' => 'folder,name',
                 'driveId' => $this->driveId,
                 'corpora' => 'drive',
-                'q' => sprintf("'%s' in parents and trashed = false", $folderId)
+                'q' => "'{$folderId}' in parents and trashed = false"
             ];
 
-            error_log("API Request parameters: " . json_encode($params));
+            error_log("API Request parameters: " . json_encode($optParams));
 
-            $results = $this->service->files->listFiles($params);
+            $results = $this->service->files->listFiles($optParams);
             $files = [];
 
             foreach ($results->getFiles() as $file) {
