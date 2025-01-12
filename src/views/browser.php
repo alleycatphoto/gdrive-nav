@@ -308,14 +308,17 @@
         .navbar-brand {
             font-size: 0.8rem;
         }
+        .btn-close-white {
+            filter: invert(1);
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid" style="justify-content: center;">
             <a class="navbar-brand" href="/">
-                <img src="/attached_assets/Cryoskin White Transparent.png" alt="Cryoskin Logo">
-                CUSTOMER RESOURCES
+                <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo">
+                DNA DISTRIBUTION : CUSTOMER RESOURCES
             </a>
         </div>
     </nav>
@@ -455,24 +458,48 @@
         <?php endif; ?>
     </div>
 
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-0">
+                    <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 100%; width: auto; height: auto; object-fit: contain;">
+                </div>
+                <div class="modal-footer border-secondary">
+                    <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
+                        <i class="fas fa-download me-2"></i> Download
+                    </a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Initialize preview modal
-        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize preview modal
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
 
-        function previewImage(src, title, downloadUrl) {
-            const modalTitle = document.getElementById('previewModalLabel');
-            const modalImage = document.getElementById('previewImage');
-            const downloadLink = document.getElementById('modalDownloadLink');
+            // Function to preview image
+            window.previewImage = function(src, title, downloadUrl) {
+                const modalTitle = document.getElementById('previewModalLabel');
+                const modalImage = document.getElementById('previewImage');
+                const downloadLink = document.getElementById('modalDownloadLink');
 
-            modalTitle.textContent = title;
-            // Use high-res thumbnail for preview
-            const highResThumbnail = src.replace(/=s\d+$/, '=s1024');
-            modalImage.src = highResThumbnail;
-            downloadLink.href = downloadUrl;
+                modalTitle.textContent = title;
+                // Use high-res thumbnail for preview
+                const highResThumbnail = src.replace(/=s\d+$/, '=s1024');
+                modalImage.src = highResThumbnail;
+                downloadLink.href = downloadUrl;
 
-            previewModal.show();
-        }
+                previewModal.show();
+            }
+        });
     </script>
 </body>
 </html>
