@@ -11,17 +11,18 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 CREDENTIALS_FILE = 'attached_assets/dna-distribution-portal-444605-8de102eaeb67.json'
+DEFAULT_ROOT_FOLDER = '1EWkdMmyFUdX7rui-ZzaP6lHWfM10SNAk'
 drive_service = DriveService(CREDENTIALS_FILE)
 
 @app.route('/')
 def index():
-    folder_id = request.args.get('folder_id', 'root')
+    folder_id = request.args.get('folder_id', DEFAULT_ROOT_FOLDER)
     return render_template('browser.html', folder_id=folder_id)
 
 @app.route('/list')
 def list_files():
     try:
-        folder_id = request.args.get('folder_id', 'root')
+        folder_id = request.args.get('folder_id', DEFAULT_ROOT_FOLDER)
         files = drive_service.list_files(folder_id)
         breadcrumbs = drive_service.get_breadcrumbs(folder_id)
         return jsonify({
@@ -37,7 +38,7 @@ def download_file():
     try:
         file_id = request.args.get('file_id')
         file_name = request.args.get('file_name')
-        
+
         if not file_id or not file_name:
             return jsonify({'error': 'Missing file_id or file_name'}), 400
 

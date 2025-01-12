@@ -2,6 +2,12 @@
     --custom-bg: #544055;
     --custom-bg-lighter: #654d66;
     --custom-bg-darker: #443344;
+    --custom-primary: #745076;
+    --custom-primary-hover: #856087;
+    --custom-secondary: #493849;
+    --custom-secondary-hover: #5a495a;
+    --custom-success: #4d5544;
+    --custom-success-hover: #5e6655;
 }
 
 body {
@@ -36,7 +42,7 @@ body {
 }
 
 .breadcrumb-item a {
-    color: var(--bs-primary);
+    color: var(--custom-primary);
     text-decoration: none;
 }
 
@@ -67,4 +73,35 @@ body {
     border-radius: 0.5rem;
     padding: 1.5rem;
     margin-top: 2rem;
+}
+
+/* Custom button styles */
+.btn-primary {
+    background-color: var(--custom-primary);
+    border-color: var(--custom-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--custom-primary-hover);
+    border-color: var(--custom-primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--custom-secondary);
+    border-color: var(--custom-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--custom-secondary-hover);
+    border-color: var(--custom-secondary-hover);
+}
+
+.btn-success {
+    background-color: var(--custom-success);
+    border-color: var(--custom-success);
+}
+
+.btn-success:hover {
+    background-color: var(--custom-success-hover);
+    border-color: var(--custom-success-hover);
 }
