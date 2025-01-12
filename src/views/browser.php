@@ -239,11 +239,13 @@
                         <div class="card h-100 file-card" 
                              <?php if ($file['isFolder']): ?>
                              onclick="window.location='<?php echo $cardLink; ?>'"
-                             <?php elseif ($isPreviewable): ?>
-                             onclick="previewImage('<?php echo htmlspecialchars($file['webViewLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>')"
                              <?php endif; ?>>
                             <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
-                            <div class="thumbnail-container">
+                            <div class="thumbnail-container" 
+                                 <?php if ($isPreviewable): ?>
+                                 onclick="previewImage('<?php echo htmlspecialchars($file['webViewLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>')"
+                                 style="cursor: pointer;"
+                                 <?php endif; ?>>
                                 <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
                                      alt="<?php echo htmlspecialchars($file['name']); ?>"
                                      class="card-img-top">
@@ -312,7 +314,7 @@
             <div class="modal-content bg-dark">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title" id="previewModalLabel">Image Preview</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-0">
                     <img id="previewImage" src="" alt="" class="img-fluid">
@@ -338,8 +340,10 @@
             const downloadLink = document.getElementById('modalDownloadLink');
 
             modalTitle.textContent = title;
+            // Use webViewLink for preview
             modalImage.src = src;
             downloadLink.href = downloadUrl;
+
             previewModal.show();
         }
     </script>
