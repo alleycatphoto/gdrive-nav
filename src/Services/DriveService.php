@@ -32,12 +32,16 @@ class DriveService {
         }
     }
 
+    // Add method to get service instance
+    public function getService() {
+        return $this->service;
+    }
+
     public function getBreadcrumbs($folderId) {
         try {
             $breadcrumbs = [];
             $currentId = $folderId;
 
-            // Don't traverse beyond the default folder
             while ($currentId && $currentId !== $this->defaultFolderId) {
                 $file = $this->service->files->get($currentId, [
                     'supportsAllDrives' => true,
@@ -53,7 +57,6 @@ class DriveService {
                 $currentId = !empty($parents) ? $parents[0] : null;
             }
 
-            // Always add home as the first breadcrumb
             array_unshift($breadcrumbs, [
                 'id' => $this->defaultFolderId,
                 'name' => 'Home'
@@ -83,7 +86,6 @@ class DriveService {
                 'q' => "'$folderId' in parents and trashed = false"
             ];
 
-            // Only add driveId for shared drives
             if ($this->isSharedDrive) {
                 $optParams['driveId'] = $this->driveId;
                 $optParams['corpora'] = 'drive';
@@ -98,7 +100,6 @@ class DriveService {
                 $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
                 $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
 
-                // Create high-res thumbnail URL
                 $thumbnailLink = $file->getThumbnailLink();
                 $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
 

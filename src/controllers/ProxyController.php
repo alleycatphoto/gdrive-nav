@@ -13,13 +13,14 @@ class ProxyController {
     public function streamFile($fileId) {
         try {
             // Get file metadata from Drive
-            $file = $this->driveService->getService()->files->get($fileId, [
+            $service = $this->driveService->getService();
+            $file = $service->files->get($fileId, [
                 'supportsAllDrives' => true,
                 'fields' => 'id, name, mimeType, size'
             ]);
 
             // Get the file content
-            $response = $this->driveService->getService()->files->get($fileId, [
+            $response = $service->files->get($fileId, [
                 'alt' => 'media',
                 'supportsAllDrives' => true
             ]);
@@ -32,7 +33,7 @@ class ProxyController {
             // Stream the file content
             $stream = $response->getBody()->getContents();
             echo $stream;
-            
+
         } catch (\Exception $e) {
             error_log("Error in ProxyController: " . $e->getMessage());
             http_response_code(500);
