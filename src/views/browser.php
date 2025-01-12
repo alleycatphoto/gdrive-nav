@@ -16,6 +16,7 @@
             --custom-primary-hover: #856087;
             --custom-secondary: #493849;
             --custom-secondary-hover: #5a495a;
+            --custom-icon: #b996b9;
         }
 
         body {
@@ -33,16 +34,6 @@
             margin-top: 2rem;
         }
 
-        .btn-primary {
-            background-color: var(--custom-primary);
-            border-color: var(--custom-primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--custom-primary-hover);
-            border-color: var(--custom-primary-hover);
-        }
-
         /* Breadcrumb animations */
         .breadcrumb-item {
             transition: opacity 0.3s ease-in-out;
@@ -58,6 +49,7 @@
         /* File cards */
         .file-card {
             transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
         }
 
         .file-card:hover {
@@ -66,7 +58,8 @@
         }
 
         .file-icon {
-            font-size: 0.9em;
+            color: var(--custom-icon);
+            font-size: 1em;
             margin-right: 0.5em;
             vertical-align: middle;
         }
@@ -94,24 +87,31 @@
             bottom: 0.5rem;
             opacity: 0;
             transition: opacity 0.2s;
+            display: flex;
+            gap: 0.5rem;
         }
 
         .card:hover .file-actions {
             opacity: 1;
         }
 
-        .dropdown-menu {
+        .action-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
             background-color: var(--custom-bg-darker);
-            border-color: var(--custom-primary);
+            border: none;
+            color: var(--custom-icon);
+            transition: all 0.2s;
         }
 
-        .dropdown-item {
-            color: #fff;
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--custom-primary);
-            color: #fff;
+        .action-btn:hover {
+            background-color: var(--custom-bg);
+            transform: scale(1.1);
         }
 
         /* Mobile optimizations */
@@ -141,11 +141,7 @@
         // Initialize DriveService
         try {
             $driveService = new \App\Services\DriveService();
-
-            // Get current folder ID from query parameters
             $currentFolderId = isset($_GET['folder']) ? $_GET['folder'] : null;
-
-            // Get breadcrumbs for current folder
             $breadcrumbs = $driveService->getBreadcrumbs($currentFolderId);
 
             // Display breadcrumbs
@@ -176,7 +172,6 @@
                 echo '<div class="row g-4">';
                 foreach ($files as $file) {
                     $fileIcon = $file['isFolder'] ? 'fa-folder' : 'fa-file';
-                    $fileColorClass = $file['isFolder'] ? 'text-warning' : 'text-info';
 
                     // Determine file type icon
                     if (!$file['isFolder']) {
@@ -192,9 +187,11 @@
                             $fileIcon = 'fa-file-pdf';
                         }
                     }
+
+                    $cardLink = $file['isFolder'] ? '/?folder=' . htmlspecialchars($file['id']) : 'javascript:void(0);';
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="card h-100 file-card">
+                        <div class="card h-100 file-card" <?php if ($file['isFolder']): ?>onclick="window.location='<?php echo $cardLink; ?>'"<?php endif; ?>>
                             <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
                             <div class="thumbnail-container">
                                 <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
@@ -208,41 +205,29 @@
 
                             <div class="card-body">
                                 <h6 class="card-title text-truncate mb-3" title="<?php echo htmlspecialchars($file['name']); ?>">
-                                    <i class="fas <?php echo $fileIcon; ?> file-icon <?php echo $fileColorClass; ?>"></i>
+                                    <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
                                     <?php echo htmlspecialchars($file['name']); ?>
                                 </h6>
 
-                                <div class="btn-group file-actions">
-                                    <button type="button" class="btn btn-dark btn-sm dropdown-toggle" 
-                                            data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v"></i>
+                                <?php if (!$file['isFolder']): ?>
+                                <div class="file-actions">
+                                    <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
+                                       target="_blank"
+                                       class="action-btn"
+                                       title="View">
+                                        <i class="fas fa-external-link-alt"></i>
+                                    </a>
+                                    <?php if (strpos($file['mimeType'], 'image/') === 0): ?>
+                                    <button type="button"
+                                            class="action-btn preview-link"
+                                            title="Preview"
+                                            data-pswp-src="<?php echo htmlspecialchars($file['webViewLink']); ?>"
+                                            data-pswp-title="<?php echo htmlspecialchars($file['name']); ?>">
+                                        <i class="fas fa-search-plus"></i>
                                     </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <?php if ($file['isFolder']): ?>
-                                        <li>
-                                            <a class="dropdown-item" href="/?folder=<?php echo htmlspecialchars($file['id']); ?>">
-                                                <i class="fas fa-folder-open me-2"></i> Open
-                                            </a>
-                                        </li>
-                                        <?php else: ?>
-                                        <li>
-                                            <a class="dropdown-item" href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
-                                               target="_blank">
-                                                <i class="fas fa-external-link-alt me-2"></i> View
-                                            </a>
-                                        </li>
-                                        <?php if (strpos($file['mimeType'], 'image/') === 0): ?>
-                                        <li>
-                                            <a class="dropdown-item preview-link" href="#" 
-                                               data-pswp-src="<?php echo htmlspecialchars($file['webViewLink']); ?>"
-                                               data-pswp-title="<?php echo htmlspecialchars($file['name']); ?>">
-                                                <i class="fas fa-search-plus me-2"></i> Preview
-                                            </a>
-                                        </li>
-                                        <?php endif; ?>
-                                        <?php endif; ?>
-                                    </ul>
+                                    <?php endif; ?>
                                 </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
