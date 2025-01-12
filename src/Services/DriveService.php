@@ -96,11 +96,16 @@ class DriveService {
                 $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
                 $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
 
+                // Create high-res thumbnail URL
+                $thumbnailLink = $file->getThumbnailLink();
+                $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
+
                 $files[] = [
                     'id' => $file->getId(),
                     'name' => $file->getName(),
                     'mimeType' => $file->getMimeType(),
-                    'thumbnailLink' => $file->getThumbnailLink(),
+                    'thumbnailLink' => $thumbnailLink,
+                    'highResThumbnail' => $highResThumbnail,
                     'downloadUrl' => $downloadUrl,
                     'webViewLink' => $viewUrl,
                     'isFolder' => $file->getMimeType() === 'application/vnd.google-apps.folder'

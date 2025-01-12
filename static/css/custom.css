@@ -71,8 +71,8 @@ body {
 .container {
     background-color: var(--custom-bg-lighter);
     border-radius: 0.5rem;
-    padding: 1.5rem;
-    margin-top: 2rem;
+    padding: 1rem;
+    margin-top: 1rem;
 }
 
 /* Custom button styles */

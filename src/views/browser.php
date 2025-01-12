@@ -39,6 +39,10 @@
             padding: 0.75rem 1rem;
             border-radius: 0.25rem;
             margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
         }
 
         .breadcrumb-item {
@@ -47,33 +51,35 @@
             animation: fadeIn 0.5s forwards;
             font-size: 0.9rem;
             font-weight: 500;
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 0;
         }
 
         .breadcrumb-item + .breadcrumb-item::before {
             color: var(--custom-icon);
             opacity: 0.5;
+            padding: 0 0.5rem;
+            float: none;
+            line-height: inherit;
         }
 
-        .breadcrumb-item a {
+        .breadcrumb-item a,
+        .breadcrumb-item.active {
             color: var(--custom-icon);
             text-decoration: none;
-            padding: 0.25rem 0.5rem;
-            background-color: var(--custom-bg-darker);
+            padding: 0.25rem 0.75rem;
+            background-color: var(--custom-secondary);
             border-radius: 0.25rem;
             transition: background-color 0.2s;
+            display: inline-block;
+            line-height: 1.5;
         }
 
         .breadcrumb-item a:hover {
-            background-color: var(--custom-bg);
+            background-color: var(--custom-secondary-hover);
             color: var(--custom-icon);
-        }
-
-        .breadcrumb-item.active {
-            color: var(--custom-icon);
-            padding: 0.25rem 0.5rem;
-            background-color: var(--custom-bg-darker);
-            border-radius: 0.25rem;
-            margin: 0;
         }
 
         @keyframes fadeIn {
@@ -82,29 +88,85 @@
         }
 
         /* File cards */
-        .file-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
+        .card {
+            background-color: var(--custom-secondary);
+            border: none;
+            transition: transform 0.2s, background-color 0.2s;
         }
 
-        .file-card:hover {
+        .card:hover {
+            background-color: var(--custom-secondary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .card-body {
+            display: flex;
+            flex-direction: column;
+            padding: 1.25rem;
+        }
+
+        .card-title {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--custom-icon);
         }
 
         .file-icon {
+            font-size: 1.25rem;
             color: var(--custom-icon);
-            font-size: 1em;
-            margin-right: 0.5em;
-            vertical-align: middle;
         }
 
+        /* Action buttons styling */
+        .action-btn {
+            padding: 0.5rem 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--custom-secondary);
+            border: 1px solid var(--custom-icon);
+            color: var(--custom-icon);
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .action-btn:hover {
+            background-color: var(--custom-icon);
+            color: var(--custom-secondary);
+        }
+
+        .folder-link {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            background-color: var(--custom-secondary);
+            border: 1px solid var(--custom-icon);
+            color: var(--custom-icon);
+            border-radius: 0.25rem;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .folder-link:hover {
+            background-color: var(--custom-icon);
+            color: var(--custom-secondary);
+        }
+
+        /* Thumbnail styling */
         .thumbnail-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%;
             background-color: var(--custom-bg-darker);
             border-radius: 0.25rem;
             overflow: hidden;
+            margin-bottom: 1rem;
         }
 
         .thumbnail-container img {
@@ -114,34 +176,6 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-        }
-
-        /* Action buttons styling */
-        .action-btn {
-            padding: 0.5rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: transparent;
-            border: 1px solid var(--custom-icon);
-            color: var(--custom-icon);
-            text-decoration: none;
-            margin-right: 0.5rem;
-        }
-
-        .action-btn:hover {
-            background-color: var(--custom-icon);
-            color: var(--custom-bg-darker);
-        }
-
-        /* File card layout */
-        .card-body {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-title {
-            margin-bottom: 1rem;
         }
 
         .file-actions {
@@ -157,16 +191,14 @@
                 margin-top: 1rem;
             }
 
-            .breadcrumb {
-                padding: 0.5rem;
+            .card-title {
+                font-size: 0.9rem;
             }
 
-            .breadcrumb-item {
+            .action-btn,
+            .folder-link {
+                padding: 0.4rem 0.6rem;
                 font-size: 0.8rem;
-            }
-
-            .file-actions {
-                opacity: 1;
             }
         }
     </style>
@@ -236,14 +268,11 @@
                     $isPreviewable = !$file['isFolder'] && (strpos($file['mimeType'], 'image/') === 0);
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="card h-100 file-card" 
-                             <?php if ($file['isFolder']): ?>
-                             onclick="window.location='<?php echo $cardLink; ?>'"
-                             <?php endif; ?>>
+                        <div class="card h-100"> 
                             <?php if (!$file['isFolder'] && $file['thumbnailLink']): ?>
                             <div class="thumbnail-container" 
                                  <?php if ($isPreviewable): ?>
-                                 onclick="previewImage('<?php echo htmlspecialchars($file['webViewLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>')"
+                                 onclick="previewImage('<?php echo htmlspecialchars($file['thumbnailLink']); ?>', '<?php echo htmlspecialchars($file['name']); ?>', '<?php echo htmlspecialchars($file['downloadUrl']); ?>')"
                                  style="cursor: pointer;"
                                  <?php endif; ?>>
                                 <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>" 
@@ -253,25 +282,32 @@
                             <?php endif; ?>
 
                             <div class="card-body">
-                                <h6 class="card-title text-truncate mb-3" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                <h6 class="card-title">
                                     <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
-                                    <?php echo htmlspecialchars($file['name']); ?>
+                                    <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                        <?php echo htmlspecialchars($file['name']); ?>
+                                    </span>
                                 </h6>
-                                <?php if (!$file['isFolder']): ?>
-                                <div class="file-actions">
-                                    <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
-                                       target="_blank"
-                                       class="action-btn"
-                                       title="View">
-                                        <i class="fas fa-external-link-alt"></i>
+
+                                <?php if ($file['isFolder']): ?>
+                                    <a href="<?php echo $cardLink; ?>" class="folder-link">
+                                        <i class="fas fa-folder-open"></i> Open
                                     </a>
-                                    <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
-                                       class="action-btn"
-                                       title="Download"
-                                       download>
-                                        <i class="fas fa-download"></i>
-                                    </a>
-                                </div>
+                                <?php else: ?>
+                                    <div class="file-actions">
+                                        <a href="<?php echo htmlspecialchars($file['webViewLink']); ?>" 
+                                           target="_blank"
+                                           class="action-btn"
+                                           title="View">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                        <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
+                                           class="action-btn"
+                                           title="Download"
+                                           download>
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -317,7 +353,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-0">
-                    <img id="previewImage" src="" alt="" class="img-fluid">
+                    <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 90vw; width: auto; height: auto; object-fit: contain;">
                 </div>
                 <div class="modal-footer border-secondary">
                     <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
@@ -340,8 +376,9 @@
             const downloadLink = document.getElementById('modalDownloadLink');
 
             modalTitle.textContent = title;
-            // Use webViewLink for preview
-            modalImage.src = src;
+            // Use high-res thumbnail for preview
+            const highResThumbnail = src.replace(/=s\d+$/, '=s1024');
+            modalImage.src = highResThumbnail;
             downloadLink.href = downloadUrl;
 
             previewModal.show();
