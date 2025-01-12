@@ -120,6 +120,24 @@
             color: var(--custom-icon);
             cursor: pointer;
             transition: color 0.2s;
+            width: 100%;
+            padding: 1rem;
+        }
+
+        .card-title a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            width: 100%;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card-title .text-truncate {
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .card-title:hover {
@@ -515,19 +533,20 @@
                                     </div>
                                 </div>
                             <?php else: ?>
-                                <h6 class="card-title">
-                                    <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
-                                       class="d-flex align-items-center gap-2 text-decoration-none text-truncate" 
-                                       style="color: inherit; width: 100%;">
-                                        <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
-                                        <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
-                                            <?php echo htmlspecialchars($file['name']); ?>
-                                        </span>
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
+                                           class="d-flex align-items-center">
+                                            <i class="fas <?php echo $fileIcon; ?> file-icon me-2"></i>
+                                            <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                                <?php echo htmlspecialchars($file['name']); ?>
+                                            </span>
+                                        </a>
+                                    </h6>
+                                    <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link mt-2">
+                                        <i class="fas fa-folder-open"></i> Open
                                     </a>
-                                </h6>
-                                <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link">
-                                    <i class="fas fa-folder-open"></i> Open
-                                </a>
+                                </div>
                             <?php endif; ?>
                         </div>
                     </div>
