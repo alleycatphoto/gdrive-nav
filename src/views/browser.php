@@ -443,7 +443,7 @@
         .pdf-container {
             width: 100%;
             height: calc(90vh - 120px);
-            background: #000;
+            background: #161116;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -461,6 +461,70 @@
         }
         .btn-close-white {
             filter: invert(1);
+        }
+
+        /* Modal animations */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8);
+            opacity: 0;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* Modal content animations */
+        .modal-content {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        .modal.show .modal-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modal body content animations */
+        .modal-body img,
+        .modal-body video,
+        .modal-body object,
+        .modal-body #previewFallback {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-out 0.2s, transform 0.3s ease-out 0.2s;
+        }
+
+        .modal.show .modal-body img,
+        .modal.show .modal-body video,
+        .modal.show .modal-body object,
+        .modal.show .modal-body #previewFallback {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modal footer animation */
+        .modal-footer {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-out 0.3s, transform 0.3s ease-out 0.3s;
+        }
+
+        .modal.show .modal-footer {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Modal backdrop animation */
+        .modal-backdrop {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.5;
         }
     </style>
 </head>
@@ -787,14 +851,19 @@
                 modalTitle.textContent = name;
                 downloadLink.href = downloadUrl;
 
-                // Reset all preview elements
+                // Reset all preview elements with opacity 0
+                previewImage.style.opacity = '0';
+                previewVideo.style.opacity = '0';
+                pdfContainer.style.opacity = '0';
+                previewFallback.style.opacity = '0';
+
+                // Hide all preview elements
                 previewImage.style.display = 'none';
                 previewVideo.style.display = 'none';
                 pdfContainer.style.display = 'none';
                 previewFallback.style.display = 'none';
-                previewPdf.data = ''; // Reset PDF data
 
-                // Reset video element completely
+                // Reset video element
                 previewVideo.pause();
                 previewVideo.currentTime = 0;
                 previewVideo.src = '';
@@ -803,79 +872,58 @@
                     videoSource.src = '';
                 }
 
-                // Handle different file types
-                if (mimeType.startsWith('image/')) {
-                    previewImage.src = thumbnail || '';
-                    previewImage.style.display = 'block';
-                } else if (mimeType.startsWith('video/')) {
-                    // Set up video source and error handling
-                    videoSource.src = proxyUrl;
-                    videoSource.type = mimeType;
-                    previewVideo.src = proxyUrl; // Set source on video element as well
-                    previewVideo.preload = 'auto'; // Enable preloading
-
-                    // Add loading indicator
-                    previewVideo.style.display = 'block';
-
-                    // Handle video loading and errors
-                    const loadHandler = function() {
-                        previewVideo.removeEventListener('loadeddata', loadHandler);
-                        previewVideo.play().catch(function(error) {
-                            console.error('Error playing video:', error);
-                            previewFallback.style.display = 'block';
-                            previewVideo.style.display = 'none';
-                        });
-                    };
-
-                    previewVideo.addEventListener('loadeddata', loadHandler);
-
-                    const errorHandler = function(e) {
-                        console.error('Error loading video:', e);
-                        previewFallback.style.display = 'block';
-                        previewVideo.style.display = 'none';
-                    };
-
-                    previewVideo.addEventListener('error', errorHandler);
-
-                    // Clean up event listeners when modal is hidden
-                    const cleanup = function() {
-                        previewVideo.removeEventListener('loadeddata', loadHandler);
-                        previewVideo.removeEventListener('error', errorHandler);
-                        modalElement.removeEventListener('hidden.bs.modal', cleanup);
-                    };
-
-                    modalElement.addEventListener('hidden.bs.modal', cleanup);
-                    previewVideo.load();
-                } else if (mimeType === 'application/pdf') {
-                    // Remove existing PDF object and create a new one
-                    pdfContainer.innerHTML = '';
-                    const newPdfObject = document.createElement('object');
-                    newPdfObject.id = 'previewPdf';
-                    newPdfObject.data = proxyUrl;
-                    newPdfObject.type = 'application/pdf';
-
-                    // Add fallback message
-                    const fallbackParagraph = document.createElement('p');
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = downloadUrl;
-                    downloadLink.target = '_blank';
-                    downloadLink.textContent = 'Download';
-                    fallbackParagraph.textContent = 'Unable to display PDF file. ';
-                    fallbackParagraph.appendChild(downloadLink);
-                    fallbackParagraph.appendChild(document.createTextNode(' instead.'));
-
-                    newPdfObject.appendChild(fallbackParagraph);
-                    pdfContainer.appendChild(newPdfObject);
-                    pdfContainer.style.display = 'block';
-
-                    // Update download link
-                    pdfDownloadLink.href = downloadUrl;
-                } else {
-                    previewFallback.style.display = 'block';
-                    fallbackLink.href = webViewLink;
-                }
-
+                // Show modal first
                 previewModal.show();
+
+                // Small delay to ensure modal is visible before animating content
+                setTimeout(() => {
+                    if (mimeType.startsWith('image/')) {
+                        previewImage.src = thumbnail || '';
+                        previewImage.style.display = 'block';
+                        // Trigger reflow
+                        void previewImage.offsetWidth;
+                        previewImage.style.opacity = '1';
+                    } else if (mimeType.startsWith('video/')) {
+                        videoSource.src = proxyUrl;
+                        videoSource.type = mimeType;
+                        previewVideo.src = proxyUrl;
+                        previewVideo.preload = 'auto';
+                        previewVideo.style.display = 'block';
+                        // Trigger reflow
+                        void previewVideo.offsetWidth;
+                        previewVideo.style.opacity = '1';
+
+                        const loadHandler = function() {
+                            previewVideo.removeEventListener('loadeddata', loadHandler);
+                            previewVideo.play().catch(function(error) {
+                                console.error('Error playing video:', error);
+                                previewFallback.style.display = 'block';
+                                previewVideo.style.display = 'none';
+                            });
+                        };
+
+                        previewVideo.addEventListener('loadeddata', loadHandler);
+                        previewVideo.load();
+                    } else if (mimeType === 'application/pdf') {
+                        pdfContainer.innerHTML = '';
+                        const newPdfObject = document.createElement('object');
+                        newPdfObject.id = 'previewPdf';
+                        newPdfObject.data = proxyUrl;
+                        newPdfObject.type = 'application/pdf';
+
+                        pdfContainer.appendChild(newPdfObject);
+                        pdfContainer.style.display = 'block';
+                        // Trigger reflow
+                        void pdfContainer.offsetWidth;
+                        pdfContainer.style.opacity = '1';
+                    } else {
+                        previewFallback.style.display = 'block';
+                        fallbackLink.href = webViewLink;
+                        // Trigger reflow
+                        void previewFallback.offsetWidth;
+                        previewFallback.style.opacity = '1';
+                    }
+                }, 300); // Delay matches the modal show animation duration
             }
 
             // Add hover event listeners to video thumbnails for preloading
