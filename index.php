@@ -60,6 +60,14 @@ try {
             $controller = new \App\Controllers\AuthController();
             $controller->showLoginForm();
             break;
+        case '/register':
+            $controller = new \App\Controllers\AuthController();
+            $controller->showRegisterForm();
+            break;
+        case '/auth/register':
+            $controller = new \App\Controllers\AuthController();
+            $controller->register();
+            break;
         case '/auth/login':
             $controller = new \App\Controllers\AuthController();
             $controller->login();
