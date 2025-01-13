@@ -383,7 +383,7 @@
         }
 
         .modal-body {
-            background-color: #000;
+            background-color: #161116;
             padding: 0;
             max-height: calc(90vh - 120px);
             overflow: hidden; /* Changed from auto to hidden */
@@ -750,7 +750,7 @@
                 }
                 // Reset PDF viewer
                 if (previewPdf) {
-                    previewPdf.data = '';
+                    pdfContainer.innerHTML = ''; //Clear the pdf container
                     pdfContainer.style.display = 'none';
                 }
             });
@@ -847,14 +847,29 @@
                     modalElement.addEventListener('hidden.bs.modal', cleanup);
                     previewVideo.load();
                 } else if (mimeType === 'application/pdf') {
-                    // Clear existing PDF data first
-                    previewPdf.data = '';
-                    // Set new PDF data and show container
-                    setTimeout(() => {
-                        previewPdf.data = proxyUrl;
-                        pdfDownloadLink.href = downloadUrl;
-                        pdfContainer.style.display = 'block';
-                    }, 50); // Small delay to ensure proper reset
+                    // Remove existing PDF object and create a new one
+                    pdfContainer.innerHTML = '';
+                    const newPdfObject = document.createElement('object');
+                    newPdfObject.id = 'previewPdf';
+                    newPdfObject.data = proxyUrl;
+                    newPdfObject.type = 'application/pdf';
+
+                    // Add fallback message
+                    const fallbackParagraph = document.createElement('p');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = downloadUrl;
+                    downloadLink.target = '_blank';
+                    downloadLink.textContent = 'Download';
+                    fallbackParagraph.textContent = 'Unable to display PDF file. ';
+                    fallbackParagraph.appendChild(downloadLink);
+                    fallbackParagraph.appendChild(document.createTextNode(' instead.'));
+
+                    newPdfObject.appendChild(fallbackParagraph);
+                    pdfContainer.appendChild(newPdfObject);
+                    pdfContainer.style.display = 'block';
+
+                    // Update download link
+                    pdfDownloadLink.href = downloadUrl;
                 } else {
                     previewFallback.style.display = 'block';
                     fallbackLink.href = webViewLink;
