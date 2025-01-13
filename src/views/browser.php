@@ -6,6 +6,27 @@
     <title>DNA Distribution : Customer Resources</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="DNA Distribution"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="mstile-310x150.png" />
+    <meta name="mstile-310x310.png" />
+
     <style>
         :root {
             --custom-bg: #544055;
@@ -526,15 +547,75 @@
         .modal-backdrop.show {
             opacity: 0.5;
         }
+
+        /* Add animation styles for authentication UI */
+        #userSection, #loginBtn {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+        }
+
+        #userSection.show, #loginBtn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .navbar-auth {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        #userAvatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--custom-icon);
+            transition: transform 0.2s ease-out;
+        }
+
+        #userAvatar:hover {
+            transform: scale(1.1);
+        }
+
+        #userName {
+            color: var(--custom-icon);
+            font-size: 0.9rem;
+            margin-right: 1rem;
+        }
+
+        #logoutBtn, #loginBtn {
+            background-color: var(--custom-secondary);
+            border: 1px solid var(--custom-icon);
+            color: var(--custom-icon);
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-out;
+        }
+
+        #logoutBtn:hover, #loginBtn:hover {
+            background-color: var(--custom-icon);
+            color: var(--custom-secondary);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid" style="justify-content: center;">
+        <div class="container-fluid">
             <a class="navbar-brand" href="/">
                 <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo">
                 DNA DISTRIBUTION : CUSTOMER RESOURCES
             </a>
+            <div class="ms-auto navbar-auth">
+                <div id="userSection" style="display: none;">
+                    <img id="userAvatar" src="" alt="User Avatar" class="me-2">
+                    <span id="userName"></span>
+                    <button id="logoutBtn" class="btn btn-sm">Logout</button>
+                </div>
+                <button id="loginBtn" class="btn btn-sm" style="display: none;">Login</button>
+            </div>
         </div>
     </nav>
 
@@ -789,8 +870,7 @@
                     });
 
                     preloadVideo.addEventListener('error', () => {
-                        preloadQueue.shift();
-                        isPreloading = false;
+                        preloadQueue.shift();                        isPreloading = false;
                         processPreloadQueue();
                     });
                 } else {
@@ -849,7 +929,7 @@
                 const proxyUrl = fileId ? getProxyUrl(fileId) : downloadUrl;
 
                 modalTitle.textContent = name;
-                downloadLink.href = downloadUrl;
+                downloadLink.href = downloadUrl + '&confirm=t&uuid=cacf5fa8-0bdc-421e-9160-48f69dc40ad8&at=AIrpjvOa7r0E2SS8Ml2Mht_7S4gD:1736743263452';
 
                 // Reset all preview elements with opacity 0
                 previewImage.style.opacity = '0';
@@ -908,7 +988,7 @@
                         pdfContainer.innerHTML = '';
                         const newPdfObject = document.createElement('object');
                         newPdfObject.id = 'previewPdf';
-                        newPdfObject.data = proxyUrl;
+                        newPdfObject.data = proxyUrl + '#toolbar=0&navpanes=0&scrollbar=0';;
                         newPdfObject.type = 'application/pdf';
 
                         pdfContainer.appendChild(newPdfObject);
@@ -946,6 +1026,73 @@
                     }
                 });
             });
+        });
+    </script>
+    <script>
+        // Add this to your existing JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            const userSection = document.getElementById('userSection');
+            const loginBtn = document.getElementById('loginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+
+            function checkAuthStatus() {
+                fetch('/auth/current-user')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.user) {
+                            userSection.style.display = 'flex';
+                            loginBtn.style.display = 'none';
+                            userName.textContent = data.user.name || data.user.email;
+                            if (data.user.avatar_url) {
+                                userAvatar.src = data.user.avatar_url;
+                            } else {
+                                userAvatar.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+                            }
+                        } else {
+                            userSection.style.display = 'none';
+                            loginBtn.style.display = 'block';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Auth check error:', error);
+                        userSection.style.display = 'none';
+                        loginBtn.style.display = 'block';
+                    });
+            }
+
+            loginBtn.addEventListener('click', function() {
+                fetch('/auth/login', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            checkAuthStatus();
+                        } else {
+                            alert('Login failed. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Login error:', error);
+                        alert('Login failed. Please try again.');
+                    });
+            });
+
+            logoutBtn.addEventListener('click', function() {
+                fetch('/auth/logout', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            checkAuthStatus();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Logout error:', error);
+                    });
+            });
+
+            // Check auth status on page load
+            checkAuthStatus();
         });
     </script>
 </body>
