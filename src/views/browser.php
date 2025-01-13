@@ -652,7 +652,7 @@
                     <!-- Image preview -->
                     <img id="previewImage" src="" alt="" class="img-fluid" style="max-height: 80vh; max-width: 100%; width: auto; height: auto; object-fit: contain; display: none;">
                     <!-- Video preview -->
-                    <video id="previewVideo" controls style="max-height: 80vh; max-width: 100%; display: none;">
+                    <video id="previewVideo" controls autoplay style="max-height: 80vh; max-width: 100%; display: none;">
                         <source src="" type="">
                         Your browser does not support the video player.
                     </video>
@@ -692,6 +692,21 @@
             const pdfDownloadLink = document.getElementById('pdfDownloadLink');
             const previewFallback = document.getElementById('previewFallback');
             const fallbackLink = document.getElementById('fallbackLink');
+            const modalElement = document.getElementById('previewModal');
+
+            // Add modal close event listener
+            modalElement.addEventListener('hidden.bs.modal', function () {
+                // Stop and reset video if it exists
+                if (previewVideo) {
+                    previewVideo.pause();
+                    previewVideo.currentTime = 0;
+                    previewVideo.src = '';
+                    const videoSource = previewVideo.querySelector('source');
+                    if (videoSource) {
+                        videoSource.src = '';
+                    }
+                }
+            });
 
             // Function to get proxy URL for a file
             function getProxyUrl(fileId) {
