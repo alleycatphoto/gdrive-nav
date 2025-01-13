@@ -504,8 +504,8 @@
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <div class="card h-100"> 
-                            <?php if (!$file['isFolder'] && ($file['thumbnailLink'] ?? null)): ?>
                             <?php 
+                            if (!$file['isFolder']) {
                                 $thumbnailLink = $file['thumbnailLink'] ?? null;
                                 $highResThumbnail = $file['highResThumbnail'] ?? null;
                                 $isVideo = strpos($file['mimeType'], 'video/') === 0;
@@ -515,23 +515,26 @@
                                     'downloadUrl' => $file['downloadUrl'],
                                     'mimeType' => $file['mimeType'],
                                     'webViewLink' => $file['webViewLink']
-                                ]);
+                                ], JSON_THROW_ON_ERROR);
+
+                                if ($thumbnailLink) {
+                                    echo '<div class="thumbnail-container ' . ($isVideo ? 'video-thumbnail' : '') . '"';
+                                    echo ' onclick="previewFile(' . htmlspecialchars($previewProps, ENT_QUOTES) . ')"';
+                                    echo ' style="cursor: pointer;">';
+                                    echo '<img src="' . htmlspecialchars($thumbnailLink) . '"'; 
+                                    echo ' alt="' . htmlspecialchars($file['name']) . '"';
+                                    echo ' class="card-img-top">';
+
+                                    if ($isVideo) {
+                                        echo '<div class="video-play-overlay">';
+                                        echo '<i class="fas fa-play"></i>';
+                                        echo '</div>';
+                                    }
+
+                                    echo '</div>';
+                                }
+                            }
                             ?>
-                            <div class="thumbnail-container <?php echo $isVideo ? 'video-thumbnail' : ''; ?>"
-                                 onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
-                                 style="cursor: pointer;">
-                                <?php if ($thumbnailLink): ?>
-                                    <img src="<?php echo htmlspecialchars($thumbnailLink); ?>" 
-                                         alt="<?php echo htmlspecialchars($file['name']); ?>"
-                                         class="card-img-top">
-                                    <?php if ($isVideo): ?>
-                                        <div class="video-play-overlay">
-                                            <i class="fas fa-play"></i>
-                                        </div>
-                                    <?php endif; ?>
-                                <?php endif; ?>
-                            </div>
-                            <?php endif; ?>
 
                             <div class="card-body">
                                 <?php if (!$file['isFolder']): ?>
