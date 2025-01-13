@@ -1,7 +1,4 @@
 <?php
-// Start session before any output
-session_start();
-
 // Enable error reporting only in non-production
 if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
     error_reporting(E_ALL);
@@ -58,18 +55,6 @@ try {
             break;
         case '/list':
             require __DIR__ . '/src/controllers/ListController.php';
-            break;
-        case '/auth/login':
-            $controller = new \App\Controllers\AuthController();
-            $controller->login();
-            break;
-        case '/auth/logout':
-            $controller = new \App\Controllers\AuthController();
-            $controller->logout();
-            break;
-        case '/auth/current-user':
-            $controller = new \App\Controllers\AuthController();
-            $controller->getCurrentUser();
             break;
         default:
             http_response_code(404);
