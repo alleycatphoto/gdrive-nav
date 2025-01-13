@@ -762,22 +762,40 @@
                     // Set up video source and error handling
                     videoSource.src = proxyUrl;
                     videoSource.type = mimeType;
+                    previewVideo.src = proxyUrl; // Set source on video element as well
 
                     // Add loading indicator
                     previewVideo.style.display = 'block';
 
                     // Handle video loading
-                    previewVideo.addEventListener('loadeddata', function onLoadedData() {
-                        previewVideo.removeEventListener('loadeddata', onLoadedData);
-                        previewVideo.play().catch(console.error);
-                    });
+                    const loadHandler = function() {
+                        previewVideo.removeEventListener('loadeddata', loadHandler);
+                        previewVideo.play().catch(function(error) {
+                            console.error('Error playing video:', error);
+                            previewFallback.style.display = 'block';
+                            previewVideo.style.display = 'none';
+                        });
+                    };
+
+                    previewVideo.addEventListener('loadeddata', loadHandler);
 
                     // Handle video errors
-                    previewVideo.addEventListener('error', function onError() {
-                        console.error('Error loading video:', previewVideo.error);
+                    const errorHandler = function(e) {
+                        console.error('Error loading video:', e);
                         previewFallback.style.display = 'block';
                         previewVideo.style.display = 'none';
-                    });
+                    };
+
+                    previewVideo.addEventListener('error', errorHandler);
+
+                    // Clean up event listeners when modal is hidden
+                    const cleanup = function() {
+                        previewVideo.removeEventListener('loadeddata', loadHandler);
+                        previewVideo.removeEventListener('error', errorHandler);
+                        modalElement.removeEventListener('hidden.bs.modal', cleanup);
+                    };
+
+                    modalElement.addEventListener('hidden.bs.modal', cleanup);
 
                     previewVideo.load();
                 } else if (mimeType === 'application/pdf') {
