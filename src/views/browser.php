@@ -748,6 +748,11 @@
                         videoSource.src = '';
                     }
                 }
+                // Reset PDF viewer
+                if (previewPdf) {
+                    previewPdf.data = '';
+                    pdfContainer.style.display = 'none';
+                }
             });
 
             // Function to get proxy URL for a file
@@ -787,6 +792,7 @@
                 previewVideo.style.display = 'none';
                 pdfContainer.style.display = 'none';
                 previewFallback.style.display = 'none';
+                previewPdf.data = ''; // Reset PDF data
 
                 // Reset video element completely
                 previewVideo.pause();
@@ -811,7 +817,7 @@
                     // Add loading indicator
                     previewVideo.style.display = 'block';
 
-                    // Handle video loading
+                    // Handle video loading and errors
                     const loadHandler = function() {
                         previewVideo.removeEventListener('loadeddata', loadHandler);
                         previewVideo.play().catch(function(error) {
@@ -823,7 +829,6 @@
 
                     previewVideo.addEventListener('loadeddata', loadHandler);
 
-                    // Handle video errors
                     const errorHandler = function(e) {
                         console.error('Error loading video:', e);
                         previewFallback.style.display = 'block';
@@ -840,12 +845,16 @@
                     };
 
                     modalElement.addEventListener('hidden.bs.modal', cleanup);
-
                     previewVideo.load();
                 } else if (mimeType === 'application/pdf') {
-                    previewPdf.data = proxyUrl;
-                    pdfDownloadLink.href = downloadUrl;
-                    pdfContainer.style.display = 'block';
+                    // Clear existing PDF data first
+                    previewPdf.data = '';
+                    // Set new PDF data and show container
+                    setTimeout(() => {
+                        previewPdf.data = proxyUrl;
+                        pdfDownloadLink.href = downloadUrl;
+                        pdfContainer.style.display = 'block';
+                    }, 50); // Small delay to ensure proper reset
                 } else {
                     previewFallback.style.display = 'block';
                     fallbackLink.href = webViewLink;
