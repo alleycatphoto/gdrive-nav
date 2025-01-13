@@ -98,12 +98,14 @@
         .card {
             background-color: var(--custom-secondary);
             border: none;
-            transition: transform 0.2s, background-color 0.2s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+            will-change: transform;
         }
 
         .card:hover {
             background-color: var(--custom-secondary-hover);
-            transform: translateY(-2px);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .card-body {
@@ -154,13 +156,19 @@
             color: var(--custom-icon);
             text-decoration: none;
             border-radius: 0.25rem;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
             font-size: 0.9rem;
         }
 
         .action-btn:hover {
             background-color: var(--custom-icon);
             color: var(--custom-secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .action-btn:active {
+            transform: translateY(0);
         }
 
         .folder-link {
@@ -192,6 +200,13 @@
             border-radius: 0.25rem;
             overflow: hidden;
             margin-bottom: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            will-change: transform;
+        }
+
+        .thumbnail-container:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
         .thumbnail-container img {
@@ -201,12 +216,53 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: filter 0.3s ease;
         }
 
-        .file-actions {
-            margin-top: auto;
+        .thumbnail-container:hover img {
+            filter: brightness(1.1);
+        }
+
+        /* Video thumbnail overlay */
+        .thumbnail-container.video-thumbnail {
+            position: relative;
+        }
+
+        .video-play-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.5);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             display: flex;
-            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 0.8;
+            backdrop-filter: blur(2px);
+        }
+
+        .thumbnail-container:hover .video-play-overlay {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1.1);
+            background: rgba(0, 0, 0, 0.7);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .video-play-overlay i {
+            transform: translateX(2px); /* Slight adjustment for visual centering */
+            transition: transform 0.3s ease;
+        }
+
+        .thumbnail-container:hover .video-play-overlay i {
+            transform: translateX(2px) scale(1.1);
+            color: white;
         }
 
         /* Mobile optimizations */
@@ -405,35 +461,6 @@
         }
         .btn-close-white {
             filter: invert(1);
-        }
-
-        /* Video thumbnail overlay */
-        .thumbnail-container.video-thumbnail {
-            position: relative;
-        }
-
-        .video-play-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: rgba(255, 255, 255, 0.8);
-            background: rgba(0, 0, 0, 0.5);
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .video-play-overlay:hover {
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            transform: translate(-50%, -50%) scale(1.1);
         }
     </style>
 </head>
