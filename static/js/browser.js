@@ -22,7 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalElement = document.getElementById('previewModal');
     const modalDownloadLink = document.getElementById('modalDownloadLink');
 
-    // Authentication functions
+    // Check authentication status on page load
+    checkAuthStatus();
+
     function checkAuthStatus() {
         fetch('/auth/current-user')
             .then(response => response.json())
@@ -40,17 +42,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showUserInfo(user) {
-        userSection.style.display = 'flex';
-        loginBtn.style.display = 'none';
+        userSection.classList.add('show');
+        loginBtn.classList.remove('show');
         userName.textContent = user.name || user.email;
         if (user.avatar_url) {
             userAvatar.src = user.avatar_url;
+        } else {
+            userAvatar.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
         }
     }
 
     function showLoginButton() {
-        userSection.style.display = 'none';
-        loginBtn.style.display = 'block';
+        userSection.classList.remove('show');
+        loginBtn.classList.add('show');
     }
 
     loginBtn.addEventListener('click', function() {

@@ -596,7 +596,7 @@
 
         #logoutBtn:hover, #loginBtn:hover {
             background-color: var(--custom-icon);
-            color: var(--custom-secondary);
+            color: var(--custom-bg-darker);
             transform: translateY(-2px);
         }
         /* Add search bar styles */
@@ -633,6 +633,53 @@
             background-color: var(--custom-icon);
             color: var(--custom-secondary);
         }
+
+        #userSection {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        #userSection.show {
+            display: flex;
+        }
+
+        #loginBtn {
+            display: none;
+        }
+
+        #loginBtn.show {
+            display: block;
+        }
+
+        #userAvatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--custom-icon);
+            transition: transform 0.2s ease-out;
+        }
+
+        #userName {
+            color: var(--custom-icon);
+            font-size: 0.9rem;
+        }
+
+        #logoutBtn, #loginBtn {
+            background-color: var(--custom-secondary);
+            border: 1px solid var(--custom-icon);
+            color: var(--custom-icon);
+            padding: 0.25rem 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-out;
+        }
+
+        #logoutBtn:hover, #loginBtn:hover {
+            background-color: var(--custom-icon);
+            color: var(--custom-bg-darker);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -645,10 +692,10 @@
             <div class="ms-auto navbar-auth">
                 <div id="userSection" style="display: none;">
                     <img id="userAvatar" src="" alt="User Avatar" class="me-2">
-                    <span id="userName"></span>
-                    <button id="logoutBtn" class="btn btn-sm">Logout</button>
+                    <span id="userName" class="me-2"></span>
+                    <button id="logoutBtn" class="btn btn-sm btn-outline-light">Logout</button>
                 </div>
-                <button id="loginBtn" class="btn btn-sm" style="display: none;">Login</button>
+                <button id="loginBtn" class="btn btn-sm btn-outline-light">Login with Shopify</button>
             </div>
         </div>
     </nav>
@@ -816,7 +863,7 @@
                 <div class="card-body">
                     <pre id="debug-output" class="mb-0 text-light">
                     <?php
-                        echo json_encode([
+                        echojson_encode([
                             'current_folder' => $currentFolderId,
                             'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
                             'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
