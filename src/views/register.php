@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - DNA Distribution</title>
+    <title>Register - DNA Distribution</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
     <style>
@@ -23,7 +23,7 @@
             justify-content: center;
         }
 
-        .login-container {
+        .register-container {
             background-color: var(--custom-bg-lighter);
             border-radius: 0.5rem;
             padding: 2rem;
@@ -46,28 +46,28 @@
             margin-bottom: 2rem;
         }
 
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 1rem;
         }
 
-        .register-link a {
+        .login-link a {
             color: var(--custom-primary);
             text-decoration: none;
         }
 
-        .register-link a:hover {
+        .login-link a:hover {
             color: var(--custom-primary-hover);
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="register-container">
         <div class="text-center mb-4">
             <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo" class="logo">
         </div>
-
+        
         <?php if (isset($_SESSION['auth_error'])): ?>
             <div class="alert alert-danger">
                 <?php 
@@ -77,7 +77,7 @@
             </div>
         <?php endif; ?>
 
-        <form action="/auth/login" method="POST">
+        <form action="/auth/register" method="POST">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" id="email" name="email" required>
@@ -86,10 +86,18 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <div class="mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="first_name" name="first_name">
+            </div>
+            <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="last_name" name="last_name">
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
         </form>
-        <div class="register-link">
-            Don't have an account? <a href="/register">Register here</a>
+        <div class="login-link">
+            Already have an account? <a href="/login">Login here</a>
         </div>
     </div>
 
