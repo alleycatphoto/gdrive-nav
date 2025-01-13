@@ -694,6 +694,48 @@
             const fallbackLink = document.getElementById('fallbackLink');
             const modalElement = document.getElementById('previewModal');
 
+            // Preload management
+            let preloadQueue = [];
+            let isPreloading = false;
+            const maxPreloadQueueSize = 3;
+
+            function addToPreloadQueue(fileId, mimeType) {
+                if (!preloadQueue.some(item => item.fileId === fileId) && 
+                    preloadQueue.length < maxPreloadQueueSize) {
+                    preloadQueue.push({ fileId, mimeType });
+                    processPreloadQueue();
+                }
+            }
+
+            function processPreloadQueue() {
+                if (isPreloading || preloadQueue.length === 0) return;
+
+                isPreloading = true;
+                const { fileId, mimeType } = preloadQueue[0];
+
+                if (mimeType.startsWith('video/')) {
+                    const preloadVideo = document.createElement('video');
+                    preloadVideo.preload = 'metadata';
+                    preloadVideo.src = getProxyUrl(fileId);
+
+                    preloadVideo.addEventListener('loadedmetadata', () => {
+                        preloadQueue.shift();
+                        isPreloading = false;
+                        processPreloadQueue();
+                    });
+
+                    preloadVideo.addEventListener('error', () => {
+                        preloadQueue.shift();
+                        isPreloading = false;
+                        processPreloadQueue();
+                    });
+                } else {
+                    preloadQueue.shift();
+                    isPreloading = false;
+                    processPreloadQueue();
+                }
+            }
+
             // Add modal close event listener
             modalElement.addEventListener('hidden.bs.modal', function () {
                 // Stop and reset video if it exists
@@ -715,6 +757,7 @@
 
             // Function to extract file ID from Google Drive URL
             function extractFileId(url) {
+                if (!url) return null;
                 const match = url.match(/[-\w]{25,}/);
                 return match ? match[0] : null;
             }
@@ -763,6 +806,7 @@
                     videoSource.src = proxyUrl;
                     videoSource.type = mimeType;
                     previewVideo.src = proxyUrl; // Set source on video element as well
+                    previewVideo.preload = 'auto'; // Enable preloading
 
                     // Add loading indicator
                     previewVideo.style.display = 'block';
@@ -809,6 +853,27 @@
 
                 previewModal.show();
             }
+
+            // Add hover event listeners to video thumbnails for preloading
+            document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+                thumbnail.addEventListener('mouseenter', function() {
+                    const previewProps = this.closest('[onclick]').getAttribute('onclick');
+                    if (!previewProps) return;
+
+                    const match = previewProps.match(/previewFile\((.*)\)/);
+                    if (!match || !match[1]) return;
+
+                    try {
+                        const props = JSON.parse(match[1]);
+                        const fileId = extractFileId(props.downloadUrl);
+                        if (fileId) {
+                            addToPreloadQueue(fileId, props.mimeType);
+                        }
+                    } catch (e) {
+                        console.error('Error parsing preview properties for preload:', e);
+                    }
+                });
+            });
         });
     </script>
 </body>
