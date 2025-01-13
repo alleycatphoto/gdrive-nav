@@ -599,7 +599,6 @@
             color: var(--custom-secondary);
             transform: translateY(-2px);
         }
-
         /* Add search bar styles */
         .search-container {
             margin-bottom: 1rem;
@@ -641,7 +640,7 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
                 <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo">
-                DNA DISTRIBUTION : CUSTOMER RESOURCES
+                CUSTOMER RESOURCES
             </a>
             <div class="ms-auto navbar-auth">
                 <div id="userSection" style="display: none;">
@@ -1090,8 +1089,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success && data.user) {
-                            userSection.style.display = 'flex';
-                            loginBtn.style.display = 'none';
+                            userSection.classList.add('show');
+                            loginBtn.classList.remove('show');
                             userName.textContent = data.user.name || data.user.email;
                             if (data.user.avatar_url) {
                                 userAvatar.src = data.user.avatar_url;
@@ -1099,14 +1098,14 @@
                                 userAvatar.src = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
                             }
                         } else {
-                            userSection.style.display = 'none';
-                            loginBtn.style.display = 'block';
+                            userSection.classList.remove('show');
+                            loginBtn.classList.add('show');
                         }
                     })
                     .catch(error => {
                         console.error('Auth check error:', error);
-                        userSection.style.display = 'none';
-                        loginBtn.style.display = 'block';
+                        userSection.classList.remove('show');
+                        loginBtn.classList.add('show');
                     });
             }
 
