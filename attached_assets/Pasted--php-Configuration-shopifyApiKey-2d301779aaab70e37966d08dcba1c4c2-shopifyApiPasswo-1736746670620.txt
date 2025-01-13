@@ -1,0 +1,95 @@
+<?php 
+
+// Configuration 
+$shopifyApiKey = '2d301779aaab70e37966d08dcba1c4c2';
+$shopifyApiPassword = '89c716c8b026008880214a411daa2816';
+$shopifyApiUrl = 'https://b570c3-8b.myshopify.com/admin';
+
+
+// Function to get user data from Shopify 
+
+function getUserData($email, $shopifyApiPassword, $shopifyApiUrl)
+{
+    $ch = curl_init(
+        "{$shopifyApiUrl}/customers.json?email={$email}"
+    );
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt(
+        $ch,
+        CURLOPT_HTTPHEADER,
+        [
+            "X-Shopify-Access-Token: {$shopifyApiPassword}",
+            'Content-Type: application/json'
+        ]
+    );
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($response, true);
+}
+// Function to create new user in Shopify 
+function createUser($email, $password, $shopifyApiUrl, $shopifyApiPassword)
+{
+    $ch = curl_init($shopifyApiUrl . '/customers.json');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt(
+        $ch,
+        CURLOPT_HTTPHEADER,
+        [
+            "X-Shopify-Access-Token: {$shopifyApiPassword}",
+            'Content-Type: application/json'
+        ]
+    );
+
+    $data = ['customer' => ['email' => $email, 'password' => $password]];
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($response, true);
+}
+// Registration Form 
+
+if (isset($_POST['register'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $userData = getUserData($email, $shopifyApiPassword, $shopifyApiUrl);
+    if ($userData) { // User already exists in Shopify 
+        echo 'User already exists in Shopify';
+    } else { // Create new user in Shopify 
+        $createUserResponse = createUser($email, $password, $shopifyApiUrl, $shopifyApiPassword);
+        if ($createUserResponse) { // User created successfully 
+            echo 'User created successfully';
+        } else { // Error creating user
+            echo 'Error creating user';
+        }
+    }
+} 
+
+//Login Form 
+if (isset($_POST['login'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password']; // Verify user credentials 
+    $userData = getUserData($email, $shopifyApiPassword, $shopifyApiUrl);
+    if ($userData) { // User exists in Shopify 
+        echo 'User exists in Shopify';
+    } else { // User does not exist in Shopify 
+        echo 'User does not exist in Shopify';
+    }
+}
+?>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>DNA Distribution Customer Portal</title>
+</head>
+
+<body>
+    <h1>Registration Form</h1>
+    <form action="" method="post"> <input type="email" name="email" placeholder="Email"> <input type="password"
+            name="password" placeholder="Password"> <input type="submit" name="register" value="Register"> </form>
+    <h1>Login Form</h1>
+    <form action="" method="post"> <input type="email" name="email" placeholder="Email"> <input type="password"
+            name="password" placeholder="Password"> <input type="submit" name="login" value="Login"> </form>
+</body>
+
+</html>

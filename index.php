@@ -8,7 +8,6 @@ if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
     ini_set('display_errors', 0);
 }
 
-// Check if vendor directory exists
 if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
     die('Composer dependencies not installed. Please run: composer install');
 }
@@ -19,6 +18,11 @@ try {
     // Load environment variables
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
     $dotenv->load();
+
+    // Start session
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
     // Basic routing
     $request = $_SERVER['REQUEST_URI'];
@@ -32,12 +36,14 @@ try {
     }
     $_GET = array_merge($_GET, $queryParams);
 
-    // Only log in non-production
-    if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
-        error_log("Request URI: " . $request);
-        error_log("Path: " . $path);
-        error_log("Query: " . $query);
-        error_log("GET params: " . print_r($_GET, true));
+    // Authentication instance
+    $authService = new \App\Services\AuthService();
+
+    // Protected routes - redirect to login if not authenticated
+    $protectedPaths = ['/', '/list'];
+    if (in_array($path, $protectedPaths) && !$authService->isAuthenticated()) {
+        header('Location: /login');
+        exit;
     }
 
     // Extract file ID from proxy route
@@ -50,6 +56,18 @@ try {
     }
 
     switch ($path) {
+        case '/login':
+            $controller = new \App\Controllers\AuthController();
+            $controller->showLoginForm();
+            break;
+        case '/auth/login':
+            $controller = new \App\Controllers\AuthController();
+            $controller->login();
+            break;
+        case '/auth/logout':
+            $controller = new \App\Controllers\AuthController();
+            $controller->logout();
+            break;
         case '/':
             require __DIR__ . '/src/views/browser.php';
             break;
