@@ -100,14 +100,12 @@
             border: none;
             transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
             will-change: transform;
-            transform: translateY(0); /* Added for initial state */
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Added for smooth transition */
         }
 
         .card:hover {
             background-color: var(--custom-secondary-hover);
-            transform: translateY(-8px); /* Increased translation for better visual effect */
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* Increased shadow for better visual effect */
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
         }
 
         .card-body {
@@ -135,39 +133,10 @@
         }
 
         .file-icon {
-            font-size: 2.5rem;
-            color: var(--custom-icon);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            margin-bottom: 1rem;
-            display: block;
-            text-align: center;
+            font-size: 1rem;
+            color: inherit;
+            flex-shrink: 0;
         }
-
-        .card:hover .file-icon {
-            transform: scale(1.1);
-            color: var(--custom-icon-hover);
-            filter: drop-shadow(0 0 8px rgba(185, 150, 185, 0.3));
-        }
-
-        /* File type specific colors */
-        .file-icon.image-icon { color: #4CAF50; }
-        .file-icon.video-icon { color: #f44336; }
-        .file-icon.audio-icon { color: #2196F3; }
-        .file-icon.document-icon { color: #FF9800; }
-        .file-icon.pdf-icon { color: #E91E63; }
-        .file-icon.folder-icon { color: #FFC107; }
-        .file-icon.archive-icon { color: #795548; }
-        .file-icon.code-icon { color: #607D8B; }
-
-        .card:hover .file-icon.image-icon { color: #81C784; }
-        .card:hover .file-icon.video-icon { color: #E57373; }
-        .card:hover .file-icon.audio-icon { color: #64B5F6; }
-        .card:hover .file-icon.document-icon { color: #FFB74D; }
-        .card:hover .file-icon.pdf-icon { color: #F06292; }
-        .card:hover .file-icon.folder-icon { color: #FFD54F; }
-        .card:hover .file-icon.archive-icon { color: #A1887F; }
-        .card:hover .file-icon.code-icon { color: #90A4AE; }
-
 
         .card-title span {
             flex: 1;
@@ -493,17 +462,6 @@
         .btn-close-white {
             filter: invert(1);
         }
-
-        /* Animated loading states */
-        .loading-icon {
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.6; transform: scale(0.98); }
-            50% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0.6; transform: scale(0.98); }
-        }
     </style>
 </head>
 <body>
@@ -551,105 +509,98 @@
             } else {
                 echo '<div class="row g-4">';
                 foreach ($files as $file) {
-                    // Determine file type icon and class
-                    $iconClass = 'folder-icon';
-                    $fileIcon = 'fa-folder';
+                    $fileIcon = $file['isFolder'] ? 'fa-folder' : 'fa-file';
 
+                    // Determine file type icon
                     if (!$file['isFolder']) {
-                        $mimeType = strtolower($file['mimeType']);
-
-                        if (strpos($mimeType, 'image/') === 0) {
+                        if (strpos($file['mimeType'], 'image/') === 0) {
                             $fileIcon = 'fa-image';
-                            $iconClass = 'image-icon';
-                        } elseif (strpos($mimeType, 'video/') === 0) {
+                        } elseif (strpos($file['mimeType'], 'video/') === 0) {
                             $fileIcon = 'fa-video';
-                            $iconClass = 'video-icon';
-                        } elseif (strpos($mimeType, 'audio/') === 0) {
+                        } elseif (strpos($file['mimeType'], 'audio/') === 0) {
                             $fileIcon = 'fa-music';
-                            $iconClass = 'audio-icon';
-                        } elseif (strpos($mimeType, 'text/') === 0) {
+                        } elseif (strpos($file['mimeType'], 'text/') === 0) {
                             $fileIcon = 'fa-file-alt';
-                            $iconClass = 'document-icon';
-                        } elseif (strpos($mimeType, 'application/pdf') === 0) {
+                        } elseif (strpos($file['mimeType'], 'application/pdf') === 0) {
                             $fileIcon = 'fa-file-pdf';
-                            $iconClass = 'pdf-icon';
-                        } elseif (strpos($mimeType, 'application/zip') === 0 || 
-                                 strpos($mimeType, 'application/x-rar') === 0 ||
-                                 strpos($mimeType, 'application/x-7z') === 0) {
-                            $fileIcon = 'fa-file-archive';
-                            $iconClass = 'archive-icon';
-                        } elseif (strpos($mimeType, 'text/html') === 0 ||
-                                 strpos($mimeType, 'application/json') === 0 ||
-                                 strpos($mimeType, 'application/xml') === 0) {
-                            $fileIcon = 'fa-file-code';
-                            $iconClass = 'code-icon';
-                        } else {
-                            $fileIcon = 'fa-file';
-                            $iconClass = 'document-icon';
                         }
                     }
 
-                    // Prepare preview properties
-                    $previewProps = '';
-                    if (!$file['isFolder']) {
-                        $previewProps = htmlspecialchars(json_encode([
-                            'thumbnail' => $file['highResThumbnail'] ?? $file['thumbnailLink'],
-                            'name' => $file['name'],
-                            'downloadUrl' => $file['downloadUrl'],
-                            'mimeType' => $file['mimeType'],
-                            'webViewLink' => $file['webViewLink']
-                        ]), ENT_QUOTES);
-                    }
+                    $cardLink = $file['isFolder'] ? '/?folder=' . htmlspecialchars($file['id']) : 'javascript:void(0);';
+                    $isPreviewable = !$file['isFolder'] && (strpos($file['mimeType'], 'image/') === 0);
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
                         <div class="card h-100"> 
-                            <div class="card-body d-flex flex-column align-items-center">
+                            <?php 
+                            if (!$file['isFolder']) {
+                                $thumbnailLink = $file['thumbnailLink'] ?? null;
+                                $highResThumbnail = $file['highResThumbnail'] ?? null;
+                                $isVideo = strpos($file['mimeType'], 'video/') === 0;
+                                $previewProps = json_encode([
+                                    'thumbnail' => $highResThumbnail ?? $thumbnailLink,
+                                    'name' => $file['name'],
+                                    'downloadUrl' => $file['downloadUrl'],
+                                    'mimeType' => $file['mimeType'],
+                                    'webViewLink' => $file['webViewLink']
+                                ], JSON_THROW_ON_ERROR);
+
+                                if ($thumbnailLink) {
+                                    echo '<div class="thumbnail-container ' . ($isVideo ? 'video-thumbnail' : '') . '"';
+                                    echo ' onclick="previewFile(' . htmlspecialchars($previewProps, ENT_QUOTES) . ')"';
+                                    echo ' style="cursor: pointer;">';
+                                    echo '<img src="' . htmlspecialchars($thumbnailLink) . '"'; 
+                                    echo ' alt="' . htmlspecialchars($file['name']) . '"';
+                                    echo ' class="card-img-top">';
+
+                                    if ($isVideo) {
+                                        echo '<div class="video-play-overlay">';
+                                        echo '<i class="fas fa-play"></i>';
+                                        echo '</div>';
+                                    }
+
+                                    echo '</div>';
+                                }
+                            }
+                            ?>
+
+                            <div class="card-body">
                                 <?php if (!$file['isFolder']): ?>
-                                    <?php if ($file['thumbnailLink']): ?>
-                                        <div class="thumbnail-container <?php echo strpos($file['mimeType'], 'video/') === 0 ? 'video-thumbnail' : ''; ?>"
-                                             onclick="previewFile(<?php echo $previewProps; ?>)"
-                                             style="cursor: pointer;">
-                                            <img src="<?php echo htmlspecialchars($file['thumbnailLink']); ?>"
-                                                 alt="<?php echo htmlspecialchars($file['name']); ?>"
-                                                 class="card-img-top">
-                                            <?php if (strpos($file['mimeType'], 'video/') === 0): ?>
-                                                <div class="video-play-overlay">
-                                                    <i class="fas fa-play"></i>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <i class="fas <?php echo $fileIcon; ?> file-icon <?php echo $iconClass; ?>"></i>
-                                    <?php endif; ?>
-                                    <h6 class="card-title text-center mb-3">
-                                        <span class="text-truncate d-block" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                    <h6 class="card-title" 
+                                        onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
+                                        style="cursor: pointer;">
+                                        <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
+                                        <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
                                             <?php echo htmlspecialchars($file['name']); ?>
                                         </span>
                                     </h6>
-                                    <div class="mt-auto w-100">
-                                        <button onclick="previewFile(<?php echo $previewProps; ?>)"
-                                                class="btn btn-primary btn-sm w-100 mb-2">
-                                            <i class="fas fa-eye me-1"></i> Preview
+
+                                    <div class="file-actions">
+                                        <button onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
+                                                class="action-btn"
+                                                title="View">
+                                            <i class="fas fa-eye"></i>
                                         </button>
-                                        <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>"
-                                           class="btn btn-outline-primary btn-sm w-100"
+                                        <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
+                                           class="action-btn"
+                                           title="Download"
                                            download>
-                                            <i class="fas fa-download me-1"></i> Download
+                                            <i class="fas fa-download"></i>
                                         </a>
                                     </div>
                                 <?php else: ?>
-                                    <i class="fas <?php echo $fileIcon; ?> file-icon <?php echo $iconClass; ?>"></i>
-                                    <h6 class="card-title text-center mb-3">
-                                        <span class="text-truncate d-block" title="<?php echo htmlspecialchars($file['name']); ?>">
-                                            <?php echo htmlspecialchars($file['name']); ?>
-                                        </span>
-                                    </h6>
-                                    <div class="mt-auto w-100">
-                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>"
-                                           class="btn btn-primary btn-sm w-100">
-                                            <i class="fas fa-folder-open me-1"></i> Open
+                                    <h6 class="card-title">
+                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
+                                           class="d-flex align-items-center gap-2 text-decoration-none text-truncate" 
+                                           style="color: inherit; width: 100%;">
+                                            <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
+                                            <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
+                                                <?php echo htmlspecialchars($file['name']); ?>
+                                            </span>
                                         </a>
-                                    </div>
+                                    </h6>
+                                    <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" class="folder-link">
+                                        <i class="fas fa-folder-open"></i> Open
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -662,6 +613,31 @@
             echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
         ?>
+
+        <?php if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)): ?>
+        <!-- Debug Information Section (Only shown in non-production) -->
+        <div id="debug-section" class="mt-4">
+            <div class="card bg-dark">
+                <div class="card-header">
+                    Debug Information
+                </div>
+                <div class="card-body">
+                    <pre id="debug-output" class="mb-0 text-light">
+                    <?php
+                        echo json_encode([
+                            'current_folder' => $currentFolderId,
+                            'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
+                            'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
+                            'request_uri' => $_SERVER['REQUEST_URI'],
+                            'get_params' => $_GET,
+                            'production_mode' => $_ENV['PRODUCTION'] ?? false,
+                        ], JSON_PRETTY_PRINT);
+                    ?>
+                    </pre>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Preview Modal -->
@@ -850,7 +826,8 @@
                     // Handle video errors
                     const errorHandler = function(e) {
                         console.error('Error loading video:', e);
-                        previewFallback.style.style.display = 'none';
+                        previewFallback.style.display = 'block';
+                        previewVideo.style.display = 'none';
                     };
 
                     previewVideo.addEventListener('error', errorHandler);
