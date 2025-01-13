@@ -599,6 +599,41 @@
             color: var(--custom-secondary);
             transform: translateY(-2px);
         }
+
+        /* Add search bar styles */
+        .search-container {
+            margin-bottom: 1rem;
+        }
+
+        .search-container .input-group {
+            background-color: var(--custom-secondary);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #searchInput {
+            background-color: var(--custom-bg-darker);
+            border: 1px solid var(--custom-icon);
+            color: var(--custom-icon);
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            background-color: var(--custom-bg);
+            box-shadow: 0 0 0 0.2rem rgba(185, 150, 185, 0.25);
+        }
+
+        #searchButton {
+            border-color: var(--custom-icon);
+            color: var(--custom-icon);
+            transition: all 0.3s ease;
+        }
+
+        #searchButton:hover {
+            background-color: var(--custom-icon);
+            color: var(--custom-secondary);
+        }
     </style>
 </head>
 <body>
@@ -618,6 +653,19 @@
             </div>
         </div>
     </nav>
+
+    <div class="search-container container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search files..." aria-label="Search files">
+                    <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <?php

@@ -69,13 +69,13 @@ class DriveService {
         }
     }
 
-    public function listFiles($folderId = null) {
+    public function listFiles($folderId = null, $searchQuery = '') {
         try {
             if ($folderId === null || empty($folderId)) {
                 $folderId = $this->defaultFolderId;
             }
 
-            error_log("Listing files for folder: " . $folderId);
+            error_log("Listing files for folder: " . $folderId . " with search query: " . $searchQuery);
 
             $optParams = [
                 'pageSize' => 1000,
@@ -85,6 +85,12 @@ class DriveService {
                 'orderBy' => 'folder,name',
                 'q' => "'$folderId' in parents and trashed = false"
             ];
+
+            // Add search query if provided
+            if (!empty($searchQuery)) {
+                $searchTerm = addslashes($searchQuery); // Escape special characters
+                $optParams['q'] .= " and name contains '$searchTerm'";
+            }
 
             if ($this->isSharedDrive) {
                 $optParams['driveId'] = $this->driveId;

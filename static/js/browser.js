@@ -100,10 +100,47 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('active');
     }
 
-    function loadFiles(folderId = null) {
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    let searchTimeout = null;
+
+    // Add search event listeners
+    searchInput.addEventListener('input', function(e) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            const currentFolderId = new URLSearchParams(window.location.search).get('folder');
+            loadFiles(currentFolderId, e.target.value);
+        }, 300); // Debounce search for 300ms
+    });
+
+    searchButton.addEventListener('click', function() {
+        const currentFolderId = new URLSearchParams(window.location.search).get('folder');
+        loadFiles(currentFolderId, searchInput.value);
+    });
+
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const currentFolderId = new URLSearchParams(window.location.search).get('folder');
+            loadFiles(currentFolderId, searchInput.value);
+        }
+    });
+
+    function loadFiles(folderId = null, searchQuery = '') {
         showLoadingState();
 
-        const url = '/list' + (folderId ? `?folder=${encodeURIComponent(folderId)}` : '');
+        let url = '/list';
+        const params = new URLSearchParams();
+
+        if (folderId) {
+            params.append('folder', folderId);
+        }
+        if (searchQuery) {
+            params.append('search', searchQuery);
+        }
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
 
         fetch(url)
             .then(response => response.json())
@@ -114,6 +151,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderBreadcrumbs(data.breadcrumbs);
                 renderFiles(data.files);
                 hideLoadingState();
+
+                // Update URL but keep the search query out of it
+                if (!searchQuery) {
+                    updateUrl(folderId);
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -230,12 +272,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function navigateToFolder(folderId) {
+        const currentSearch = searchInput.value;
+
         // Add slide-out animation
         filesContainer.classList.add('folder-transition', 'slide-left');
 
         setTimeout(() => {
-            loadFiles(folderId);
-            updateUrl(folderId);
+            loadFiles(folderId, currentSearch);
 
             // Reset container for slide-in animation
             filesContainer.classList.remove('slide-left');
