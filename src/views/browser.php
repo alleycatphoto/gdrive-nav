@@ -105,7 +105,7 @@
         .card:hover {
             background-color: var(--custom-secondary-hover);
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 24px rgb(32, 24, 33, 0.15);
         }
 
         .card-body {
@@ -165,7 +165,7 @@
             background-color: var(--custom-icon);
             color: var(--custom-secondary);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgb(92, 66, 92, 0.15);
         }
         .action-btn:active {
             transform: translateY(0);
@@ -206,7 +206,7 @@
 
         .thumbnail-container:hover {
             transform: scale(1.02) translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 16px rgb(52, 35, 52, 0.2);
         }
 
         .thumbnail-container img {
@@ -234,8 +234,8 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 3rem;
-            color: rgba(255, 255, 255, 0.8);
-            background: rgba(0, 0, 0, 0.5);
+            color: rgb(218, 199, 219, 0.8);
+            background: rgb(39, 32, 40, 0.5);
             width: 80px;
             height: 80px;
             border-radius: 50%;
@@ -251,8 +251,8 @@
         .thumbnail-container:hover .video-play-overlay {
             opacity: 1;
             transform: translate(-50%, -50%) scale(1.1);
-            background: rgba(0, 0, 0, 0.7);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            background: rgb(41, 30, 41, 0.7);
+            box-shadow: 0 0 20px rgb(181, 150, 182, 0.2);
         }
 
         .video-play-overlay i {
@@ -262,7 +262,7 @@
 
         .thumbnail-container:hover .video-play-overlay i {
             transform: translateX(2px) scale(1.1);
-            color: white;
+            color: #b294b3;
         }
 
         /* Mobile optimizations */
@@ -383,7 +383,7 @@
         }
 
         .modal-body {
-            background-color: #000;
+            background-color: #291f29;
             padding: 0;
             max-height: calc(90vh - 120px);
             overflow: hidden; /* Changed from auto to hidden */
@@ -443,7 +443,7 @@
         .pdf-container {
             width: 100%;
             height: calc(90vh - 120px);
-            background: #000;
+            background: #2b262b;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -657,8 +657,8 @@
                         Your browser does not support the video player.
                     </video>
                     <!-- PDF preview -->
-                    <div id="pdfContainer" class="pdf-container" style="display: none;">
-                        <object id="previewPdf" data="" type="application/pdf">
+                    <div id="pdfContainer" class="pdf-container" style="display: none; background-color: #000000;">
+                        <object id="previewPdf" data="" type="application/pdf" style="background-color: #000000;">
                             <p>Unable to display PDF file. <a id="pdfDownloadLink" href="#" target="_blank">Download</a> instead.</p>
                         </object>
                     </div>
@@ -748,6 +748,41 @@
                         videoSource.src = '';
                     }
                 }
+                // Function to reset PDF preview
+                function resetPdfPreview() {
+                    if (previewPdf) {
+                        previewPdf.data = '';
+                        const pdfSource = previewPdf.querySelector('source');
+                        if (pdfSource) {
+                            pdfSource.src = '';
+                        }
+                    }
+                }
+
+                // Add an event listener to reset the PDF preview when modal is closed
+                const modalElement = document.getElementById('previewModal');
+                if (modalElement) {
+                    modalElement.addEventListener('hidden.bs.modal', resetPdfPreview);
+                }
+
+                // Reset image and PDF containers
+                if (previewImage) {
+                    previewImage.src = '';
+                    const imageSource = previewImage.querySelector('source');
+                    if (imageSource) {
+                        imageSource.src = '';
+                    }
+                }
+
+                // Reset image and PDF containers
+                if (previewPdf) {
+                    previewPdf.data = '';
+                    const pdfSource = previewPdf.querySelector('source');
+                    if (pdfSource) {
+                         pdfSource.src = '';
+                    }
+                }
+                
             });
 
             // Function to get proxy URL for a file
@@ -796,7 +831,23 @@
                 if (videoSource) {
                     videoSource.src = '';
                 }
+                // Reset image and PDF containers
+                if (previewImage) {
+                    previewImage.src = '';
+                    const imageSource = previewImage.querySelector('source');
+                    if (imageSource) {
+                        imageSource.src = '';
+                    }
+                }
 
+                // Reset image and PDF containers
+                if (previewPdf) {
+                    previewPdf.data = '';
+                    const pdfSource = previewPdf.querySelector('source');
+                    if (pdfSource) {
+                         pdfSource.src = '';
+                    }
+                }
                 // Handle different file types
                 if (mimeType.startsWith('image/')) {
                     previewImage.src = thumbnail || '';
@@ -843,7 +894,14 @@
 
                     previewVideo.load();
                 } else if (mimeType === 'application/pdf') {
-                    previewPdf.data = proxyUrl;
+                    
+                    previewPdf.data = '';
+                    const pdfSource = previewPdf.querySelector('object');
+                    if (pdfSource) {
+                        pdfSource.data = '';
+                    }
+
+                    previewPdf.data = proxyUrl + '#view=FitW&scrollbar=1&toolbar=0&statusbar=1&messages=1&navpanes=0';
                     pdfDownloadLink.href = downloadUrl;
                     pdfContainer.style.display = 'block';
                 } else {
