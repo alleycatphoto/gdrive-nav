@@ -9,7 +9,7 @@
     <style>
         :root {
             --custom-bg: #544055;
-            --custom-bg-lighter: #654d66;
+            --custom-bg-lighter: #2e212f;
             --custom-bg-darker: #443344;
             --custom-primary: #745076;
             --custom-primary-hover: #856087;

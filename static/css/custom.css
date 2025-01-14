@@ -105,3 +105,11 @@ body {
     background-color: var(--custom-success-hover);
     border-color: var(--custom-success-hover);
 }
+
+.login-container {
+    background-color: #2e212f;
+    border-radius: 0.5rem;
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+}

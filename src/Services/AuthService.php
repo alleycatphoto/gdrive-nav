@@ -39,7 +39,7 @@ class AuthService {
         return $data['customers'][0] ?? null;
     }
 
-    public function createUser($email, $password, $firstName = '', $lastName = '', $avatarUrl = '') {
+    public function createUser($email, $password, $firstName = '', $lastName = '') {
         $ch = curl_init("{$this->shopifyApiUrl}/customers.json");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
@@ -60,14 +60,15 @@ class AuthService {
                 'first_name' => $firstName,
                 'last_name' => $lastName,
                 'verified_email' => true,
-                'metafields' => [
-                    [
-                        'key' => 'avatar_url',
-                        'value' => $avatarUrl,
-                        'type' => 'single_line_text_field',
-                        'namespace' => 'customer'
-                    ]
-                ]
+                'accepts_marketing' => true,
+                'tags' => 'dna-distribution, portal, user',
+                'accepts_marketing_updated_at' => date('Y-m-d H:i:s'),
+                'marketing_opt_in_level' => 'single_opt_in',
+                'marketing_permission_level' => 'unrestricted',
+                'sms_marketing_permission_level' => 'unrestricted',
+                'tags_updated_at' => date('Y-m-d H:i:s'),
+                'company' => 'DNA Distribution',
+                'custom_fields[dna_distribution_portal_user_id]' => $email
             ]
         ];
 
@@ -82,36 +83,7 @@ class AuthService {
         }
 
         $responseData = json_decode($response, true);
-        $user = $responseData['customer'] ?? null;
-        if ($user) {
-            $user['avatar_url'] = $avatarUrl; // Add avatar URL to user data
-        }
-        return $user;
-    }
-
-    public function importSocialMediaAvatar($platform, $username) {
-        $avatarUrl = '';
-        switch ($platform) {
-            case 'github':
-                $avatarUrl = "https://github.com/{$username}.png";
-                break;
-            case 'gravatar':
-                $hash = md5(strtolower(trim($username)));
-                $avatarUrl = "https://www.gravatar.com/avatar/{$hash}?s=200&d=mp";
-                break;
-            default:
-                return null;
-        }
-
-        // Verify if the avatar URL is accessible
-        $ch = curl_init($avatarUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_exec($ch);
-        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        return $statusCode === 200 ? $avatarUrl : null;
+        return $responseData['customer'] ?? null;
     }
 
     public function validateCredentials($email, $password) {
@@ -125,7 +97,7 @@ class AuthService {
         // In a production environment, you would implement proper password validation
         // For now, we'll return the user if found
 
-
+        
         //error_log(print_r($user));
         return $user;
     }
