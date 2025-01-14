@@ -68,32 +68,6 @@
             font-size: 3rem;
             color: white;
         }
-        /* Action buttons styling */
-        .action-btn {
-            padding: 0.5rem 0.75rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--custom-secondary);
-            border: 1px solid var(--custom-icon);
-            color: var(--custom-icon);
-            text-decoration: none;
-            border-radius: 0.25rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-            font-size: 0.9rem;
-        }
-
-        .action-btn:hover {
-            background-color: var(--custom-icon);
-            color: var(--custom-secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        .action-btn:active {
-            transform: translateY(0);
-        }
-
     </style>
 </head>
 <body>
