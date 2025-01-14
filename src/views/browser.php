@@ -533,15 +533,39 @@ $currentUser = $authService->getCurrentUser();
         }
 
         /* Shopify Buy Button Customization */
+        .collection-header {
+            margin-bottom: 2rem;
+            padding: 0 1rem;
+        }
+
+        .collection-header h4 {
+            color: var(--custom-icon);
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
         #collection-component-1736831470697 {
-            margin: 0 -1rem; /* Compensate for the grid gap */
+            margin: 0 -1rem;
+        }
+
+        #collection-component-1736831470697 .shopify-buy__collection {
+            margin: 0 !important;
+            padding: 2rem 0 !important;
         }
 
         #collection-component-1736831470697 .shopify-buy__collection-products {
             display: grid !important;
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 1rem !important;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+            gap: 1.5rem !important;
             padding: 0 1rem !important;
+            max-width: 100% !important;
+        }
+
+        @media (min-width: 576px) {
+            #collection-component-1736831470697 .shopify-buy__collection-products {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
         }
 
         @media (min-width: 768px) {
@@ -561,8 +585,18 @@ $currentUser = $authService->getCurrentUser();
             margin: 0 !important;
             background-color: var(--custom-secondary) !important;
             border-radius: 0.5rem !important;
-            transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             overflow: hidden !important;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: productAppear 0.5s ease-out forwards;
+        }
+
+        @keyframes productAppear {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         #collection-component-1736831470697 .shopify-buy__product:hover {
@@ -571,10 +605,11 @@ $currentUser = $authService->getCurrentUser();
         }
 
         #collection-component-1736831470697 .shopify-buy__product-img-wrapper {
-            padding-bottom: 56.25% !important; /* 16:9 aspect ratio */
+            padding-bottom: 100% !important;
             position: relative !important;
             background-color: var(--custom-bg-darker) !important;
             border-radius: 0.25rem 0.25rem 0 0 !important;
+            overflow: hidden !important;
         }
 
         #collection-component-1736831470697 .shopify-buy__product-img {
@@ -584,30 +619,58 @@ $currentUser = $authService->getCurrentUser();
             width: 100% !important;
             height: 100% !important;
             object-fit: cover !important;
+            transition: transform 0.3s ease !important;
         }
 
-        #collection-component-1736831470697 .shopify-buy__product__title,
-        #collection-component-1736831470697 .shopify-buy__product__price {
+        #collection-component-1736831470697 .shopify-buy__product:hover .shopify-buy__product-img {
+            transform: scale(1.05) !important;
+        }
+
+        #collection-component-1736831470697 .shopify-buy__product__title {
             color: var(--custom-icon) !important;
-            padding: 0.5rem !important;
+            padding: 1rem 1rem 0.5rem !important;
             margin: 0 !important;
             font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            line-height: 1.4 !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+        }
+
+        #collection-component-1736831470697 .shopify-buy__product__price {
+            color: var(--custom-icon) !important;
+            padding: 0 1rem 1rem !important;
+            margin: 0 !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
         }
 
         #collection-component-1736831470697 .shopify-buy__btn {
             background-color: var(--custom-primary) !important;
-            border-color: var(--custom-primary) !important;
+            border: none !important;
             color: white !important;
             width: 100% !important;
-            border-radius: 0 0 0.25rem 0.25rem !important;
-            margin: 0 !important;
-            padding: 0.5rem !important;
-            transition: background-color 0.3s ease !important;
+            padding: 0.75rem !important;
+            font-size: 0.9rem !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+            text-transform: none !important;
+            letter-spacing: normal !important;
         }
 
         #collection-component-1736831470697 .shopify-buy__btn:hover {
             background-color: var(--custom-primary-hover) !important;
-            border-color: var(--custom-primary-hover) !important;
+        }
+
+        #collection-component-1736831470697 .shopify-buy__btn:active {
+            transform: translateY(1px) !important;
+        }
+
+        #collection-component-1736831470697 .shopify-buy__quantity-container {
+            display: none !important;
         }
     </style>
 </head>
@@ -793,16 +856,12 @@ $currentUser = $authService->getCurrentUser();
         }
         ?>
 
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-12">
-                    <h4 class="text-custom-icon mb-4">Featured Products</h4>
-                </div>
-                <div class="col-12">
-                    <div class="row g-4" id='collection-component-1736831470697'>
-                        <!-- Shopify buy button will be injected here -->
-                    </div>
-                </div>
+        <div class="container mt-5">
+            <div class="collection-header">
+                <h4>Featured Products</h4>
+            </div>
+            <div id='collection-component-1736831470697'>
+                <!-- Shopify buy button will be injected here -->
             </div>
         </div>
 
@@ -813,8 +872,7 @@ $currentUser = $authService->getCurrentUser();
                 <div class="card-header">
                     Debug Information
                 </div>
-                <div class="card-body">
-                    <pre id="debug-output" class="mb-0 text-light">
+                <div class="card-body">                    <pre id="debug-output" class="mb-0 text-light">
                     <?php
                         echo json_encode([
                             'current_folder' => $currentFolderId,
@@ -1078,6 +1136,7 @@ $currentUser = $authService->getCurrentUser();
         });
     </script>
    
+
     <script type="text/javascript">
     /*<![CDATA[*/
     (function () {
