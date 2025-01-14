@@ -664,6 +664,12 @@ $currentUser = $authService->getCurrentUser();
         #collection-component-1736831470697 .shopify-buy__quantity-container {
             display: none !important;
         }
+
+        .container mt-5 {
+            background-color: var(--custom-bg-lighter) !important;
+            border-radius: 0.5rem !important;
+            padding: 1.5rem !important;
+        }
     </style>
 </head>
 <body>
@@ -860,8 +866,7 @@ $currentUser = $authService->getCurrentUser();
         <?php if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)): ?>
         <!-- Debug Information Section (Onlyshown in non-production) -->
         <div id="debug-section" class="mt-4">
-            <div class="card bg-dark">
-                <div class="card-header">
+            <div class="card bg-dark">                <div class="card-header">
                     Debug Information
                 </div>
                 <div class="card-body">                    <pre id="debug-output" class="mb-0 text-light">
