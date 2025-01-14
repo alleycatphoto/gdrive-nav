@@ -556,8 +556,8 @@ $currentUser = $authService->getCurrentUser();
 
         #collection-component-1736831470697 .shopify-buy__collection-products {
             display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
-            gap: 1.5rem !important;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important; /* Reduced from 150px */
+            gap: 1rem !important; /* Reduced from 1.5rem */
             padding: 0 1rem !important;
             max-width: 100% !important;
         }
@@ -583,29 +583,21 @@ $currentUser = $authService->getCurrentUser();
         #collection-component-1736831470697 .shopify-buy__product {
             max-width: none !important;
             margin: 0 !important;
-            background-color: var(--custom-secondary) !important;
+            background-color: var(--custom-bg-darker) !important; /* Changed to match thumbnail boxes */
             border-radius: 0.5rem !important;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
             overflow: hidden !important;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: productAppear 0.5s ease-out forwards;
-        }
-
-        @keyframes productAppear {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            transform: scale(0.75) !important; /* 25% smaller */
+            transform-origin: center top !important;
         }
 
         #collection-component-1736831470697 .shopify-buy__product:hover {
-            transform: translateY(-4px) !important;
+            transform: scale(0.75) translateY(-4px) !important;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
         }
 
         #collection-component-1736831470697 .shopify-buy__product-img-wrapper {
-            padding-bottom: 100% !important;
+            padding-bottom: 75% !important; /* Changed aspect ratio to match thumbnails */
             position: relative !important;
             background-color: var(--custom-bg-darker) !important;
             border-radius: 0.25rem 0.25rem 0 0 !important;
@@ -628,9 +620,9 @@ $currentUser = $authService->getCurrentUser();
 
         #collection-component-1736831470697 .shopify-buy__product__title {
             color: var(--custom-icon) !important;
-            padding: 1rem 1rem 0.5rem !important;
+            padding: 0.75rem 0.75rem 0.25rem !important; /* Reduced padding */
             margin: 0 !important;
-            font-size: 0.9rem !important;
+            font-size: 0.8rem !important; /* Smaller font */
             font-weight: 500 !important;
             line-height: 1.4 !important;
             overflow: hidden !important;
@@ -642,9 +634,9 @@ $currentUser = $authService->getCurrentUser();
 
         #collection-component-1736831470697 .shopify-buy__product__price {
             color: var(--custom-icon) !important;
-            padding: 0 1rem 1rem !important;
+            padding: 0 0.75rem 0.75rem !important; /* Reduced padding */
             margin: 0 !important;
-            font-size: 1rem !important;
+            font-size: 0.9rem !important; /* Smaller font */
             font-weight: 600 !important;
         }
 
@@ -653,8 +645,8 @@ $currentUser = $authService->getCurrentUser();
             border: none !important;
             color: white !important;
             width: 100% !important;
-            padding: 0.75rem !important;
-            font-size: 0.9rem !important;
+            padding: 0.5rem !important; /* Reduced padding */
+            font-size: 0.8rem !important; /* Smaller font */
             font-weight: 500 !important;
             transition: all 0.3s ease !important;
             text-transform: none !important;
@@ -866,7 +858,7 @@ $currentUser = $authService->getCurrentUser();
         </div>
 
         <?php if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)): ?>
-        <!-- Debug Information Section (Only shown in non-production) -->
+        <!-- Debug Information Section (Onlyshown in non-production) -->
         <div id="debug-section" class="mt-4">
             <div class="card bg-dark">
                 <div class="card-header">
