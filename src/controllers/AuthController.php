@@ -31,7 +31,7 @@ class AuthController {
         $user = $this->authService->validateCredentials($email, $password);
         if ($user) {
             $this->authService->startSession($user);
-            header('Location: /dashboard'); // Changed from / to /dashboard
+            header('Location: /dashboard'); 
         } else {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
@@ -52,6 +52,7 @@ class AuthController {
         $password = $_POST['password'] ?? '';
         $firstName = $_POST['first_name'] ?? '';
         $lastName = $_POST['last_name'] ?? '';
+        $avatarUrl = $_POST['avatar_url'] ?? '';
 
         if (empty($email) || empty($password)) {
             if (session_status() === PHP_SESSION_NONE) {
@@ -73,11 +74,11 @@ class AuthController {
             exit;
         }
 
-        // Create new user
-        $user = $this->authService->createUser($email, $password, $firstName, $lastName);
+        // Create new user with avatar
+        $user = $this->authService->createUser($email, $password, $firstName, $lastName, $avatarUrl);
         if ($user) {
             $this->authService->startSession($user);
-            header('Location: /dashboard'); // Changed from / to /dashboard
+            header('Location: /dashboard');
         } else {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();

@@ -81,6 +81,34 @@
             display: block;
             color: var(--bs-success);
         }
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 1rem auto;
+            background-color: var(--custom-bg-darker);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-options {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .avatar-option {
+            flex: 1;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -99,6 +127,31 @@
         <?php endif; ?>
 
         <form id="registerForm" action="/auth/register" method="POST" novalidate>
+            <div class="avatar-preview" id="avatarPreview">
+                <i class="fas fa-user fa-3x"></i>
+            </div>
+
+            <div class="avatar-options">
+                <div class="avatar-option">
+                    <label for="githubUsername" class="form-label">
+                        <i class="fab fa-github"></i> GitHub
+                    </label>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           id="githubUsername" 
+                           placeholder="Username">
+                </div>
+                <div class="avatar-option">
+                    <label for="gravatarEmail" class="form-label">
+                        <i class="fas fa-user-circle"></i> Gravatar
+                    </label>
+                    <input type="email" 
+                           class="form-control form-control-sm" 
+                           id="gravatarEmail" 
+                           placeholder="Email">
+                </div>
+            </div>
+            <input type="hidden" id="avatarUrl" name="avatar_url">
             <div class="mb-3">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" 
@@ -162,6 +215,10 @@
             const emailFeedback = document.getElementById('emailFeedback');
             const passwordFeedback = document.getElementById('passwordFeedback');
             const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
+            const githubUsername = document.getElementById('githubUsername');
+            const gravatarEmail = document.getElementById('gravatarEmail');
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarUrl = document.getElementById('avatarUrl');
 
             function validateEmail() {
                 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -250,9 +307,50 @@
                 submitBtn.disabled = !(isEmailValid && isPasswordValid && isConfirmPasswordValid);
             }
 
+            async function updateAvatarPreview(platform, identifier) {
+                if (!identifier) {
+                    avatarPreview.innerHTML = '<i class="fas fa-user fa-3x"></i>';
+                    avatarUrl.value = '';
+                    return;
+                }
+
+                let previewUrl = '';
+                if (platform === 'github') {
+                    previewUrl = `https://github.com/${identifier}.png`;
+                } else if (platform === 'gravatar') {
+                    const hash = await md5(identifier.toLowerCase().trim());
+                    previewUrl = `https://www.gravatar.com/avatar/${hash}?s=200&d=mp`;
+                }
+
+                const img = new Image();
+                img.onload = function() {
+                    avatarPreview.innerHTML = `<img src="${previewUrl}" alt="Profile picture">`;
+                    avatarUrl.value = previewUrl;
+                };
+                img.onerror = function() {
+                    avatarPreview.innerHTML = '<i class="fas fa-user fa-3x"></i>';
+                    avatarUrl.value = '';
+                };
+                img.src = previewUrl;
+            }
+
+            async function md5(string) {
+                const msgBuffer = new TextEncoder().encode(string);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                return hashHex;
+            }
+
             email.addEventListener('input', validateEmail);
             password.addEventListener('input', validatePassword);
             confirmPassword.addEventListener('input', validateConfirmPassword);
+            githubUsername.addEventListener('input', function() {
+                updateAvatarPreview('github', this.value);
+            });
+            gravatarEmail.addEventListener('input', function() {
+                updateAvatarPreview('gravatar', this.value);
+            });
 
             form.addEventListener('submit', function(e) {
                 if (!submitBtn.disabled) {
