@@ -11,6 +11,7 @@ $currentUser = $authService->getCurrentUser();
     <title>DNA Distribution : Customer Resources</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
         :root {
             --custom-bg: #544055;
@@ -532,208 +533,49 @@ $currentUser = $authService->getCurrentUser();
             opacity: 0.5;
         }
 
-        /* Shopify Buy Button Customization */
-        .collection-header {
-            margin-bottom: 2rem;
-            padding: 0 1rem;
+        /* Social sharing buttons styling */
+        .social-share-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-right: auto;
         }
 
-        .collection-header h4 {
-            color: var(--custom-icon);
-            font-size: 1.25rem;
-            font-weight: 500;
-            margin: 0;
+        .social-share-btn {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
         }
 
-        #collection-component-1736831470697 {
-            margin: 0 -1rem;
+        .social-share-btn i {
+            font-size: 1rem;
         }
 
-        #collection-component-1736831470697 .shopify-buy__collection {
-            margin: 0 !important;
-            padding: 2rem 0 !important;
+        .social-share-btn.facebook {
+            background-color: #1877f2;
         }
 
-        #collection-component-1736831470697 .shopify-buy__collection-products {
-            display: grid !important;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) !important; /* Reduced from 150px */
-            gap: 1rem !important; /* Reduced from 1.5rem */
-            padding: 0 1rem !important;
-            max-width: 100% !important;
+        .social-share-btn.twitter {
+            background-color: #1da1f2;
         }
 
-        @media (min-width: 576px) {
-            #collection-component-1736831470697 .shopify-buy__collection-products {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
+        .social-share-btn.linkedin {
+            background-color: #0a66c2;
         }
 
-        @media (min-width: 768px) {
-            #collection-component-1736831470697 .shopify-buy__collection-products {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
+        .social-share-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
         }
 
-        @media (min-width: 992px) {
-            #collection-component-1736831470697 .shopify-buy__collection-products {
-                grid-template-columns: repeat(6, 1fr) !important;
-            }
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product {
-            max-width: none !important;
-            margin: 0 !important;
-            background-color: var(--custom-bg-darker) !important; /* Changed to match thumbnail boxes */
-            border-radius: 0.5rem !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            overflow: hidden !important;
-            transform: scale(0.75) !important; /* 25% smaller */
-            transform-origin: center top !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product:hover {
-            transform: scale(0.75) translateY(-4px) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product-img-wrapper {
-            padding-bottom: 75% !important; /* Changed aspect ratio to match thumbnails */
-            position: relative !important;
-            background-color: var(--custom-bg-darker) !important;
-            border-radius: 0.25rem 0.25rem 0 0 !important;
-            overflow: hidden !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product-img {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            transition: transform 0.3s ease !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product:hover .shopify-buy__product-img {
-            transform: scale(1.05) !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product__title {
-            color: var(--custom-icon) !important;
-            padding: 0.75rem 0.75rem 0.25rem !important; /* Reduced padding */
-            margin: 0 !important;
-            font-size: 0.8rem !important; /* Smaller font */
-            font-weight: 500 !important;
-            line-height: 1.4 !important;
-            overflow: hidden !important;
-            text-overflow: ellipsis !important;
-            display: -webkit-box !important;
-            -webkit-line-clamp: 2 !important;
-            -webkit-box-orient: vertical !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__product__price {
-            color: var(--custom-icon) !important;
-            padding: 0 0.75rem 0.75rem !important; /* Reduced padding */
-            margin: 0 !important;
-            font-size: 0.9rem !important; /* Smaller font */
-            font-weight: 600 !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__btn {
-            background-color: var(--custom-primary) !important;
-            border: none !important;
-            color: white !important;
-            width: 100% !important;
-            padding: 0.5rem !important; /* Reduced padding */
-            font-size: 0.8rem !important; /* Smaller font */
-            font-weight: 500 !important;
-            transition: all 0.3s ease !important;
-            text-transform: none !important;
-            letter-spacing: normal !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__btn:hover {
-            background-color: var(--custom-primary-hover) !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__btn:active {
-            transform: translateY(1px) !important;
-        }
-
-        #collection-component-1736831470697 .shopify-buy__quantity-container {
-            display: none !important;
-        }
-
-        .container mt-5 {
-            background-color: var(--custom-bg-lighter) !important;
-            border-radius: 0.5rem !important;
-            padding: 1.5rem !important;
-        }
-
-        /* Additional Shopify product styling to match thumbnails */
-        #collection-component-1736831470697 {
-            margin: 2rem 0;
-        }
-
-        .shopify-buy__product {
-            background-color: var(--custom-bg-darker) !important;
-            border-radius: 0.5rem !important;
-            overflow: hidden !important;
-            transition: transform 0.3s ease-in-out !important;
-            transform: scale(0.75) !important;
-            transform-origin: top center !important;
-        }
-
-        .shopify-buy__product:hover {
-            transform: scale(0.75) translateY(-4px) !important;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-        }
-
-        .shopify-buy__product-img-wrapper {
-            position: relative !important;
-            padding-bottom: 75% !important;
-            background-color: var(--custom-bg-darker) !important;
-            border-radius: 0.25rem 0.25rem 0 0 !important;
-            overflow: hidden !important;
-        }
-
-        .shopify-buy__product-img {
-            position: absolute !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-        }
-
-        .shopify-buy__product__title {
-            padding: 1rem !important;
-            margin: 0 !important;
-            color: var(--custom-icon) !important;
-            font-size: 0.9rem !important;
-        }
-
-        .shopify-buy__product__price {
-            padding: 0 1rem 1rem !important;
-            color: var(--custom-icon) !important;
-            font-size: 0.9rem !important;
-        }
-
-        .shopify-buy__btn {
-            width: calc(100% - 2rem) !important;
-            margin: 0 1rem 1rem !important;
-            background-color: var(--custom-primary) !important;
-            border: none !important;
-            border-radius: 0.25rem !important;
-            color: white !important;
-            padding: 0.5rem 1rem !important;
-            font-size: 0.9rem !important;
-            transition: background-color 0.2s !important;
-        }
-
-        .shopify-buy__btn:hover {
-            background-color: var(--custom-primary-hover) !important;
+        .social-share-btn:active {
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -867,7 +709,7 @@ $currentUser = $authService->getCurrentUser();
                             ?>
 
                             <div class="card-body">
-                               <?php if (!$file['isFolder']): ?>
+                                <?php if (!$file['isFolder']): ?>
                                     <h6 class="card-title" 
                                         onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
                                         style="cursor: pointer;">
@@ -975,7 +817,7 @@ $currentUser = $authService->getCurrentUser();
                         </object>
                     </div>
                     <!-- Fallback message -->
-                    <div id="previewFallback" class.p-4" style="display: none;">
+                    <div id="previewFallback" class="p-4" style="display: none;">
                         <p>This file type cannot be previewed directly.</p>
                         <a id="fallbackLink" href="#" target="_blank" class="btn btn-primary">
                             <i class="fas fa-external-link-alt me-2"></i> Open in Google Drive
@@ -983,6 +825,20 @@ $currentUser = $authService->getCurrentUser();
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <div class="social-share-buttons">
+                        <button onclick="shareOnPlatform('facebook')" class="social-share-btn facebook" title="Share on Facebook">
+                            <i class="fab fa-facebook-f"></i>
+                            <span class="d-none d-sm-inline">Facebook</span>
+                        </button>
+                        <button onclick="shareOnPlatform('twitter')" class="social-share-btn twitter" title="Share on Twitter">
+                            <i class="fab fa-twitter"></i>
+                            <span class="d-none d-sm-inline">Twitter</span>
+                        </button>
+                        <button onclick="shareOnPlatform('linkedin')" class="social-share-btn linkedin" title="Share on LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                            <span class="d-none d-sm-inline">LinkedIn</span>
+                        </button>
+                    </div>
                     <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
                         <i class="fas fa-download me-2"></i> Download
                     </a>
@@ -1005,6 +861,69 @@ $currentUser = $authService->getCurrentUser();
             const previewFallback = document.getElementById('previewFallback');
             const fallbackLink = document.getElementById('fallbackLink');
             const modalElement = document.getElementById('previewModal');
+            let currentFileData = null; // Store current file data for sharing
+
+            // Function to handle social media sharing
+            function shareOnPlatform(platform) {
+                if (!currentFileData) return;
+
+                const shareUrls = {
+                    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentFileData.webViewLink)}`,
+                    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentFileData.webViewLink)}&text=${encodeURIComponent('Check out this file: ' + currentFileData.name)}`,
+                    linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentFileData.webViewLink)}`
+                };
+
+                const shareUrl = shareUrls[platform];
+                if (!shareUrl) return;
+
+                // Open share dialog in a popup window
+                const width = 600;
+                const height = 400;
+                const left = (window.innerWidth - width) / 2;
+                const top = (window.innerHeight - height) / 2;
+                window.open(shareUrl, 'share', 
+                    `width=${width},height=${height},left=${left},top=${top},toolbar=0,menubar=0`);
+            }
+
+            // Expose shareOnPlatform to global scope for button onclick handlers
+            window.shareOnPlatform = shareOnPlatform;
+
+            function previewFile(fileData) {
+                currentFileData = fileData; // Store file data for sharing
+                const modalTitle = document.getElementById('previewModalLabel');
+                modalTitle.textContent = fileData.name;
+
+                // Reset all preview elements
+                previewImage.style.display = 'none';
+                previewVideo.style.display = 'none';
+                pdfContainer.style.display = 'none';
+                previewFallback.style.display = 'none';
+
+                // Update download link
+                const modalDownloadLink = document.getElementById('modalDownloadLink');
+                modalDownloadLink.href = fileData.downloadUrl;
+                modalDownloadLink.download = fileData.name;
+
+                // Show appropriate preview based on file type
+                if (fileData.mimeType.startsWith('image/')) {
+                    previewImage.src = fileData.thumbnail || fileData.downloadUrl;
+                    previewImage.style.display = 'block';
+                } else if (fileData.mimeType.startsWith('video/')) {
+                    previewVideo.src = fileData.downloadUrl;
+                    previewVideo.type = fileData.mimeType;
+                    previewVideo.style.display = 'block';
+                } else if (fileData.mimeType === 'application/pdf') {
+                    previewPdf.data = fileData.downloadUrl;
+                    pdfDownloadLink.href = fileData.downloadUrl;
+                    pdfContainer.style.display = 'block';
+                } else {
+                    previewFallback.style.display = 'block';
+                    fallbackLink.href = fileData.webViewLink;
+                }
+
+                // Show modal
+                previewModal.show();
+            }
 
             // Preload management
             let preloadQueue = [];
@@ -1013,8 +932,7 @@ $currentUser = $authService->getCurrentUser();
 
             function addToPreloadQueue(fileId, mimeType) {
                 if (!preloadQueue.some(item => item.fileId === fileId) && 
-                    preloadQueue.length < maxPreloadQueueSize) {
-                    preloadQueue.push({ fileId, mimeType });
+                    preloadQueue.length < maxPreloadQueueSize) {                    preloadQueue.push({ fileId, mimeType });
                     processPreloadQueue();
                 }
             }
@@ -1196,7 +1114,7 @@ $currentUser = $authService->getCurrentUser();
             });
         });
     </script>
-   
+    
 
     <script type="text/javascript">
     /*<![CDATA[*/
@@ -1227,151 +1145,311 @@ $currentUser = $authService->getCurrentUser();
           ui.createComponent('collection', {
             id: '313578782870',
             node: document.getElementById('collection-component-1736831470697'),
-            moneyFormat: '%24%7B%7Bamount%7D%7D',
-            options: {
-              "product": {
-                "styles": {
-                  "product": {
-                    "transform": "scale(0.75)",
-                    "transform-origin": "top center",
-                    "@media (min-width: 601px)": {
-                      "max-width": "calc(25% - 20px)",
-                      "margin-left": "20px",
-                      "margin-bottom": "50px"
-                    }
-                  },
-                  "button": {
-                    "font-family": "Helvetica Neue, sans-serif",
-                    "background-color": "var(--custom-primary)",
-                    ":hover": {
-                      "background-color": "var(--custom-primary-hover)"
-                    },
-                    "border-radius": "6px",
-                    "padding": "8px 16px"
-                  },
-                  "title": {
-                    "color": "var(--custom-icon)"
-                  },
-                  "price": {
-                    "color": "var(--custom-icon)"
-                  }
-                },
-                "buttonDestination": "modal",
-                "contents": {
-                  "options": false
-                },
-                "text": {
-                  "button": "View Details"
-                }
-              },
-              "productSet": {
-                "styles": {
-                  "products": {
-                    "display": "grid",
-                    "grid-template-columns": "repeat(auto-fill, minmax(200px, 1fr))",
-                    "gap": "1rem",
-                    "@media (min-width: 601px)": {
-                      "margin-left": "-20px"
-                    }
-                  }
-                }
-              },
-              "option": {},
-              "cart": {
-                "styles": {
-                  "button": {
-                    "background-color": "var(--custom-primary)",
-                    ":hover": {
-                      "background-color": "var(--custom-primary-hover)"
-                    },
-                    "border-radius": "6px"
-                  }
-                }
-              },
-              "toggle": {
-                "styles": {
-                  "toggle": {
-                    "background-color": "var(--custom-primary)",
-                    ":hover": {
-                      "background-color": "var(--custom-primary-hover)"
-                    }
-                  }
-                }
-              }
+            moneyFormat: '%24%7B%7D%7D',
+                options: {
+      "product": {
+        "styles": {
+            "product": {
+                "padding": "15px !important",
+                "display": "inline-block",
+                "vertical-align": "top",
+                "background-color": "#493849",
+                "color": "lightgray !important",
+                "border-radius": ".375rem !important",
+                "max-width": "120px !important",
+                "font-size": "12px !important"
+            },
+          "button": {
+                  "width": "100%",
+                  "padding": "0.5rem 0.75rem",
+                  "background-color": "var(--custom-secondary)",
+                  "border": "1px solid var(--custom-icon)",
+                  "color": "var(--custom-icon)",
+                  "border-radius": "0.25rem",
+                  "transition": "all 0.2s",
+                  "text-decoration": "none",
+                  "display": "inline-flex",
+                  "align-items": "center",
+                  "justify-content": "center",
+                  "gap": "0.5rem",
+                  "margin-top": "auto"
+            },
+            "background-color": "#4f3950",
+            ":focus": {
+              "background-color": "#473348"
+            },
+            "border-radius": "2px"
+          },
+        },
+        "classes" : {
+            "button" : "action-btn"
+        },
+        "buttonDestination": "modal",
+        "contents": {
+          "options": false
+        },
+        "text": {
+          "button": "View product"
+        },
+        "googleFonts": [
+          "Open Sans"
+        ]
+      },
+      "productSet": {
+        "styles": {
+          "products": {
+            "@media (min-width: 301px)": {
+              "margin-left": "-20px"
             }
+          }
+        }
+      },
+      "modalProduct": {
+        "contents": {
+          "img": false,
+          "imgWithCarousel": true,
+          "button": false,
+          "buttonWithQuantity": true
+        },
+        "styles": {
+          "product": {
+            "@media (min-width: 301px)": {
+              "max-width": "80%",
+              "margin-left": "100px",
+              "margin-bottom": "100px"
+            }
+          },
+          "button": {
+            "font-family": "Open Sans, sans-serif",
+            "font-size": "14px",
+            "padding-top": "15px",
+            "padding-bottom": "15px",
+            "color": "#efd8f9",
+            ":hover": {
+              "color": "#efd8f9",
+              "background-color": "#473348"
+            },
+            "background-color": "#4f3950",
+            ":focus": {
+              "background-color": "#473348"
+            },
+            "border-radius": "2px",
+            "padding-left": "18px",
+            "padding-right": "18px"
+          },
+          "quantityInput": {
+            "font-size": "14px",
+            "padding-top": "15px",
+            "padding-bottom": "15px"
+          },
+          "title": {
+            "font-family": "Open Sans, sans-serif",
+            "font-weight": "bold",
+            "font-size": "26px",
+            "color": "#b0a0b1"
+          },
+          "price": {
+            "font-family": "Open Sans, sans-serif",
+            "font-weight": "bold",
+            "font-size": "18px",
+            "color": "#add4aa"
+          },
+          "compareAt": {
+            "font-family": "Open Sans, sans-serif",
+            "font-weight": "bold",
+            "font-size": "15.299999999999999px",
+            "color": "#add4aa"
+          },
+          "unitPrice": {
+            "font-family": "Open Sans, sans-serif",
+            "font-weight": "bold",
+            "font-size": "15.299999999999999px",
+            "color": "#add4aa"
+          },
+          "description": {
+            "font-family": "Open Sans, sans-serif",
+            "font-weight": "normal",
+            "font-size": "14px",
+            "color": "#cacaca"
+          }
+        },
+        "googleFonts": [
+          "Open Sans"
+        ],
+        "text": {
+          "button": "Add to cart"
+        }
+      },
+      "modal": {
+        "styles": {
+          "modal": {
+            "background-color": "#544055"
+          }
+        }
+      },
+      "option": {
+        "styles": {
+          "label": {
+            "font-family": "Open Sans, sans-serif",
+            "color": "#d2abd4"
+          },
+          "select": {
+            "font-family": "Open Sans, sans-serif"
+          }
+        },
+        "googleFonts": [
+          "Open Sans"
+        ]
+      },
+      "cart": {
+        "styles": {
+          "button": {
+            "font-family": "Open Sans, sans-serif",
+            "font-size": "14px",
+            "padding-top": "15px",
+            "padding-bottom": "15px",
+            "color": "#efd8f9",
+            ":hover": {
+              "color": "#efd8f9",
+              "background-color": "#473348"
+            },
+            "background-color": "#4f3950",
+            ":focus": {
+              "background-color": "#473348"
+            },
+            "border-radius": "2px"
+          },
+          "title": {
+            "color": "#e1e1e1"
+          },
+          "header": {
+            "color": "#e1e1e1"
+          },
+          "lineItems": {
+            "color": "#e1e1e1"
+          },
+          "subtotalText": {
+            "color": "#e1e1e1"
+          },
+          "subtotal": {
+            "color": "#e1e1e1"
+          },
+          "notice": {
+            "color": "#e1e1e1"
+          },
+          "currency": {
+            "color": "#e1e1e1"
+          },
+          "close": {
+            "color": "#e1e1e1",
+            ":hover": {
+              "color": "#e1e1e1"
+            }
+          },
+          "empty": {
+            "color": "#e1e1e1"
+          },
+          "noteDescription": {
+            "color": "#e1e1e1"
+          },
+          "discountText": {
+            "color": "#e1e1e1"
+          },
+          "discountIcon": {
+            "fill": "#e1e1e1"
+          },
+          "discountAmount": {
+            "color": "#e1e1e1"
+          },
+          "cart": {
+            "background-color": "#544055"
+          },
+          "footer": {
+            "background-color": "#544055"
+          }
+        },
+        "text": {
+          "total": "Subtotal",
+          "button": "Checkout"
+        },
+        "contents": {
+          "note": true
+        },
+        "popup": false,
+        "googleFonts": [
+          "Open Sans"
+        ]
+      },
+      "toggle": {
+        "styles": {
+          "toggle": {
+            "font-family": "Open Sans, sans-serif",
+            "background-color": "#4f3950",
+            ":hover": {
+              "background-color": "#473348"
+            },
+            ":focus": {
+              "background-color": "#473348"
+            }
+          },
+          "count": {
+            "font-size": "14px",
+            "color": "#efd8f9",
+            ":hover": {
+              "color": "#efd8f9"
+            }
+          },
+          "iconPath": {
+            "fill": "#efd8f9"
+          }
+        },
+        "googleFonts": [
+          "Open Sans"
+        ]
+      },
+      "lineItem": {
+        "styles": {
+          "variantTitle": {
+            "color": "#e1e1e1"
+          },
+          "title": {
+            "color": "#e1e1e1"
+          },
+          "price": {
+            "color": "#e1e1e1"
+          },
+          "fullPrice": {
+            "color": "#e1e1e1"
+          },
+          "discount": {
+            "color": "#e1e1e1"
+          },
+          "discountIcon": {
+            "fill": "#e1e1e1"
+          },
+          "quantity": {
+            "color": "#e1e1e1"
+          },
+          "quantityIncrement": {
+            "color": "#e1e1e1",
+            "border-color": "#e1e1e1"
+          },
+          "quantityDecrement": {
+            "color": "#e1e1e1",
+            "border-color": "#e1e1e1"
+          },
+          "quantityInput": {
+            "color": "#e1e1e1",
+            "border-color": "#e1e1e1"
+          }
+        }
+      }
+    },
           });
         });
       }
     })();
     /*]]>*/
     </script>
-
-    <style>
-    /* Additional Shopify product styling to match thumbnails */
-    #collection-component-1736831470697 {
-        margin: 2rem 0;
-    }
-
-    .shopify-buy__product {
-        background-color: var(--custom-bg-darker) !important;
-        border-radius: 0.5rem !important;
-        overflow: hidden !important;
-        transition: transform 0.3s ease-in-out !important;
-        transform: scale(0.75) !important;
-        transform-origin: top center !important;
-    }
-
-    .shopify-buy__product:hover {
-        transform: scale(0.75) translateY(-4px) !important;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .shopify-buy__product-img-wrapper {
-        position: relative !important;
-        padding-bottom: 75% !important;
-        background-color: var(--custom-bg-darker) !important;
-        border-radius: 0.25rem 0.25rem 0 0 !important;
-        overflow: hidden !important;
-    }
-
-    .shopify-buy__product-img {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-    }
-
-    .shopify-buy__product__title {
-        padding: 1rem !important;
-        margin: 0 !important;
-        color: var(--custom-icon) !important;
-        font-size: 0.9rem !important;
-    }
-
-    .shopify-buy__product__price {
-        padding: 0 1rem 1rem !important;
-        color: var(--custom-icon) !important;
-        font-size: 0.9rem !important;
-    }
-
-    .shopify-buy__btn {
-        width: calc(100% - 2rem) !important;
-        margin: 0 1rem 1rem !important;
-        background-color: var(--custom-primary) !important;
-        border: none !important;
-        border-radius: 0.25rem !important;
-        color: white !important;
-        padding: 0.5rem 1rem !important;
-        font-size: 0.9rem !important;
-        transition: background-color 0.2s !important;
-    }
-
-    .shopify-buy__btn:hover {
-        background-color: var(--custom-primary-hover) !important;
-    }
-    </style>
-
 </body>
 </html>
