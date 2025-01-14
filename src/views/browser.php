@@ -869,7 +869,7 @@ $currentUser = $authService->getCurrentUser();
 
                 const shareUrls = {
                     facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentFileData.webViewLink)}`,
-                    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentFileData.webViewLink)}&text=${encodeURIComponent('Check out this file: ' + currentFileData.name)}`,
+                    twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentFileData.webViewLink)}&text=${encodeURIComponent('Check out this file: ' + currentFileData.name)}`
                     linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentFileData.webViewLink)}`
                 };
 
@@ -1145,306 +1145,78 @@ $currentUser = $authService->getCurrentUser();
           ui.createComponent('collection', {
             id: '313578782870',
             node: document.getElementById('collection-component-1736831470697'),
-            moneyFormat: '%24%7B%7D%7D',
-                options: {
-      "product": {
-        "styles": {
-            "product": {
-                "padding": "15px !important",
-                "display": "inline-block",
-                "vertical-align": "top",
-                "background-color": "#493849",
-                "color": "lightgray !important",
-                "border-radius": ".375rem !important",
-                "max-width": "120px !important",
-                "font-size": "12px !important"
-            },
-          "button": {
-                  "width": "100%",
-                  "padding": "0.5rem 0.75rem",
-                  "background-color": "var(--custom-secondary)",
-                  "border": "1px solid var(--custom-icon)",
-                  "color": "var(--custom-icon)",
-                  "border-radius": "0.25rem",
-                  "transition": "all 0.2s",
-                  "text-decoration": "none",
-                  "display": "inline-flex",
-                  "align-items": "center",
-                  "justify-content": "center",
-                  "gap": "0.5rem",
-                  "margin-top": "auto"
-            },
-            "background-color": "#4f3950",
-            ":focus": {
-              "background-color": "#473348"
-            },
-            "border-radius": "2px"
-          },
-        },
-        "classes" : {
-            "button" : "action-btn"
-        },
-        "buttonDestination": "modal",
-        "contents": {
-          "options": false
-        },
-        "text": {
-          "button": "View product"
-        },
-        "googleFonts": [
-          "Open Sans"
-        ]
-      },
-      "productSet": {
-        "styles": {
-          "products": {
-            "@media (min-width: 301px)": {
-              "margin-left": "-20px"
+            moneyFormat: '%24%7B%7Bamount%7D%7D',
+            options: {
+              "product": {
+                "styles": {
+                  "product": {
+                    "transform": "scale(0.75)",
+                    "transform-origin": "top center",
+                    "@media (min-width: 601px)": {
+                      "max-width": "calc(25% - 20px)",
+                      "margin-left": "20px",
+                      "margin-bottom": "50px"
+                    }
+                  },
+                  "button": {
+                    "font-family": "Helvetica Neue, sans-serif",
+                    "background-color": "var(--custom-primary)",
+                    ":hover": {
+                      "background-color": "var(--custom-primary-hover)"
+                    },
+                    "border-radius": "6px",
+                    "padding": "8px 16px"
+                  },
+                  "title": {
+                    "color": "var(--custom-icon)"
+                  },
+                  "price": {
+                    "color": "var(--custom-icon)"
+                  }
+                },
+                "buttonDestination": "modal",
+                "contents": {
+                  "options": false
+                },
+                "text": {
+                  "button": "View Details"
+                }
+              },
+              "productSet": {
+                "styles": {
+                  "products": {
+                    "display": "grid",
+                    "grid-template-columns": "repeat(auto-fill, minmax(200px, 1fr))",
+                    "gap": "1rem",
+                    "@media (min-width: 601px)": {
+                      "margin-left": "-20px"
+                    }
+                  }
+                }
+              },
+              "option": {},
+              "cart": {
+                "styles": {
+                  "button": {
+                    "background-color": "var(--custom-primary)",
+                    ":hover": {
+                      "background-color": "var(--custom-primary-hover)"
+                    },
+                    "border-radius": "6px"
+                  }
+                }
+              },
+              "toggle": {
+                "styles": {
+                  "toggle": {
+                    "background-color": "var(--custom-primary)",
+                    ":hover": {
+                      "background-color": "var(--custom-primary-hover)"
+                    }
+                  }
+                }
+              }
             }
-          }
-        }
-      },
-      "modalProduct": {
-        "contents": {
-          "img": false,
-          "imgWithCarousel": true,
-          "button": false,
-          "buttonWithQuantity": true
-        },
-        "styles": {
-          "product": {
-            "@media (min-width: 301px)": {
-              "max-width": "80%",
-              "margin-left": "100px",
-              "margin-bottom": "100px"
-            }
-          },
-          "button": {
-            "font-family": "Open Sans, sans-serif",
-            "font-size": "14px",
-            "padding-top": "15px",
-            "padding-bottom": "15px",
-            "color": "#efd8f9",
-            ":hover": {
-              "color": "#efd8f9",
-              "background-color": "#473348"
-            },
-            "background-color": "#4f3950",
-            ":focus": {
-              "background-color": "#473348"
-            },
-            "border-radius": "2px",
-            "padding-left": "18px",
-            "padding-right": "18px"
-          },
-          "quantityInput": {
-            "font-size": "14px",
-            "padding-top": "15px",
-            "padding-bottom": "15px"
-          },
-          "title": {
-            "font-family": "Open Sans, sans-serif",
-            "font-weight": "bold",
-            "font-size": "26px",
-            "color": "#b0a0b1"
-          },
-          "price": {
-            "font-family": "Open Sans, sans-serif",
-            "font-weight": "bold",
-            "font-size": "18px",
-            "color": "#add4aa"
-          },
-          "compareAt": {
-            "font-family": "Open Sans, sans-serif",
-            "font-weight": "bold",
-            "font-size": "15.299999999999999px",
-            "color": "#add4aa"
-          },
-          "unitPrice": {
-            "font-family": "Open Sans, sans-serif",
-            "font-weight": "bold",
-            "font-size": "15.299999999999999px",
-            "color": "#add4aa"
-          },
-          "description": {
-            "font-family": "Open Sans, sans-serif",
-            "font-weight": "normal",
-            "font-size": "14px",
-            "color": "#cacaca"
-          }
-        },
-        "googleFonts": [
-          "Open Sans"
-        ],
-        "text": {
-          "button": "Add to cart"
-        }
-      },
-      "modal": {
-        "styles": {
-          "modal": {
-            "background-color": "#544055"
-          }
-        }
-      },
-      "option": {
-        "styles": {
-          "label": {
-            "font-family": "Open Sans, sans-serif",
-            "color": "#d2abd4"
-          },
-          "select": {
-            "font-family": "Open Sans, sans-serif"
-          }
-        },
-        "googleFonts": [
-          "Open Sans"
-        ]
-      },
-      "cart": {
-        "styles": {
-          "button": {
-            "font-family": "Open Sans, sans-serif",
-            "font-size": "14px",
-            "padding-top": "15px",
-            "padding-bottom": "15px",
-            "color": "#efd8f9",
-            ":hover": {
-              "color": "#efd8f9",
-              "background-color": "#473348"
-            },
-            "background-color": "#4f3950",
-            ":focus": {
-              "background-color": "#473348"
-            },
-            "border-radius": "2px"
-          },
-          "title": {
-            "color": "#e1e1e1"
-          },
-          "header": {
-            "color": "#e1e1e1"
-          },
-          "lineItems": {
-            "color": "#e1e1e1"
-          },
-          "subtotalText": {
-            "color": "#e1e1e1"
-          },
-          "subtotal": {
-            "color": "#e1e1e1"
-          },
-          "notice": {
-            "color": "#e1e1e1"
-          },
-          "currency": {
-            "color": "#e1e1e1"
-          },
-          "close": {
-            "color": "#e1e1e1",
-            ":hover": {
-              "color": "#e1e1e1"
-            }
-          },
-          "empty": {
-            "color": "#e1e1e1"
-          },
-          "noteDescription": {
-            "color": "#e1e1e1"
-          },
-          "discountText": {
-            "color": "#e1e1e1"
-          },
-          "discountIcon": {
-            "fill": "#e1e1e1"
-          },
-          "discountAmount": {
-            "color": "#e1e1e1"
-          },
-          "cart": {
-            "background-color": "#544055"
-          },
-          "footer": {
-            "background-color": "#544055"
-          }
-        },
-        "text": {
-          "total": "Subtotal",
-          "button": "Checkout"
-        },
-        "contents": {
-          "note": true
-        },
-        "popup": false,
-        "googleFonts": [
-          "Open Sans"
-        ]
-      },
-      "toggle": {
-        "styles": {
-          "toggle": {
-            "font-family": "Open Sans, sans-serif",
-            "background-color": "#4f3950",
-            ":hover": {
-              "background-color": "#473348"
-            },
-            ":focus": {
-              "background-color": "#473348"
-            }
-          },
-          "count": {
-            "font-size": "14px",
-            "color": "#efd8f9",
-            ":hover": {
-              "color": "#efd8f9"
-            }
-          },
-          "iconPath": {
-            "fill": "#efd8f9"
-          }
-        },
-        "googleFonts": [
-          "Open Sans"
-        ]
-      },
-      "lineItem": {
-        "styles": {
-          "variantTitle": {
-            "color": "#e1e1e1"
-          },
-          "title": {
-            "color": "#e1e1e1"
-          },
-          "price": {
-            "color": "#e1e1e1"
-          },
-          "fullPrice": {
-            "color": "#e1e1e1"
-          },
-          "discount": {
-            "color": "#e1e1e1"
-          },
-          "discountIcon": {
-            "fill": "#e1e1e1"
-          },
-          "quantity": {
-            "color": "#e1e1e1"
-          },
-          "quantityIncrement": {
-            "color": "#e1e1e1",
-            "border-color": "#e1e1e1"
-          },
-          "quantityDecrement": {
-            "color": "#e1e1e1",
-            "border-color": "#e1e1e1"
-          },
-          "quantityInput": {
-            "color": "#e1e1e1",
-            "border-color": "#e1e1e1"
-          }
-        }
-      }
-    },
           });
         });
       }

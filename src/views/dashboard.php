@@ -13,6 +13,10 @@
             --custom-bg-darker: #443344;
             --custom-primary: #745076;
             --custom-primary-hover: #856087;
+            --custom-secondary: #493849;
+            --custom-secondary-hover: #5a495a;
+            --custom-icon: #b996b9;
+            --custom-icon-hover: #d2b9d2; /* Added hover color */
         }
 
         body {
@@ -74,7 +78,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--custom-secondary);
+            background-color: var(--custom-bg);
             border: 1px solid var(--custom-icon);
             color: var(--custom-icon);
             text-decoration: none;
@@ -86,7 +90,7 @@
 
         .action-btn:hover {
             background-color: var(--custom-icon);
-            color: var(--custom-secondary);
+            color: var(--custom-bg-lighter);
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
@@ -157,7 +161,7 @@
                             <i class="fas fa-folder-open feature-icon"></i>
                             <h5 class="card-title">Browse Files</h5>
                             <p class="card-text">Access our comprehensive collection of resources and documents.</p>
-                            <a href="/" class="btn btn-primary">Get Started</a>
+                            <a href="/" class="btn action-btn">Get Started</a>
                         </div>
                     </div>
                 </div>
@@ -167,7 +171,7 @@
                             <i class="fas fa-search feature-icon"></i>
                             <h5 class="card-title">Search Content</h5>
                             <p class="card-text">Quickly find the exact resources you need.</p>
-                            <a href="/?search=true" class="btn btn-primary">Search Now</a>
+                            <a href="/?search=true" class="btn action-btn">Search Now</a>
                         </div>
                     </div>
                 </div>
@@ -177,7 +181,7 @@
                             <i class="fas fa-user-cog feature-icon"></i>
                             <h5 class="card-title">Manage Profile</h5>
                             <p class="card-text">Update your account settings and preferences.</p>
-                            <a href="#" class="btn btn-primary">View Profile</a>
+                            <a href="#" class="btn  action-btn">View Profile</a>
                         </div>
                     </div>
                 </div>
