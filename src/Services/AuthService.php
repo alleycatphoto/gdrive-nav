@@ -35,6 +35,7 @@ class AuthService {
         }
 
         $data = json_decode($response, true);
+        error_log("User Data: " . print_r($response, true));
         return $data['customers'][0] ?? null;
     }
 
@@ -86,6 +87,9 @@ class AuthService {
 
         // In a production environment, you would implement proper password validation
         // For now, we'll return the user if found
+
+        
+        //error_log(print_r($user));
         return $user;
     }
 
@@ -93,6 +97,7 @@ class AuthService {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        error_log("User: " . print_r($user, true));
         $_SESSION['user'] = [
             'id' => $user['id'] ?? '',
             'email' => $user['email'] ?? '',

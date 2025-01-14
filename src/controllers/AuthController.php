@@ -31,7 +31,7 @@ class AuthController {
         $user = $this->authService->validateCredentials($email, $password);
         if ($user) {
             $this->authService->startSession($user);
-            header('Location: /');
+            header('Location: /dashboard'); // Changed from / to /dashboard
         } else {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
@@ -77,7 +77,7 @@ class AuthController {
         $user = $this->authService->createUser($email, $password, $firstName, $lastName);
         if ($user) {
             $this->authService->startSession($user);
-            header('Location: /');
+            header('Location: /dashboard'); // Changed from / to /dashboard
         } else {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
@@ -106,5 +106,17 @@ class AuthController {
             session_start();
         }
         require __DIR__ . '/../views/register.php';
+    }
+
+    public function showDashboard() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $currentUser = $this->authService->getCurrentUser();
+        if (!$currentUser) {
+            header('Location: /login');
+            exit;
+        }
+        require __DIR__ . '/../views/dashboard.php';
     }
 }

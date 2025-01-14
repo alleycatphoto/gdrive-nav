@@ -40,7 +40,7 @@ try {
     $authService = new \App\Services\AuthService();
 
     // Protected routes - redirect to login if not authenticated
-    $protectedPaths = ['/', '/list'];
+    $protectedPaths = ['/', '/list', '/dashboard'];
     if (in_array($path, $protectedPaths) && !$authService->isAuthenticated()) {
         header('Location: /login');
         exit;
@@ -63,6 +63,10 @@ try {
         case '/register':
             $controller = new \App\Controllers\AuthController();
             $controller->showRegisterForm();
+            break;
+        case '/dashboard':
+            $controller = new \App\Controllers\AuthController();
+            $controller->showDashboard();
             break;
         case '/auth/register':
             $controller = new \App\Controllers\AuthController();
