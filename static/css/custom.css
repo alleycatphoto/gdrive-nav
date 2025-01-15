@@ -165,3 +165,47 @@ body {
     border-color: #2f212f;
     opacity: var(--bs-btn-disabled-opacity);
 }
+
+/* Dashboard specific styles */
+.welcome-container {
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.feature-card {
+    background-color: var(--custom-bg-darker);
+    border: none;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    color: var(--custom-primary);
+    margin-bottom: 1rem;
+}
+
+.user-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: var(--custom-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+.user-avatar i {
+    font-size: 3rem;
+    color: white;
+}
+
+.navbar-brand img {
+    height: 30px;
+    width: auto;
+    margin-right: 10px;
+}
