@@ -10,6 +10,18 @@ include __DIR__ . '/../includes/header.php';
     <?php include __DIR__ . '/../includes/nav.php'; ?>
 
     <div class="container">
+        <div class="row mb-4">
+            <div class="col-12">
+                <form class="d-flex" id="search-form">
+                    <input class="form-control me-2" type="search" id="search-input" 
+                           placeholder="Search files..." aria-label="Search">
+                    <button class="btn btn-outline-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <?php
         // Initialize DriveService and display files
         try {
