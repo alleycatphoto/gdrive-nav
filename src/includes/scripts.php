@@ -28,6 +28,7 @@
         const previewFallback = document.getElementById('previewFallback');
         const fallbackLink = document.getElementById('fallbackLink');
         const modalElement = document.getElementById('previewModal');
+        const modalShareBtn = document.getElementById('modalShareBtn');
 
         // Preload management
         let preloadQueue = [];
@@ -40,6 +41,18 @@
                 preloadQueue.push({ fileId, mimeType });
                 processPreloadQueue();
             }
+        }
+
+        // Add click handler for modal share button
+        if (modalShareBtn) {
+            modalShareBtn.addEventListener('click', function() {
+                const fileId = this.getAttribute('data-file-id');
+                if (fileId) {
+                    const driveLink = generateGoogleDriveShareLink(fileId);
+                    copyToClipboard(driveLink);
+                    showToast('Google Drive sharing link copied to clipboard!');
+                }
+            });
         }
 
         function processPreloadQueue() {
@@ -73,7 +86,6 @@
 
         // Add modal close event listener
         modalElement.addEventListener('hidden.bs.modal', function () {
-            // Stop and reset video if it exists
             if (previewVideo) {
                 previewVideo.pause();
                 previewVideo.currentTime = 0;
@@ -83,9 +95,8 @@
                     videoSource.src = '';
                 }
             }
-            // Reset PDF viewer
-            if (previewPdf) {
-                pdfContainer.innerHTML = ''; //Clear the pdf container
+            if (pdfContainer) {
+                pdfContainer.innerHTML = '';
                 pdfContainer.style.display = 'none';
             }
         });
@@ -100,6 +111,22 @@
             if (!url) return null;
             const match = url.match(/[-\w]{25,}/);
             return match ? match[0] : null;
+        }
+
+        // Generate Google Drive sharing link
+        function generateGoogleDriveShareLink(fileId) {
+            return `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+        }
+
+        // Copy text to clipboard
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+                return false;
+            }
         }
 
         // Function to preview file - make it globally available
@@ -118,6 +145,11 @@
             const downloadLink = document.getElementById('modalDownloadLink');
             const fileId = extractFileId(downloadUrl);
             const proxyUrl = fileId ? getProxyUrl(fileId) : downloadUrl;
+
+            // Update modal share button
+            if (modalShareBtn && fileId) {
+                modalShareBtn.setAttribute('data-file-id', fileId);
+            }
 
             modalTitle.textContent = name;
             downloadLink.href = downloadUrl;
@@ -194,6 +226,21 @@
                     }
                 } catch (e) {
                     console.error('Error parsing preview properties for preload:', e);
+                }
+            });
+        });
+
+        // Add click handlers for thumbnail share buttons
+        document.querySelectorAll('.thumbnail-share-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const fileId = this.getAttribute('data-file-id');
+                if (fileId) {
+                    const driveLink = generateGoogleDriveShareLink(fileId);
+                    copyToClipboard(driveLink).then(success => {
+                        showToast(success ? 'Google Drive sharing link copied to clipboard!' : 'Failed to copy link');
+                    });
                 }
             });
         });

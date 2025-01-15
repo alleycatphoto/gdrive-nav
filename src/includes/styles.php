@@ -20,14 +20,19 @@
 
     .navbar {
         background-color: var(--custom-bg-darker) !important;
+        justfy-content: center;
     }
 
     .navbar-brand img {
         height: 30px;
         width: auto;
         margin-right: 10px;
+        justfy-content: center;
     }
 
+    .navbar-brand {
+        justfy-content: center;
+    }
     .container {
         background-color: var(--custom-bg-lighter);
         border-radius: 0.5rem;
@@ -167,23 +172,58 @@
         transform: translateY(0);
     }
 
-    .btn-primary {
-        width: 100%;
+    .btn {
         padding: 0.5rem 0.75rem;
-        background-color: var(--custom-secondary);
-        border: 1px solid var(--custom-icon);
-        color: var(--custom-icon);
-        border-radius: 0.25rem;
-        transition: all 0.2s;
-        text-decoration: none;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        margin-top: auto;
+        background-color: var(--custom-secondary);
+        border: 1px solid var(--custom-icon);
+        color: var(--custom-icon);
+        text-decoration: none;
+        border-radius: 0.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+        font-size: 0.9rem;
     }
 
-    .btn-primary:hover {
+    .btn:hover {
+        background-color: var(--custom-icon);
+        color: var(--custom-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: 1px solid var(--custom-icon);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+        background-color: var(--custom-icon);
+        color: var(--custom-secondary);
+        border: 1px solid var(--custom-icon);
+    }
+    .btn-secondary {
+        padding: 0.5rem 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--custom-bg);
+        border: 1px solid var(--custom-icon);
+        color: var(--custom-icon);
+        text-decoration: none;
+        border-radius: 0.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+        font-size: 0.9rem;
+    }
+
+    .btn-secondary :hover {
+        background-color: var(--custom-secondary-hover);
+        color: var(--custom-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .btn-secondary:active {
+        transform: translateY(0);
         background-color: var(--custom-icon);
         color: var(--custom-secondary);
     }
@@ -238,6 +278,48 @@
     .thumbnail-container:hover img {
         filter: brightness(1.1);
     }
+
+    /* Add these new styles after the existing .thumbnail-container styles */
+
+    .thumbnail-share-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 2rem;
+        height: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        z-index: 2;
+        backdrop-filter: blur(2px);
+    }
+
+    .thumbnail-share-btn:hover {
+        background-color: var(--custom-primary);
+        transform: scale(1.1);
+    }
+
+    .modal-header .modal-share-btn {
+        background: none;
+        border: none;
+        color: var(--custom-icon);
+        padding: 0.5rem;
+        margin-right: 0.5rem;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+    }
+
+    .modal-header .modal-share-btn:hover {
+        color: var(--custom-icon-hover);
+        transform: scale(1.1);
+    }
+
 
     /* Video Thumbnail */
     .video-play-overlay {
@@ -420,104 +502,51 @@
             font-size: 0.8rem;
         }
     }
-
-    /* Sharing Tooltip Styles */
-    .sharing-tooltip-content {
-        padding: 1rem;
-        max-width: 300px;
-        background-color: var(--custom-bg-darker);
-        border: 1px solid var(--custom-primary);
-        border-radius: 0.375rem;
-    }
-
-    .sharing-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .sharing-header .file-name {
-        font-size: 0.9rem;
-        color: var(--custom-icon);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .sharing-actions {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-
-    .sharing-actions .btn {
-        flex: 1;
-        font-size: 0.8rem;
-        padding: 0.375rem 0.75rem;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .sharing-actions .btn:hover {
-        transform: translateY(-2px);
-    }
-
-    .sharing-footer {
-        margin-top: 0.75rem;
-        text-align: center;
-        font-size: 0.8rem;
-        color: var(--custom-icon);
-        opacity: 0.8;
-    }
-
-    /* Toast Notifications */
-    .toast-container {
-        z-index: 1060;
-    }
-
-    .toast {
-        background-color: var(--custom-bg-darker);
-        border: 1px solid var(--custom-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .toast-body {
-        color: var(--custom-icon);
-    }
-
-    .btn-close-white {
-        filter: brightness(0) invert(1);
-    }
-
-    /* Tooltip animations */
-    .tooltip.show {
-        opacity: 1;
-    }
-
-    .tooltip-inner {
-        background-color: var(--custom-bg-darker);
-        border: 1px solid var(--custom-primary);
+    .modal-body {
+        background-color: #161116;
         padding: 0;
-        max-width: 300px;
+        height: calc(90vh - 120px);
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
-
-    .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before,
-    .bs-tooltip-top .tooltip-arrow::before {
-        border-top-color: var(--custom-primary);
+    .text-center {
+        text-align: center !important;
     }
-
-    .bs-tooltip-auto[data-popper-placement^=bottom] .tooltip-arrow::before,
-    .bs-tooltip-bottom .tooltip-arrow::before {
-        border-bottom-color: var(--custom-primary);
+    .modal-body {
+        position: relative;
+        flex: 1 1 auto;
+        padding: var(--bs-modal-padding);
     }
-
-    .bs-tooltip-auto[data-popper-placement^=left] .tooltip-arrow::before,
-    .bs-tooltip-start .tooltip-arrow::before {
-        border-left-color: var(--custom-primary);
+    .modal-body object {
+        width: 100%;
+        height: 100%;
+        display: block;
     }
-
-    .bs-tooltip-auto[data-popper-placement^=right] .tooltip-arrow::before,
-    .bs-tooltip-end .tooltip-arrow::before {
-        border-right-color: var(--custom-primary);
+    .modal-content {
+        max-width: 90vw;
+        margin: 0 auto;
+        background-color: var(--custom-bg-darker) !important;
+        border: 1px solid var(--custom-primary);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        color: var(--bs-modal-color);
+        pointer-events: auto;
+        background-color: var(--bs-modal-bg);
+        background-clip: padding-box;
+        border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+        border-radius: var(--bs-modal-border-radius);
+        outline: 0;
+    }
+    .pdf-container {
+        width: 100%;
+        height: calc(90vh - 120px);
+        background: #161116;
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 </style>
