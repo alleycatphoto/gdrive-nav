@@ -337,16 +337,71 @@
         return `${baseUrl}/share?id=${fileId}`;
     }
 
-    // Copy share link to clipboard
+    // Generate social media sharing URLs
+    function generateSocialMediaUrls(fileId, fileName) {
+        const shareUrl = encodeURIComponent(generateShareLink(fileId));
+        const shareTitle = encodeURIComponent(`Check out ${fileName} on DNA Distribution`);
+
+        return {
+            twitter: `https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`,
+            facebook: `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`,
+            linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`,
+            email: `mailto:?subject=${shareTitle}&body=${shareUrl}`
+        };
+    }
+
+    // Copy share link to clipboard and show social sharing options
     async function copyShareLink(fileId) {
         const link = generateShareLink(fileId);
         try {
             await navigator.clipboard.writeText(link);
+            showSocialSharingPopup(fileId);
             showToast('Link copied to clipboard!');
         } catch (err) {
             console.error('Failed to copy link:', err);
             showToast('Failed to copy link', 'error');
         }
+    }
+
+    // Show social sharing popup
+    function showSocialSharingPopup(fileId) {
+        const fileName = document.querySelector(`[data-file-id="${fileId}"]`).closest('.card').querySelector('.card-title span').getAttribute('title');
+        const urls = generateSocialMediaUrls(fileId, fileName);
+
+        const popupContent = `
+            <div class="social-sharing-popup">
+                <div class="d-flex flex-column gap-2">
+                    <a href="${urls.twitter}" target="_blank" class="btn btn-outline-info">
+                        <i class="fab fa-twitter me-2"></i>Share on Twitter
+                    </a>
+                    <a href="${urls.facebook}" target="_blank" class="btn btn-outline-primary">
+                        <i class="fab fa-facebook me-2"></i>Share on Facebook
+                    </a>
+                    <a href="${urls.linkedin}" target="_blank" class="btn btn-outline-info">
+                        <i class="fab fa-linkedin me-2"></i>Share on LinkedIn
+                    </a>
+                    <a href="${urls.email}" class="btn btn-outline-secondary">
+                        <i class="fas fa-envelope me-2"></i>Share via Email
+                    </a>
+                </div>
+            </div>
+        `;
+
+        const existingPopup = document.querySelector('.social-sharing-popup');
+        if (existingPopup) {
+            existingPopup.remove();
+        }
+
+        const popup = document.createElement('div');
+        popup.className = 'position-fixed bottom-0 end-0 p-3';
+        popup.style.zIndex = '1060';
+        popup.innerHTML = popupContent;
+        document.body.appendChild(popup);
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            popup.remove();
+        }, 5000);
     }
 
     // Show toast notification

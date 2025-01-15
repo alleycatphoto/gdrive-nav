@@ -66,9 +66,15 @@ try {
         <meta property="og:image" content="<?php echo htmlspecialchars($proxyUrl); ?>">
         <meta property="og:type" content="image">
     <?php elseif ($isVideo): ?>
+        <!-- Video specific meta tags -->
+        <meta property="og:type" content="video.other">
         <meta property="og:video" content="<?php echo htmlspecialchars($proxyUrl); ?>">
+        <meta property="og:video:url" content="<?php echo htmlspecialchars($proxyUrl); ?>">
         <meta property="og:video:type" content="<?php echo htmlspecialchars($mimeType); ?>">
-        <meta property="og:type" content="video">
+        <meta property="og:video:width" content="1280">
+        <meta property="og:video:height" content="720">
+        <!-- Fallback image for platforms that don't support video -->
+        <meta property="og:image" content="/attached_assets/video_preview.png">
     <?php elseif ($isPDF): ?>
         <meta property="og:type" content="article">
         <meta property="og:image" content="/attached_assets/pdf_preview.png">
