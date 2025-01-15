@@ -247,7 +247,7 @@
                 e.stopPropagation();
                 const fileId = this.getAttribute('data-file-id');
                 if (fileId) {
-                    copyShareLink(fileId);
+                    copyShareLink(fileId, e); // Pass the event here
                 }
             });
         });
@@ -350,27 +350,20 @@
         };
     }
 
-    // Copy share link to clipboard and show social sharing options
-    async function copyShareLink(fileId) {
-        const link = generateShareLink(fileId);
-        try {
-            await navigator.clipboard.writeText(link);
-            showSocialSharingPopup(fileId);
-            showToast('Link copied to clipboard!');
-        } catch (err) {
-            console.error('Failed to copy link:', err);
-            showToast('Failed to copy link', 'error');
-        }
-    }
-
     // Show social sharing popup
-    function showSocialSharingPopup(fileId) {
-        const fileName = document.querySelector(`[data-file-id="${fileId}"]`).closest('.card').querySelector('.card-title span').getAttribute('title');
+    function showSocialSharingPopup(fileId, event) {
+        const clickedButton = event ? event.currentTarget : document.querySelector(`[data-file-id="${fileId}"]`);
+        const fileName = clickedButton.closest('.card').querySelector('.card-title span').getAttribute('title');
         const urls = generateSocialMediaUrls(fileId, fileName);
+        const shareLink = generateShareLink(fileId);
 
         const popupContent = `
             <div class="social-sharing-popup">
                 <div class="d-flex flex-column gap-2">
+                    <button class="btn btn-outline-light copy-link-btn" data-clipboard-text="${shareLink}">
+                        <i class="fas fa-link me-2"></i>Copy Link
+                    </button>
+                    <div class="dropdown-divider"></div>
                     <a href="${urls.twitter}" target="_blank" class="btn btn-outline-info">
                         <i class="fab fa-twitter me-2"></i>Share on Twitter
                     </a>
@@ -393,15 +386,52 @@
         }
 
         const popup = document.createElement('div');
-        popup.className = 'position-fixed bottom-0 end-0 p-3';
+        popup.className = 'position-absolute';
         popup.style.zIndex = '1060';
         popup.innerHTML = popupContent;
-        document.body.appendChild(popup);
 
-        // Auto-hide after 5 seconds
+        // Position popup relative to clicked button
+        clickedButton.style.position = 'relative';
+        clickedButton.appendChild(popup);
+
+        // Add click handler for copy link button
+        const copyButton = popup.querySelector('.copy-link-btn');
+        copyButton.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(shareLink);
+                showToast('Link copied to clipboard!');
+                popup.remove();
+            } catch (err) {
+                console.error('Failed to copy link:', err);
+                showToast('Failed to copy link', 'error');
+            }
+        });
+
+        // Close popup when clicking outside
+        const closePopup = (e) => {
+            if (!popup.contains(e.target) && !clickedButton.contains(e.target)) {
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            }
+        };
+
+        // Add delay to prevent immediate closure
         setTimeout(() => {
-            popup.remove();
-        }, 5000);
+            document.addEventListener('click', closePopup);
+        }, 100);
+
+        // Auto-hide after 10 seconds
+        setTimeout(() => {
+            if (document.body.contains(popup)) {
+                popup.remove();
+                document.removeEventListener('click', closePopup);
+            }
+        }, 10000);
+    }
+
+    // Update copyShareLink function to pass the event
+    async function copyShareLink(fileId, event) {
+        showSocialSharingPopup(fileId, event);
     }
 
     // Show toast notification
