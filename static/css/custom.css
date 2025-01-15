@@ -106,10 +106,62 @@ body {
     border-color: var(--custom-success-hover);
 }
 
-.login-container {
-    background-color: #2e212f;
+/* Auth pages styling */
+.login-container, .register-container {
+    background-color: var(--custom-bg-lighter);
     border-radius: 0.5rem;
     padding: 2rem;
     max-width: 400px;
     width: 100%;
+    margin: 2rem auto;
+}
+
+.auth-logo {
+    width: 200px;
+    margin-bottom: 2rem;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.auth-link a {
+    color: var(--custom-primary);
+    text-decoration: none;
+}
+
+.auth-link a:hover {
+    color: var(--custom-primary-hover);
+    text-decoration: underline;
+}
+
+/* Password strength and validation feedback */
+.password-strength {
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.validation-feedback {
+    display: none;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.is-invalid ~ .validation-feedback {
+    display: block;
+    color: var(--bs-danger);
+}
+
+.is-valid ~ .validation-feedback {
+    display: block;
+    color: var(--bs-success);
+}
+
+.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+    color: var(--bs-btn-disabled-color);
+    pointer-events: none;
+    background-color: #554055;
+    border-color: #2f212f;
+    opacity: var(--bs-btn-disabled-opacity);
 }
