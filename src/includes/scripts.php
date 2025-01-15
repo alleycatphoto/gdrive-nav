@@ -244,6 +244,21 @@
                 }
             });
         });
+
+        // Add click handlers for share buttons
+        document.querySelectorAll('.file-actions .action-btn[data-file-id]').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const fileId = this.getAttribute('data-file-id');
+                if (fileId) {
+                    const driveLink = generateGoogleDriveShareLink(fileId);
+                    copyToClipboard(driveLink).then(success => {
+                        showToast(success ? 'Google Drive sharing link copied to clipboard!' : 'Failed to copy link');
+                    });
+                }
+            });
+        });
     });
 
     // Initialize sharing tooltips functionality
@@ -408,7 +423,7 @@
                 ui.createComponent('collection', {
                     id: '313578782870',
                     node: document.getElementById('collection-component-1736831470697'),
-                    moneyFormat: '%24%7B%7Bamount%7D%7D',
+                    moneyFormat: '%24%7B%7D%7D',
                     options: {
                         "product": {
 

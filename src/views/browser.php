@@ -87,14 +87,6 @@ include __DIR__ . '/../includes/header.php';
                                     echo ' alt="' . htmlspecialchars($file['name']) . '"';
                                     echo ' class="card-img-top">';
 
-                                    // Add share button to thumbnail container
-                                    $fileId = extractFileId($file['downloadUrl']);
-                                    if ($fileId) {
-                                        echo '<button class="thumbnail-share-btn" data-file-id="' . htmlspecialchars($fileId) . '">';
-                                        echo '<i class="fas fa-share-alt"></i>';
-                                        echo '</button>';
-                                    }
-
                                     if ($isVideo) {
                                         echo '<div class="video-play-overlay">';
                                         echo '<i class="fas fa-play"></i>';
@@ -123,6 +115,17 @@ include __DIR__ . '/../includes/header.php';
                                                 title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
+                                        <?php 
+                                        // Add share button
+                                        $fileId = extractFileId($file['downloadUrl']);
+                                        if ($fileId): ?>
+                                            <button class="action-btn"
+                                                    data-file-id="<?php echo htmlspecialchars($fileId); ?>"
+                                                    onclick="event.preventDefault(); event.stopPropagation();"
+                                                    title="Share">
+                                                <i class="fas fa-share-alt"></i>
+                                            </button>
+                                        <?php endif; ?>
                                         <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
                                            class="action-btn"
                                            title="Download"
