@@ -32,29 +32,72 @@ class DriveService {
         }
     }
 
-    // Add method to get file metadata
+    // Enhanced method to get file metadata with video support
     public function getFileMetadata($fileId) {
         try {
             $file = $this->service->files->get($fileId, [
                 'supportsAllDrives' => true,
-                'fields' => 'id, name, mimeType, thumbnailLink'
+                'fields' => 'id, name, mimeType, thumbnailLink, videoMediaMetadata, imageMediaMetadata, parents'
             ]);
 
             $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
             $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
+
+            // Get video metadata if available
+            $videoMetadata = $file->getVideoMediaMetadata();
+            $dimensions = [];
+            if ($videoMetadata) {
+                $dimensions = [
+                    'width' => $videoMetadata->getWidth(),
+                    'height' => $videoMetadata->getHeight(),
+                    'durationMillis' => $videoMetadata->getDurationMillis()
+                ];
+            }
+
+            // Generate different thumbnail sizes
+            $thumbnails = $this->generateThumbnailSizes($file->getThumbnailLink());
 
             return [
                 'id' => $file->getId(),
                 'name' => $file->getName(),
                 'mimeType' => $file->getMimeType(),
                 'thumbnailLink' => $file->getThumbnailLink(),
+                'thumbnails' => $thumbnails,
+                'videoMetadata' => $dimensions,
                 'downloadUrl' => $downloadUrl,
-                'webViewLink' => $viewUrl
+                'webViewLink' => $viewUrl,
+                'parentId' => $file->getParents() ? $file->getParents()[0] : null
             ];
         } catch (\Exception $e) {
             error_log("Error getting file metadata: " . $e->getMessage());
             return null;
         }
+    }
+
+    // Generate different thumbnail sizes for social platforms
+    private function generateThumbnailSizes($thumbnailUrl) {
+        if (!$thumbnailUrl) return null;
+
+        // Define thumbnail sizes for different platforms
+        $sizes = [
+            'facebook' => ['w' => 1200, 'h' => 630],   // Facebook recommended
+            'twitter' => ['w' => 1200, 'h' => 675],    // Twitter card
+            'linkedin' => ['w' => 1200, 'h' => 627],   // LinkedIn sharing
+            'thumbnail' => ['w' => 320, 'h' => 180],   // Small preview
+            'preview' => ['w' => 1280, 'h' => 720]     // Full preview
+        ];
+
+        $thumbnails = [];
+        foreach ($sizes as $platform => $dimensions) {
+            // Replace size parameter in Google Drive thumbnail URL
+            $thumbnails[$platform] = preg_replace(
+                '/=s\d+/', 
+                "=w{$dimensions['w']}-h{$dimensions['h']}-c", 
+                $thumbnailUrl
+            );
+        }
+
+        return $thumbnails;
     }
 
     public function getService() {

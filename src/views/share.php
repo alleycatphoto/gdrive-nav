@@ -64,18 +64,30 @@ try {
     <meta property="og:url" content="https://dnadistribution.us">
 
     <?php if ($isImage): ?>
-        <meta property="og:image" content="<?php echo htmlspecialchars($proxyUrl); ?>">
+        <meta property="og:image" content="<?php echo htmlspecialchars($file['thumbnails']['facebook']); ?>">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
         <meta property="og:type" content="image">
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image" content="<?php echo htmlspecialchars($file['thumbnails']['twitter']); ?>">
     <?php elseif ($isVideo): ?>
         <!-- Video specific meta tags -->
         <meta property="og:type" content="video.other">
         <meta property="og:video" content="<?php echo htmlspecialchars($proxyUrl); ?>">
         <meta property="og:video:url" content="<?php echo htmlspecialchars($proxyUrl); ?>">
         <meta property="og:video:type" content="<?php echo htmlspecialchars($mimeType); ?>">
-        <meta property="og:video:width" content="1280">
-        <meta property="og:video:height" content="720">
-        <!-- Fallback image for platforms that don't support video -->
-        <meta property="og:image" content="/attached_assets/video_preview.png">
+        <meta property="og:video:width" content="<?php echo htmlspecialchars($file['videoMetadata']['width'] ?? 1280); ?>">
+        <meta property="og:video:height" content="<?php echo htmlspecialchars($file['videoMetadata']['height'] ?? 720); ?>">
+        <!-- Thumbnail for video -->
+        <meta property="og:image" content="<?php echo htmlspecialchars($file['thumbnails']['facebook']); ?>">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="player">
+        <meta name="twitter:image" content="<?php echo htmlspecialchars($file['thumbnails']['twitter']); ?>">
+        <meta name="twitter:player:width" content="<?php echo htmlspecialchars($file['videoMetadata']['width'] ?? 1280); ?>">
+        <meta name="twitter:player:height" content="<?php echo htmlspecialchars($file['videoMetadata']['height'] ?? 720); ?>">
     <?php elseif ($isPDF): ?>
         <meta property="og:type" content="article">
         <meta property="og:image" content="/attached_assets/pdf_preview.png">
