@@ -32,7 +32,31 @@ class DriveService {
         }
     }
 
-    // Add method to get service instance
+    // Add method to get file metadata
+    public function getFileMetadata($fileId) {
+        try {
+            $file = $this->service->files->get($fileId, [
+                'supportsAllDrives' => true,
+                'fields' => 'id, name, mimeType, thumbnailLink'
+            ]);
+
+            $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
+            $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
+
+            return [
+                'id' => $file->getId(),
+                'name' => $file->getName(),
+                'mimeType' => $file->getMimeType(),
+                'thumbnailLink' => $file->getThumbnailLink(),
+                'downloadUrl' => $downloadUrl,
+                'webViewLink' => $viewUrl
+            ];
+        } catch (\Exception $e) {
+            error_log("Error getting file metadata: " . $e->getMessage());
+            return null;
+        }
+    }
+
     public function getService() {
         return $this->service;
     }

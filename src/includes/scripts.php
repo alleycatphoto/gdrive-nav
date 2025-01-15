@@ -342,7 +342,7 @@
     // Generate shareable link for a file
     function generateShareLink(fileId) {
         const baseUrl = window.location.origin;
-        return `${baseUrl}/share/${fileId}`;
+        return `${baseUrl}/share?id=${fileId}`;
     }
 
     // Copy share link to clipboard

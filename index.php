@@ -86,6 +86,9 @@ try {
         case '/list':
             require __DIR__ . '/src/controllers/ListController.php';
             break;
+        case '/share':
+            require __DIR__ . '/src/views/share.php';
+            break;
         default:
             http_response_code(404);
             echo "404 Not Found: " . htmlspecialchars($path);
