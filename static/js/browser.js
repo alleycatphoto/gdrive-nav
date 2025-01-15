@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filesContainer = document.getElementById('files-container');
     const breadcrumbContainer = document.getElementById('breadcrumb-container');
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('search-input');
 
     // Create page transition overlay
     const overlay = document.createElement('div');
@@ -20,10 +22,22 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('active');
     }
 
-    function loadFiles(folderId = null) {
+    function loadFiles(folderId = null, searchQuery = null) {
         showLoadingState();
 
-        const url = '/list' + (folderId ? `?folder=${encodeURIComponent(folderId)}` : '');
+        let url = '/list';
+        const params = new URLSearchParams();
+
+        if (folderId) {
+            params.append('folder', folderId);
+        }
+        if (searchQuery) {
+            params.append('search', searchQuery);
+        }
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
 
         fetch(url)
             .then(response => response.json())
@@ -46,6 +60,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 hideLoadingState();
             });
+    }
+
+    // Handle search form submission
+    searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const searchQuery = searchInput.value.trim();
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentFolder = urlParams.get('folder');
+
+        loadFiles(currentFolder, searchQuery);
+        updateUrl(currentFolder, searchQuery);
+    });
+
+    function updateUrl(folderId, searchQuery) {
+        const params = new URLSearchParams();
+        if (folderId) params.set('folder', folderId);
+        if (searchQuery) params.set('search', searchQuery);
+
+        const newUrl = params.toString() ? `/?${params.toString()}` : '/';
+        history.pushState({}, '', newUrl);
     }
 
     function renderBreadcrumbs(breadcrumbs) {
@@ -151,20 +185,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
 
-    function updateUrl(folderId) {
-        const newUrl = folderId ? `/?folder=${encodeURIComponent(folderId)}` : '/';
-        history.pushState({}, '', newUrl);
-    }
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const folderId = urlParams.get('folder');
-        loadFiles(folderId);
+        const searchQuery = urlParams.get('search');
+        loadFiles(folderId, searchQuery);
     });
 
     // Initial load
     const urlParams = new URLSearchParams(window.location.search);
     const initialFolderId = urlParams.get('folder');
-    loadFiles(initialFolderId);
+    const initialSearchQuery = urlParams.get('search');
+    loadFiles(initialFolderId, initialSearchQuery);
 });

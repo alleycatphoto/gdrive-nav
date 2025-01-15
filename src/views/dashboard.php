@@ -54,16 +54,8 @@ include __DIR__ . '/../includes/header.php';
                 </div>
             </div>
         </div>
-        <div class="container mt-5">
-            <div class="collection-header">
-                <h4>Featured Products</h4>
-            </div>
-            <div id='collection-component-1736831470697'>
-                <!-- Shopify buy button will be injected here -->
-            </div>
-        </div>
+
     </div>
 
-    <?php include __DIR__ . '/../includes/scripts.php'; ?>
 </body>
 </html>

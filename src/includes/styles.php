@@ -39,6 +39,7 @@
 
     .navbar-brand {
         justfy-content: center;
+        font-size: 0.8rem;
     }
     .container {
         background-color: var(--custom-bg-lighter);

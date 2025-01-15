@@ -257,4 +257,64 @@ class DriveService {
             throw $e;
         }
     }
+
+    public function searchFiles($query, $folderId = null) {
+        try {
+            if ($folderId === null) {
+                $folderId = $this->defaultFolderId;
+            }
+
+            $searchQuery = "name contains '" . str_replace("'", "\\'", $query) . "' ";
+            $searchQuery .= "and trashed = false ";
+            if ($folderId) {
+                $searchQuery .= "and '" . $folderId . "' in parents ";
+            }
+
+            $optParams = [
+                'pageSize' => 1000,
+                'fields' => 'files(id, name, mimeType, thumbnailLink)',
+                'supportsAllDrives' => true,
+                'includeItemsFromAllDrives' => $this->isSharedDrive,
+                'orderBy' => 'folder,name',
+                'q' => $searchQuery
+            ];
+
+            if ($this->isSharedDrive) {
+                $optParams['driveId'] = $this->driveId;
+                $optParams['corpora'] = 'drive';
+            }
+
+            error_log("Search query: " . $searchQuery);
+            error_log("Search parameters: " . json_encode($optParams));
+
+            $results = $this->service->files->listFiles($optParams);
+            $files = [];
+
+            foreach ($results->getFiles() as $file) {
+                $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
+                $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
+
+                $thumbnailLink = $file->getThumbnailLink();
+                $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
+
+                $files[] = [
+                    'id' => $file->getId(),
+                    'name' => $file->getName(),
+                    'mimeType' => $file->getMimeType(),
+                    'thumbnailLink' => $thumbnailLink,
+                    'highResThumbnail' => $highResThumbnail,
+                    'downloadUrl' => $downloadUrl,
+                    'webViewLink' => $viewUrl,
+                    'isFolder' => $file->getMimeType() === 'application/vnd.google-apps.folder'
+                ];
+            }
+
+            return $files;
+        } catch (\Exception $e) {
+            error_log("Error in searchFiles: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw $e;
+        }
+    }
+
 }
