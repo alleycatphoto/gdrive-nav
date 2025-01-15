@@ -55,10 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 filesContainer.innerHTML = `
-                    <div class="col-12">
-                        <div class="alert alert-danger fade-transition">
-                            ${error.message}
-                        </div>
+                    <div class="alert alert-danger fade-transition">
+                        ${error.message}
                     </div>
                 `;
                 hideLoadingState();
@@ -66,16 +64,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Handle search form submission
-    searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchQuery = searchInput.value.trim();
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentFolder = urlParams.get('folder');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchQuery = searchInput.value.trim();
+            if (!searchQuery) return;
 
-        console.log('Search submitted:', { searchQuery, currentFolder }); // Debug log
-        loadFiles(currentFolder, searchQuery);
-        updateUrl(currentFolder, searchQuery);
-    });
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentFolder = urlParams.get('folder');
+
+            console.log('Search submitted:', { searchQuery, currentFolder }); // Debug log
+            loadFiles(currentFolder, searchQuery);
+            updateUrl(currentFolder, searchQuery);
+        });
+    }
 
     function updateUrl(folderId, searchQuery) {
         const params = new URLSearchParams();
@@ -90,8 +92,8 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!files || files.length === 0) {
             filesContainer.innerHTML = `
                 <div class="col-12">
-                    <div class="alert alert-info fade-transition show">
-                        No files found in this folder
+                    <div class="alert alert-info fade-transition">
+                        No files found
                     </div>
                 </div>
             `;
@@ -99,50 +101,55 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const html = files.map((file, index) => `
-            <div class="col-sm-6 col-md-4 col-lg-3 mb-3" style="--animation-order: ${index}">
+            <div class="col-sm-6 col-md-4 col-lg-3" style="--animation-order: ${index}">
                 <div class="card h-100">
                     ${file.isFolder ? 
                         `<div class="card-body">
-                            <h5 class="card-title text-truncate" title="${file.name}">
-                                <i class="fas fa-folder fa-3x text-warning"></i>
-                            </h5>
-                            <button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
-                                    data-folder-id="${file.id}">
-                                <i class="fas fa-folder-open me-1"></i> Open
-                            </button>
+                            <h6 class="card-title">
+                                <a href="/?folder=${encodeURIComponent(file.id)}"
+                                   class="d-flex align-items-center gap-2 text-decoration-none text-truncate"
+                                   style="color: inherit;">
+                                    <i class="fas fa-folder file-icon"></i>
+                                    <span class="text-truncate" title="${file.name}">
+                                        ${file.name}
+                                    </span>
+                                </a>
+                            </h6>
+                            <a href="/?folder=${encodeURIComponent(file.id)}" class="folder-link">
+                                <i class="fas fa-folder-open"></i> Open
+                            </a>
                         </div>` :
                         `<div class="card-body">
                             ${file.thumbnailLink ? 
                                 `<div class="thumbnail-container">
                                     <img src="${file.thumbnailLink}" alt="${file.name}" class="card-img-top">
                                 </div>` : 
-                                `<i class="fas fa-file fa-3x text-info"></i>`
+                                `<div class="text-center py-3">
+                                    <i class="fas fa-file fa-3x"></i>
+                                </div>`
                             }
-                            <h5 class="card-title text-truncate" title="${file.name}">
+                            <h6 class="card-title text-truncate" title="${file.name}">
                                 ${file.name}
-                            </h5>
-                            <a href="${file.webViewLink}" target="_blank" class="btn btn-info btn-sm w-100">
-                                <i class="fas fa-external-link-alt me-1"></i> View
-                            </a>
+                            </h6>
+                            <div class="file-actions">
+                                <a href="${file.webViewLink}" target="_blank" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                <a href="${file.downloadUrl}" class="btn btn-sm btn-secondary" download>
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
                         </div>`
                     }
                 </div>
             </div>
         `).join('');
 
-        filesContainer.innerHTML = `<div class="row">${html}</div>`;
-
-        // Add click handlers for folder navigation
-        filesContainer.querySelectorAll('.folder-link').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const folderId = this.dataset.folderId;
-                navigateToFolder(folderId);
-            });
-        });
+        filesContainer.innerHTML = `<div class="row g-4">${html}</div>`;
     }
 
     function renderBreadcrumbs(breadcrumbs) {
-        if (!breadcrumbs) return;
+        if (!breadcrumbs || !breadcrumbContainer) return;
 
         const html = `
             <nav aria-label="breadcrumb">
@@ -152,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             style="--animation-order: ${index};">
                             ${index === breadcrumbs.length - 1 ? 
                                 item.name :
-                                `<a href="#" data-folder="${item.id}">${item.name}</a>`
+                                `<a href="/?folder=${encodeURIComponent(item.id)}">${item.name}</a>`
                             }
                         </li>
                     `).join('')}
@@ -161,34 +168,6 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         breadcrumbContainer.innerHTML = html;
-
-        breadcrumbContainer.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const folderId = e.currentTarget.dataset.folder;
-                navigateToFolder(folderId);
-            });
-        });
-    }
-
-    function navigateToFolder(folderId) {
-        // Add slide-out animation
-        filesContainer.classList.add('folder-transition', 'slide-left');
-
-        setTimeout(() => {
-            loadFiles(folderId);
-            updateUrl(folderId);
-
-            // Reset container for slide-in animation
-            filesContainer.classList.remove('slide-left');
-            filesContainer.classList.add('slide-right');
-
-            // Trigger reflow
-            void filesContainer.offsetWidth;
-
-            // Remove slide-right class to animate in
-            filesContainer.classList.remove('slide-right');
-        }, 300);
     }
 
     // Handle browser back/forward buttons
