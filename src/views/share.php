@@ -57,6 +57,7 @@ try {
     <title><?php echo htmlspecialchars($title); ?></title>
 
     <!-- OpenGraph Meta Tags -->
+    <meta property="fb:app_id" content="237755102741371">
     <meta property="og:title" content="<?php echo htmlspecialchars($title); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($description); ?>">
     <meta property="og:site_name" content="DNA Distribution Customer Resources">
