@@ -32,12 +32,12 @@ class DriveService {
         }
     }
 
-    // Enhanced method to get file metadata with video support
+    // Enhanced method to get file metadata with video support and platform-specific data
     public function getFileMetadata($fileId) {
         try {
             $file = $this->service->files->get($fileId, [
                 'supportsAllDrives' => true,
-                'fields' => 'id, name, mimeType, thumbnailLink, videoMediaMetadata, imageMediaMetadata, parents'
+                'fields' => 'id, name, mimeType, thumbnailLink, videoMediaMetadata, imageMediaMetadata, parents, description'
             ]);
 
             $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
@@ -57,6 +57,15 @@ class DriveService {
             // Generate different thumbnail sizes
             $thumbnails = $this->generateThumbnailSizes($file->getThumbnailLink());
 
+            // Get image metadata if available
+            $imageMetadata = $file->getImageMediaMetadata();
+            if ($imageMetadata) {
+                $dimensions = array_merge($dimensions, [
+                    'camera' => $imageMetadata->getCamera(),
+                    'location' => $imageMetadata->getLocation()
+                ]);
+            }
+
             return [
                 'id' => $file->getId(),
                 'name' => $file->getName(),
@@ -66,12 +75,64 @@ class DriveService {
                 'videoMetadata' => $dimensions,
                 'downloadUrl' => $downloadUrl,
                 'webViewLink' => $viewUrl,
-                'parentId' => $file->getParents() ? $file->getParents()[0] : null
+                'parentId' => $file->getParents() ? $file->getParents()[0] : null,
+                'description' => $file->getDescription(),
+                'socialMetadata' => $this->generateSocialMetadata($file)
             ];
         } catch (\Exception $e) {
             error_log("Error getting file metadata: " . $e->getMessage());
             return null;
         }
+    }
+
+    // Generate social media specific metadata
+    private function generateSocialMetadata($file) {
+        $title = $file->getName();
+        $description = $file->getDescription() ?? "Shared via DNA Distribution";
+        $mimeType = $file->getMimeType();
+
+        return [
+            'facebook' => [
+                'title' => $title,
+                'description' => $description,
+                'type' => $this->getFacebookType($mimeType),
+            ],
+            'twitter' => [
+                'title' => $title,
+                'description' => substr($description, 0, 200),
+                'card' => $this->getTwitterCardType($mimeType),
+            ],
+            'linkedin' => [
+                'title' => $title,
+                'description' => substr($description, 0, 250),
+            ],
+            'pinterest' => [
+                'title' => $title,
+                'description' => substr($description, 0, 500),
+            ]
+        ];
+    }
+
+    // Determine Facebook content type
+    private function getFacebookType($mimeType) {
+        if (strpos($mimeType, 'video/') === 0) {
+            return 'video.other';
+        } elseif (strpos($mimeType, 'image/') === 0) {
+            return 'photo';
+        } elseif ($mimeType === 'application/pdf') {
+            return 'article';
+        }
+        return 'website';
+    }
+
+    // Determine Twitter card type
+    private function getTwitterCardType($mimeType) {
+        if (strpos($mimeType, 'video/') === 0) {
+            return 'player';
+        } elseif (strpos($mimeType, 'image/') === 0) {
+            return 'summary_large_image';
+        }
+        return 'summary';
     }
 
     // Generate different thumbnail sizes for social platforms
@@ -83,6 +144,7 @@ class DriveService {
             'facebook' => ['w' => 1200, 'h' => 630],   // Facebook recommended
             'twitter' => ['w' => 1200, 'h' => 675],    // Twitter card
             'linkedin' => ['w' => 1200, 'h' => 627],   // LinkedIn sharing
+            'pinterest' => ['w' => 600, 'h' => 900],   // Pinterest optimal
             'thumbnail' => ['w' => 320, 'h' => 180],   // Small preview
             'preview' => ['w' => 1280, 'h' => 720]     // Full preview
         ];
