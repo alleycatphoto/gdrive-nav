@@ -87,6 +87,14 @@ include __DIR__ . '/../includes/header.php';
                                     echo ' alt="' . htmlspecialchars($file['name']) . '"';
                                     echo ' class="card-img-top">';
 
+                                    // Add share button to thumbnail container
+                                    $fileId = extractFileId($file['downloadUrl']);
+                                    if ($fileId) {
+                                        echo '<button class="thumbnail-share-btn" data-file-id="' . htmlspecialchars($fileId) . '">';
+                                        echo '<i class="fas fa-share-alt"></i>';
+                                        echo '</button>';
+                                    }
+
                                     if ($isVideo) {
                                         echo '<div class="video-play-overlay">';
                                         echo '<i class="fas fa-play"></i>';
@@ -159,11 +167,12 @@ include __DIR__ . '/../includes/header.php';
         </div>
 
         <?php if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)): ?>
-        <!-- Debug Information Section (Onlyshown in non-production) -->
+        <!-- Debug Information Section (Only shown in non-production) -->
         <div id="debug-section" class="mt-4">
-            <div class="card bg-dark">                <div class="card-header">
-                    Debug Information                </div>
-                <div class="card-body">                    <pre id="debug-output" class="mb-0 text-light">
+            <div class="card bg-dark">
+                <div class="card-header">Debug Information</div>
+                <div class="card-body">
+                    <pre id="debug-output" class="mb-0 text-light">
                     <?php
                         echo json_encode([
                             'current_folder' => $currentFolderId,
@@ -181,13 +190,15 @@ include __DIR__ . '/../includes/header.php';
         <?php endif; ?>
     </div>
 
-
     <!-- Preview Modal -->
     <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="previewModalLabel">Preview</h5>
+                    <button type="button" id="modalShareBtn" class="modal-share-btn" data-file-id="">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
@@ -205,7 +216,7 @@ include __DIR__ . '/../includes/header.php';
                         </object>
                     </div>
                     <!-- Fallback message -->
-                    <div id="previewFallback" class.p-4" style="display: none;">
+                    <div id="previewFallback" style="display: none;">
                         <p>This file type cannot be previewed directly.</p>
                         <a id="fallbackLink" href="#" target="_blank" class="btn btn-primary">
                             <i class="fas fa-external-link-alt me-2"></i> Open in Google Drive
@@ -221,6 +232,17 @@ include __DIR__ . '/../includes/header.php';
             </div>
         </div>
     </div>
+
+    <?php
+    // Helper function to extract file ID from Google Drive URL
+    function extractFileId($url) {
+        if (!$url) return null;
+        if (preg_match('/[-\w]{25,}/', $url, $matches)) {
+            return $matches[0];
+        }
+        return null;
+    }
+    ?>
 
     <?php include __DIR__ . '/../includes/scripts.php'; ?>
 </body>

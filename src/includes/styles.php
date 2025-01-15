@@ -12,6 +12,7 @@
         --custom-secondary-hover: #5a495a;
         --custom-icon: #b996b9;
         --custom-icon-hover: #d2b9d2;
+
     }
 
     body {
@@ -279,48 +280,6 @@
         filter: brightness(1.1);
     }
 
-    /* Add these new styles after the existing .thumbnail-container styles */
-
-    .thumbnail-share-btn {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease-in-out;
-        z-index: 2;
-        backdrop-filter: blur(2px);
-    }
-
-    .thumbnail-share-btn:hover {
-        background-color: var(--custom-primary);
-        transform: scale(1.1);
-    }
-
-    .modal-header .modal-share-btn {
-        background: none;
-        border: none;
-        color: var(--custom-icon);
-        padding: 0.5rem;
-        margin-right: 0.5rem;
-        transition: all 0.2s ease-in-out;
-        cursor: pointer;
-    }
-
-    .modal-header .modal-share-btn:hover {
-        color: var(--custom-icon-hover);
-        transform: scale(1.1);
-    }
-
-
     /* Video Thumbnail */
     .video-play-overlay {
         position: absolute;
@@ -356,7 +315,8 @@
         background-color: var(--custom-bg-darker) !important;
         border: 1px solid var(--custom-primary);
         position: relative;
-        display: flex;
+        display: flex
+    ;
         flex-direction: column;
         width: 100%;
         color: var(--bs-modal-color);
@@ -382,23 +342,24 @@
         justify-content: center;
         align-items: center;
     }
-    .modal-dialog {
-        max-width: 90vw;
-        max-height: 90vh;
-        margin: 0.5rem auto;
-    }
+.modal-dialog {
+    max-width: 90vw;
+    max-height: 90vh;
+    margin: 0.5rem auto;
+}
 
-    .modal-dialog-centered {
-        display: flex;
-        align-items: center;
-        min-height: calc(100% - var(--bs-modal-margin)* 2);
-    }
-    .modal-dialog {
-        position: relative;
-        width: auto;
-        margin: var(--bs-modal-margin);
-        pointer-events: none;
-    }
+.modal-dialog-centered {
+    display: flex
+;
+    align-items: center;
+    min-height: calc(100% - var(--bs-modal-margin)* 2);
+}
+.modal-dialog {
+    position: relative;
+    width: auto;
+    margin: var(--bs-modal-margin);
+    pointer-events: none;
+}
     .modal-footer {
         border-top-color: var(--custom-primary);
         background-color: var(--custom-bg);
@@ -507,7 +468,8 @@
         padding: 0;
         height: calc(90vh - 120px);
         overflow: hidden;
-        display: flex;
+        display: flex
+    ;
         justify-content: center;
         align-items: center;
     }
@@ -530,7 +492,8 @@
         background-color: var(--custom-bg-darker) !important;
         border: 1px solid var(--custom-primary);
         position: relative;
-        display: flex;
+        display: flex
+    ;
         flex-direction: column;
         width: 100%;
         color: var(--bs-modal-color);
@@ -545,8 +508,31 @@
         width: 100%;
         height: calc(90vh - 120px);
         background: #161116;
-        display: flex;
+        display: flex
+    ;
         justify-content: center;
         align-items: center;
+    }
+    .dropdown-menu {
+        --bs-dropdown-color: #d2b9d2;
+        --bs-dropdown-bg: #544055;
+        --bs-dropdown-link-hover-color: #d2b9d2;
+        --bs-dropdown-link-hover-bg: #b996b9;
+        --bs-dropdown-link-active-color: #d2b9d2;
+        --bs-dropdown-link-active-bg: #b996b9;
+        position: absolute;
+        z-index: var(--bs-dropdown-zindex);
+        display: none;
+        min-width: var(--bs-dropdown-min-width);
+        padding: var(--bs-dropdown-padding-y) var(--bs-dropdown-padding-x);
+        margin: 0;
+        font-size: var(--bs-dropdown-font-size);
+        color: var(--bs-dropdown-color);
+        text-align: left;
+        list-style: none;
+        background-color: var(--bs-dropdown-bg);
+        background-clip: padding-box;
+        border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
+        border-radius: var(--bs-dropdown-border-radius);
     }
 </style>
