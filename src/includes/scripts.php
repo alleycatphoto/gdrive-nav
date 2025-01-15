@@ -48,9 +48,7 @@
             modalShareBtn.addEventListener('click', function() {
                 const fileId = this.getAttribute('data-file-id');
                 if (fileId) {
-                    const driveLink = generateGoogleDriveShareLink(fileId);
-                    copyToClipboard(driveLink);
-                    showToast('Google Drive sharing link copied to clipboard!');
+                    copyShareLink(fileId);
                 }
             });
         }
@@ -237,10 +235,7 @@
                 e.stopPropagation();
                 const fileId = this.getAttribute('data-file-id');
                 if (fileId) {
-                    const driveLink = generateGoogleDriveShareLink(fileId);
-                    copyToClipboard(driveLink).then(success => {
-                        showToast(success ? 'Google Drive sharing link copied to clipboard!' : 'Failed to copy link');
-                    });
+                    copyShareLink(fileId);
                 }
             });
         });
@@ -252,10 +247,7 @@
                 e.stopPropagation();
                 const fileId = this.getAttribute('data-file-id');
                 if (fileId) {
-                    const driveLink = generateGoogleDriveShareLink(fileId);
-                    copyToClipboard(driveLink).then(success => {
-                        showToast(success ? 'Google Drive sharing link copied to clipboard!' : 'Failed to copy link');
-                    });
+                    copyShareLink(fileId);
                 }
             });
         });

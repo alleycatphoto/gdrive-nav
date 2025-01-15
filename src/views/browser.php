@@ -121,7 +121,7 @@ include __DIR__ . '/../includes/header.php';
                                         if ($fileId): ?>
                                             <button class="action-btn"
                                                     data-file-id="<?php echo htmlspecialchars($fileId); ?>"
-                                                    onclick="event.preventDefault(); event.stopPropagation();"
+                                                    onclick="copyShareLink('<?php echo htmlspecialchars($fileId); ?>')"
                                                     title="Share">
                                                 <i class="fas fa-share-alt"></i>
                                             </button>
@@ -223,7 +223,7 @@ include __DIR__ . '/../includes/header.php';
                         </a>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer justify-content-center">
                     <button type="button" id="modalShareBtn" class="btn btn-primary" data-file-id="">
                         <i class="fas fa-share-alt me-2"></i> Share
                     </button>
