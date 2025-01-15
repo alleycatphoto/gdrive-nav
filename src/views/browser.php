@@ -24,11 +24,11 @@ include __DIR__ . '/../includes/header.php';
                 foreach ($breadcrumbs as $index => $crumb) {
                     $delay = $index * 0.1;
                     if ($index === count($breadcrumbs) - 1) {
-                        echo '<li class="breadcrumb-item active" style="animation-delay: ' . $delay . 's">' 
+                        echo '<li class="breadcrumb-item active" style="animation-delay: ' . $delay . 's">'
                             . htmlspecialchars($crumb['name']) . '</li>';
                     } else {
                         echo '<li class="breadcrumb-item" style="animation-delay: ' . $delay . 's">'
-                            . '<a href="/?folder=' . htmlspecialchars($crumb['id']) . '">' 
+                            . '<a href="/?folder=' . htmlspecialchars($crumb['id']) . '">'
                             . htmlspecialchars($crumb['name']) . '</a></li>';
                     }
                 }
@@ -65,8 +65,8 @@ include __DIR__ . '/../includes/header.php';
                     $isPreviewable = !$file['isFolder'] && (strpos($file['mimeType'], 'image/') === 0);
                     ?>
                     <div class="col-sm-6 col-md-4 col-lg-3">
-                        <div class="card h-100"> 
-                            <?php 
+                        <div class="card h-100">
+                            <?php
                             if (!$file['isFolder']) {
                                 $thumbnailLink = $file['thumbnailLink'] ?? null;
                                 $highResThumbnail = $file['highResThumbnail'] ?? null;
@@ -83,7 +83,7 @@ include __DIR__ . '/../includes/header.php';
                                     echo '<div class="thumbnail-container ' . ($isVideo ? 'video-thumbnail' : '') . '"';
                                     echo ' onclick="previewFile(' . htmlspecialchars($previewProps, ENT_QUOTES) . ')"';
                                     echo ' style="cursor: pointer;">';
-                                    echo '<img src="' . htmlspecialchars($thumbnailLink) . '"'; 
+                                    echo '<img src="' . htmlspecialchars($thumbnailLink) . '"';
                                     echo ' alt="' . htmlspecialchars($file['name']) . '"';
                                     echo ' class="card-img-top">';
 
@@ -100,7 +100,7 @@ include __DIR__ . '/../includes/header.php';
 
                             <div class="card-body">
                                 <?php if (!$file['isFolder']): ?>
-                                    <h6 class="card-title" 
+                                    <h6 class="card-title"
                                         onclick="previewFile(<?php echo htmlspecialchars($previewProps, ENT_QUOTES); ?>)"
                                         style="cursor: pointer;">
                                         <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
@@ -115,7 +115,7 @@ include __DIR__ . '/../includes/header.php';
                                                 title="View">
                                             <i class="fas fa-eye"></i>
                                         </button>
-                                        <?php 
+                                        <?php
                                         // Add share button
                                         $fileId = extractFileId($file['downloadUrl']);
                                         if ($fileId): ?>
@@ -126,7 +126,7 @@ include __DIR__ . '/../includes/header.php';
                                                 <i class="fas fa-share-alt"></i>
                                             </button>
                                         <?php endif; ?>
-                                        <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>" 
+                                        <a href="<?php echo htmlspecialchars($file['downloadUrl']); ?>"
                                            class="action-btn"
                                            title="Download"
                                            download>
@@ -135,8 +135,8 @@ include __DIR__ . '/../includes/header.php';
                                     </div>
                                 <?php else: ?>
                                     <h6 class="card-title">
-                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>" 
-                                           class="d-flex align-items-center gap-2 text-decoration-none text-truncate" 
+                                        <a href="/?folder=<?php echo htmlspecialchars($file['id']); ?>"
+                                           class="d-flex align-items-center gap-2 text-decoration-none text-truncate"
                                            style="color: inherit; width: 100%;">
                                             <i class="fas <?php echo $fileIcon; ?> file-icon"></i>
                                             <span class="text-truncate" title="<?php echo htmlspecialchars($file['name']); ?>">
@@ -149,8 +149,8 @@ include __DIR__ . '/../includes/header.php';
                                     </a>
                                 <?php endif; ?>
                             </div>
-                        </div>                        
-                    </div>                    
+                        </div>
+                    </div>
                     <?php
                 }
                 echo '</div>';
@@ -199,9 +199,6 @@ include __DIR__ . '/../includes/header.php';
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="previewModalLabel">Preview</h5>
-                    <button type="button" id="modalShareBtn" class="modal-share-btn" data-file-id="">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center">
@@ -227,6 +224,9 @@ include __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" id="modalShareBtn" class="btn btn-primary" data-file-id="">
+                        <i class="fas fa-share-alt me-2"></i> Share
+                    </button>
                     <a id="modalDownloadLink" href="#" class="btn btn-primary" download>
                         <i class="fas fa-download me-2"></i> Download
                     </a>
