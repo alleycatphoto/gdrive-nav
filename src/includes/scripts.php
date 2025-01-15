@@ -394,6 +394,29 @@
         clickedButton.style.position = 'relative';
         clickedButton.appendChild(popup);
 
+        // Style the popup and its buttons
+        const popupElement = popup.querySelector('.social-sharing-popup');
+        popupElement.style.minWidth = '200px';
+        popupElement.style.backgroundColor = 'var(--bs-dark)';
+        popupElement.style.border = '1px solid var(--bs-secondary)';
+        popupElement.style.borderRadius = '0.375rem';
+        popupElement.style.padding = '0.5rem';
+        popupElement.style.position = 'absolute';
+        popupElement.style.right = '0';
+        popupElement.style.top = '100%';
+        popupElement.style.marginTop = '0.5rem';
+        popupElement.style.zIndex = '9999';
+        popupElement.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
+
+        // Style all buttons in the popup
+        popup.querySelectorAll('.btn').forEach(btn => {
+            btn.style.whiteSpace = 'nowrap';
+            btn.style.width = '100%';
+            btn.style.textAlign = 'left';
+            btn.style.display = 'flex';
+            btn.style.alignItems = 'center';
+        });
+
         // Add click handler for copy link button
         const copyButton = popup.querySelector('.copy-link-btn');
         copyButton.addEventListener('click', async () => {
