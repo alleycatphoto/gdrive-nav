@@ -20,14 +20,18 @@ try {
     $isImage = strpos($mimeType, 'image/') === 0;
     $isVideo = strpos($mimeType, 'video/') === 0;
     $isPDF = $mimeType === 'application/pdf';
-    
+
     // Generate proxy URL for media content
     $proxyUrl = "/proxy/" . $fileId;
-    
+
+    // Get folder path/name
+    $breadcrumbs = $driveService->getBreadcrumbs($file['parentId'] ?? null);
+    $folderName = count($breadcrumbs) > 1 ? $breadcrumbs[count($breadcrumbs)-1]['name'] : 'Resources';
+
     // Set title and description
-    $title = $file['name'];
-    $description = "Shared via DNA Distribution Customer Resources";
-    
+    $title = $folderName . " - DNA Distribution";
+    $description = "DNA Distribution Customer Resources";
+
 } catch (Exception $e) {
     error_log("Error in share view: " . $e->getMessage());
     header("Location: /");
@@ -39,13 +43,14 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($title); ?> - DNA Distribution</title>
-    
+    <title><?php echo htmlspecialchars($title); ?></title>
+
     <!-- OpenGraph Meta Tags -->
     <meta property="og:title" content="<?php echo htmlspecialchars($title); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($description); ?>">
     <meta property="og:site_name" content="DNA Distribution Customer Resources">
-    
+    <meta property="og:url" content="https://dnadistribution.us">
+
     <?php if ($isImage): ?>
         <meta property="og:image" content="<?php echo htmlspecialchars($proxyUrl); ?>">
         <meta property="og:type" content="image">
@@ -62,21 +67,20 @@ try {
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
-    <?php include __DIR__ . '/../includes/styles.php'; ?>
 </head>
-<body>
-    <?php include __DIR__ . '/../includes/nav.php'; ?>
-    
-    <div class="container">
-        <div class="row justify-content-center mt-4">
+<body class="bg-dark">
+    <div class="container py-5">
+        <div class="row justify-content-center">
             <div class="col-md-8">
+                <div class="text-center mb-4">
+                    <h3 class="text-light"><?php echo htmlspecialchars($folderName); ?></h3>
+                    <p class="text-muted">DNA Distribution</p>
+                </div>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title mb-4"><?php echo htmlspecialchars($title); ?></h4>
-                        
                         <?php if ($isImage): ?>
                             <img src="<?php echo htmlspecialchars($proxyUrl); ?>" 
-                                 alt="<?php echo htmlspecialchars($title); ?>" 
+                                 alt="<?php echo htmlspecialchars($file['name']); ?>" 
                                  class="img-fluid rounded mb-3">
                         <?php elseif ($isVideo): ?>
                             <video controls class="w-100 rounded mb-3">
@@ -87,19 +91,16 @@ try {
                         <?php elseif ($isPDF): ?>
                             <div class="ratio ratio-16x9 mb-3">
                                 <iframe src="<?php echo htmlspecialchars($proxyUrl); ?>" 
-                                        title="<?php echo htmlspecialchars($title); ?>" 
+                                        title="<?php echo htmlspecialchars($file['name']); ?>" 
                                         allowfullscreen></iframe>
                             </div>
                         <?php endif; ?>
-                        
-                        <div class="d-flex justify-content-center gap-3">
+
+                        <div class="d-flex justify-content-center gap-3 mt-4">
                             <a href="<?php echo htmlspecialchars($proxyUrl); ?>" 
                                class="btn btn-primary" 
-                               download="<?php echo htmlspecialchars($title); ?>">
+                               download="<?php echo htmlspecialchars($file['name']); ?>">
                                 <i class="fas fa-download me-2"></i>Download
-                            </a>
-                            <a href="/" class="btn btn-secondary">
-                                <i class="fas fa-home me-2"></i>Back to Home
                             </a>
                         </div>
                     </div>
@@ -108,6 +109,6 @@ try {
         </div>
     </div>
 
-    <?php include __DIR__ . '/../includes/scripts.php'; ?>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
