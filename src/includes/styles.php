@@ -21,26 +21,18 @@
 
     .navbar {
         background-color: var(--custom-bg-darker) !important;
-        display: flex;
-        justify-content: center;
-    }
-
-    .navbar-brand {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-right: 0;
+        justfy-content: center;
     }
 
     .navbar-brand img {
         height: 30px;
         width: auto;
+        margin-right: 10px;
+        justfy-content: center;
     }
 
-    .container-fluid {
-        justify-content: center !important;
-        display: flex;
+    .navbar-brand {
+        justfy-content: center;
     }
     .container {
         background-color: var(--custom-bg-lighter);
@@ -225,7 +217,7 @@
         font-size: 0.9rem;
     }
 
-    .btn-secondary:hover {
+    .btn-secondary :hover {
         background-color: var(--custom-secondary-hover);
         color: var(--custom-secondary);
         transform: translateY(-2px);
@@ -323,7 +315,8 @@
         background-color: var(--custom-bg-darker) !important;
         border: 1px solid var(--custom-primary);
         position: relative;
-        display: flex;
+        display: flex
+    ;
         flex-direction: column;
         width: 100%;
         color: var(--bs-modal-color);
@@ -356,7 +349,8 @@
 }
 
 .modal-dialog-centered {
-    display: flex;
+    display: flex
+;
     align-items: center;
     min-height: calc(100% - var(--bs-modal-margin)* 2);
 }
@@ -474,7 +468,8 @@
         padding: 0;
         height: calc(90vh - 120px);
         overflow: hidden;
-        display: flex;
+        display: flex
+    ;
         justify-content: center;
         align-items: center;
     }
@@ -497,7 +492,8 @@
         background-color: var(--custom-bg-darker) !important;
         border: 1px solid var(--custom-primary);
         position: relative;
-        display: flex;
+        display: flex
+    ;
         flex-direction: column;
         width: 100%;
         color: var(--bs-modal-color);
@@ -512,7 +508,8 @@
         width: 100%;
         height: calc(90vh - 120px);
         background: #161116;
-        display: flex;
+        display: flex
+    ;
         justify-content: center;
         align-items: center;
     }

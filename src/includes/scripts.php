@@ -364,13 +364,13 @@
                         <i class="fas fa-link me-2"></i>Copy Link
                     </button>
                     <div class="dropdown-divider"></div>
-                    <a href="${urls.twitter}" target="_blank" class="btn btn-outline-info">
+                    <a href="${urls.twitter}" target="_blank" class="btn btn-outline-info" onclick="window.open(this.href, '_blank', 'width=550,height=420'); return false;">
                         <i class="fab fa-twitter me-2"></i>Share on Twitter
                     </a>
-                    <a href="${urls.facebook}" target="_blank" class="btn btn-outline-primary">
+                    <a href="${urls.facebook}" target="_blank" class="btn btn-outline-primary" onclick="window.open(this.href, '_blank', 'width=550,height=420'); return false;">
                         <i class="fab fa-facebook me-2"></i>Share on Facebook
                     </a>
-                    <a href="${urls.linkedin}" target="_blank" class="btn btn-outline-info">
+                    <a href="${urls.linkedin}" target="_blank" class="btn btn-outline-info" onclick="window.open(this.href, '_blank', 'width=550,height=520'); return false;">
                         <i class="fab fa-linkedin me-2"></i>Share on LinkedIn
                     </a>
                     <a href="${urls.email}" class="btn btn-outline-secondary">
@@ -387,7 +387,7 @@
 
         const popup = document.createElement('div');
         popup.className = 'position-absolute';
-        popup.style.zIndex = '1060';
+        popup.style.zIndex = '9999';
         popup.innerHTML = popupContent;
 
         // Position popup relative to clicked button
