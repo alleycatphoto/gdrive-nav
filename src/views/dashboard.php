@@ -27,8 +27,8 @@ include __DIR__ . '/../includes/header.php';
                         <div class="card-body text-center">
                             <i class="fas fa-folder-open feature-icon"></i>
                             <h5 class="card-title">Browse Files</h5>
-                            <p class="card-text">Access our comprehensive collection of resources and documents.</p>
-                            <a href="/" class="btn btn-primary">Get Started</a>
+                            <p class="card-text">Resources and documents.</p>
+                            <a href="/" class="folder-link">Get Started</a>
                         </div>
                     </div>
                 </div>
@@ -37,8 +37,8 @@ include __DIR__ . '/../includes/header.php';
                         <div class="card-body text-center">
                             <i class="fas fa-search feature-icon"></i>
                             <h5 class="card-title">Search Content</h5>
-                            <p class="card-text">Quickly find the exact resources you need.</p>
-                            <a href="/?search=true" class="btn btn-primary">Search Now</a>
+                            <p class="card-text">Find the exact resources you need.</p>
+                            <a href="/?search=true" class="folder-link">Search Now</a>
                         </div>
                     </div>
                 </div>
@@ -48,10 +48,18 @@ include __DIR__ . '/../includes/header.php';
                             <i class="fas fa-user-cog feature-icon"></i>
                             <h5 class="card-title">Manage Profile</h5>
                             <p class="card-text">Update your account settings and preferences.</p>
-                            <a href="#" class="btn btn-primary">View Profile</a>
+                            <a href="#" class="folder-link">View Profile</a>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="container mt-5">
+            <div class="collection-header">
+                <h4>Featured Products</h4>
+            </div>
+            <div id='collection-component-1736831470697'>
+                <!-- Shopify buy button will be injected here -->
             </div>
         </div>
     </div>
