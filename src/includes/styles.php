@@ -549,4 +549,14 @@
         border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
         border-radius: var(--bs-dropdown-border-radius);
     }
+    .form-control {
+    background-color: #544055;
+    border: var(--bs-border-width) solid #2c212d;
+    }
+    .form-control:focus {
+        color: var(--bs-body-color);
+        background-color: #3a2a3b;
+        border-color: #856087;
+        box-shadow: 0 0 0 .25rem #715273a6;
+    }
 </style>

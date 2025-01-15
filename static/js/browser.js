@@ -39,12 +39,15 @@ document.addEventListener('DOMContentLoaded', function() {
             url += '?' + params.toString();
         }
 
+        console.log('Fetching URL:', url); // Debug log
+
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (!data.success) {
                     throw new Error(data.error || 'Error loading files');
                 }
+                console.log('Received data:', data); // Debug log
                 renderBreadcrumbs(data.breadcrumbs);
                 renderFiles(data.files);
                 hideLoadingState();
@@ -69,6 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentFolder = urlParams.get('folder');
 
+        console.log('Search submitted:', { searchQuery, currentFolder }); // Debug log
         loadFiles(currentFolder, searchQuery);
         updateUrl(currentFolder, searchQuery);
     });
@@ -80,6 +84,61 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const newUrl = params.toString() ? `/?${params.toString()}` : '/';
         history.pushState({}, '', newUrl);
+    }
+
+    function renderFiles(files) {
+        if (!files || files.length === 0) {
+            filesContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info fade-transition show">
+                        No files found in this folder
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        const html = files.map((file, index) => `
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3" style="--animation-order: ${index}">
+                <div class="card h-100">
+                    ${file.isFolder ? 
+                        `<div class="card-body">
+                            <h5 class="card-title text-truncate" title="${file.name}">
+                                <i class="fas fa-folder fa-3x text-warning"></i>
+                            </h5>
+                            <button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
+                                    data-folder-id="${file.id}">
+                                <i class="fas fa-folder-open me-1"></i> Open
+                            </button>
+                        </div>` :
+                        `<div class="card-body">
+                            ${file.thumbnailLink ? 
+                                `<div class="thumbnail-container">
+                                    <img src="${file.thumbnailLink}" alt="${file.name}" class="card-img-top">
+                                </div>` : 
+                                `<i class="fas fa-file fa-3x text-info"></i>`
+                            }
+                            <h5 class="card-title text-truncate" title="${file.name}">
+                                ${file.name}
+                            </h5>
+                            <a href="${file.webViewLink}" target="_blank" class="btn btn-info btn-sm w-100">
+                                <i class="fas fa-external-link-alt me-1"></i> View
+                            </a>
+                        </div>`
+                    }
+                </div>
+            </div>
+        `).join('');
+
+        filesContainer.innerHTML = `<div class="row">${html}</div>`;
+
+        // Add click handlers for folder navigation
+        filesContainer.querySelectorAll('.folder-link').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const folderId = this.dataset.folderId;
+                navigateToFolder(folderId);
+            });
+        });
     }
 
     function renderBreadcrumbs(breadcrumbs) {
@@ -112,59 +171,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function renderFiles(files) {
-        if (!files || files.length === 0) {
-            filesContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info fade-transition show">
-                        No files found in this folder
-                    </div>
-                </div>
-            `;
-            return;
-        }
-
-        filesContainer.innerHTML = files.map((file, index) => `
-            <div class="col-sm-6 col-md-4 col-lg-3 mb-3" style="--animation-order: ${index}">
-                <div class="card h-100">
-                    ${file.isFolder ? 
-                        `<div class="card-body">
-                            <h5 class="card-title text-truncate" title="${file.name}">
-                                <i class="fas fa-folder fa-3x text-warning"></i>
-                            </h5>
-                            <button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
-                                    data-folder-id="${file.id}">
-                                <i class="fas fa-folder-open me-1"></i> Open
-                            </button>
-                        </div>` :
-                        `<div class="card-body">
-                            ${file.thumbnailLink ? 
-                                `<div class="thumbnail-container">
-                                    <img src="${file.thumbnailLink}" alt="${file.name}" class="card-img-top">
-                                </div>` : 
-                                `<i class="fas fa-file fa-3x text-info"></i>`
-                            }
-                            <h5 class="card-title text-truncate" title="${file.name}">
-                                ${file.name}
-                            </h5>
-                            <a href="${file.webViewLink}" target="_blank" class="btn btn-info btn-sm w-100">
-                                <i class="fas fa-external-link-alt me-1"></i> View
-                            </a>
-                        </div>`
-                    }
-                </div>
-            </div>
-        `).join('');
-
-        // Add click handlers for folder navigation
-        filesContainer.querySelectorAll('.folder-link').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const folderId = this.dataset.folderId;
-                navigateToFolder(folderId);
-            });
-        });
-    }
-
     function navigateToFolder(folderId) {
         // Add slide-out animation
         filesContainer.classList.add('folder-transition', 'slide-left');
@@ -184,7 +190,6 @@ document.addEventListener('DOMContentLoaded', function() {
             filesContainer.classList.remove('slide-right');
         }, 300);
     }
-
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
