@@ -89,7 +89,7 @@
         to { opacity: 1; transform: translateX(0); }
     }
 
-    /* File cards */
+    /* Thumbnail Card Styling */
     .card {
         background-color: var(--custom-secondary);
         border: none;
@@ -103,6 +103,274 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
-    /* Rest of existing styles... */
-    <?php include 'shopify_styles.php'; ?>
+    .card-body {
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem;
+    }
+
+    .card-title {
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--custom-icon);
+        cursor: pointer;
+        transition: color 0.2s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        width: 100%;
+    }
+
+    .card-title:hover {
+        color: var(--custom-icon-hover);
+    }
+
+    .file-icon {
+        font-size: 1rem;
+        color: inherit;
+        flex-shrink: 0;
+    }
+
+    .card-title span {
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Action Buttons */
+    .action-btn {
+        padding: 0.5rem 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--custom-secondary);
+        border: 1px solid var(--custom-icon);
+        color: var(--custom-icon);
+        text-decoration: none;
+        border-radius: 0.25rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: transform;
+        font-size: 0.9rem;
+    }
+
+    .action-btn:hover {
+        background-color: var(--custom-icon);
+        color: var(--custom-secondary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-btn:active {
+        transform: translateY(0);
+    }
+
+    .folder-link {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--custom-secondary);
+        border: 1px solid var(--custom-icon);
+        color: var(--custom-icon);
+        border-radius: 0.25rem;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .folder-link:hover {
+        background-color: var(--custom-icon);
+        color: var(--custom-secondary);
+    }
+
+    /* Thumbnail Container */
+    .thumbnail-container {
+        position: relative;
+        padding-bottom: 56.25%;
+        background-color: var(--custom-bg-darker);
+        border-radius: 0.25rem;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        will-change: transform;
+    }
+
+    .thumbnail-container:hover {
+        transform: scale(1.02) translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .thumbnail-container img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: filter 0.3s ease;
+    }
+
+    .thumbnail-container:hover img {
+        filter: brightness(1.1);
+    }
+
+    /* Video Thumbnail */
+    .video-play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        color: rgba(255, 255, 255, 0.8);
+        background: rgba(0, 0, 0, 0.5);
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        opacity: 0.8;
+        backdrop-filter: blur(2px);
+    }
+
+    .thumbnail-container:hover .video-play-overlay {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+        background: rgba(0, 0, 0, 0.7);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        max-width: 90vw;
+        margin: 0 auto;
+        background-color: var(--custom-bg-darker) !important;
+        border: 1px solid var(--custom-primary);
+    }
+
+    .modal-header {
+        border-bottom-color: var(--custom-primary);
+        background-color: var(--custom-bg);
+    }
+
+    .modal-body {
+        background-color: #161116;
+        padding: 0;
+        max-height: calc(90vh - 120px);
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-footer {
+        border-top-color: var(--custom-primary);
+        background-color: var(--custom-bg);
+    }
+
+    /* Shopify Buy Button Customization */
+    .collection-header {
+        margin-bottom: 2rem;
+        padding: 0 1rem;
+    }
+
+    .collection-header h4 {
+        color: var(--custom-icon);
+        font-size: 1.25rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    #collection-component-1736831470697 {
+        margin: 2rem 0;
+    }
+
+    .shopify-buy__product {
+        background-color: var(--custom-bg-darker) !important;
+        border-radius: 0.5rem !important;
+        overflow: hidden !important;
+        transition: transform 0.3s ease-in-out !important;
+        transform: scale(0.75) !important;
+        transform-origin: top center !important;
+    }
+
+    .shopify-buy__product:hover {
+        transform: scale(0.75) translateY(-4px) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .shopify-buy__product-img-wrapper {
+        position: relative !important;
+        padding-bottom: 75% !important;
+        background-color: var(--custom-bg-darker) !important;
+        border-radius: 0.25rem 0.25rem 0 0 !important;
+        overflow: hidden !important;
+    }
+
+    .shopify-buy__product-img {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    .shopify-buy__product__title {
+        padding: 1rem !important;
+        margin: 0 !important;
+        color: var(--custom-icon) !important;
+        font-size: 0.9rem !important;
+    }
+
+    .shopify-buy__product__price {
+        padding: 0 1rem 1rem !important;
+        color: var(--custom-icon) !important;
+        font-size: 0.9rem !important;
+    }
+
+    .shopify-buy__btn {
+        width: calc(100% - 2rem) !important;
+        margin: 0 1rem 1rem !important;
+        background-color: var(--custom-primary) !important;
+        border: none !important;
+        border-radius: 0.25rem !important;
+        color: white !important;
+        padding: 0.5rem 1rem !important;
+        font-size: 0.9rem !important;
+        transition: background-color 0.2s !important;
+    }
+
+    .shopify-buy__btn:hover {
+        background-color: var(--custom-primary-hover) !important;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+        }
+
+        .action-btn,
+        .folder-link {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+        }
+
+        .navbar-brand {
+            font-size: 0.8rem;
+        }
+    }
 </style>
