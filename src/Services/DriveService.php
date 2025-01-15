@@ -59,11 +59,14 @@ class DriveService {
 
             // Get image metadata if available
             $imageMetadata = $file->getImageMediaMetadata();
+            $imageInfo = [];
             if ($imageMetadata) {
-                $dimensions = array_merge($dimensions, [
-                    'camera' => $imageMetadata->getCamera(),
-                    'location' => $imageMetadata->getLocation()
-                ]);
+                // Safely get metadata properties
+                $imageInfo = [
+                    'width' => $imageMetadata->width ?? null,
+                    'height' => $imageMetadata->height ?? null,
+                    'rotation' => $imageMetadata->rotation ?? null
+                ];
             }
 
             return [
@@ -73,6 +76,7 @@ class DriveService {
                 'thumbnailLink' => $file->getThumbnailLink(),
                 'thumbnails' => $thumbnails,
                 'videoMetadata' => $dimensions,
+                'imageMetadata' => $imageInfo,
                 'downloadUrl' => $downloadUrl,
                 'webViewLink' => $viewUrl,
                 'parentId' => $file->getParents() ? $file->getParents()[0] : null,

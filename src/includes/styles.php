@@ -18,7 +18,13 @@
     body {
         background-color: var(--custom-bg);
     }
-
+    a {
+        color: var(--custom-icon);
+    }
+    a:hover{
+        color: var(--custom-primary-hover);
+    }
+    
     .navbar {
         background-color: var(--custom-bg-darker) !important;
         justfy-content: center;
@@ -201,6 +207,13 @@
         background-color: var(--custom-icon);
         color: var(--custom-secondary);
         border: 1px solid var(--custom-icon);
+    }
+    .btn.disabled, .btn:disabled, fieldset:disabled .btn {
+        color: var(--custom-icon);
+        pointer-events: none;
+        background-color: var(--custom-secondary);
+        border-color: var(--custom-secondary);
+        opacity: var(--bs-btn-disabled-opacity);
     }
     .btn-secondary {
         padding: 0.5rem 0.75rem;

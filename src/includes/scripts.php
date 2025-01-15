@@ -386,13 +386,15 @@
         }
 
         const popup = document.createElement('div');
-        popup.className = 'position-absolute';
+        popup.className = 'position-fixed';
         popup.style.zIndex = '9999';
         popup.innerHTML = popupContent;
 
-        // Position popup relative to clicked button
-        clickedButton.style.position = 'relative';
-        clickedButton.appendChild(popup);
+        // Position popup near the clicked button
+        const rect = clickedButton.getBoundingClientRect();
+        popup.style.top = `${rect.top + window.scrollY}px`;
+        popup.style.left = `${rect.right + window.scrollX}px`;
+        document.body.appendChild(popup);
 
         // Style the popup and its buttons
         const popupElement = popup.querySelector('.social-sharing-popup');
@@ -401,11 +403,7 @@
         popupElement.style.border = '1px solid var(--bs-secondary)';
         popupElement.style.borderRadius = '0.375rem';
         popupElement.style.padding = '0.5rem';
-        popupElement.style.position = 'absolute';
-        popupElement.style.right = '0';
-        popupElement.style.top = '100%';
-        popupElement.style.marginTop = '0.5rem';
-        popupElement.style.zIndex = '9999';
+        popupElement.style.marginLeft = '0.5rem';
         popupElement.style.boxShadow = '0 0.5rem 1rem rgba(0, 0, 0, 0.15)';
 
         // Style all buttons in the popup
@@ -416,6 +414,7 @@
             btn.style.display = 'flex';
             btn.style.alignItems = 'center';
         });
+
 
         // Add click handler for copy link button
         const copyButton = popup.querySelector('.copy-link-btn');
