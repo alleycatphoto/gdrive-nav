@@ -167,6 +167,26 @@
         transform: translateY(0);
     }
 
+    .btn-primary {
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        background-color: var(--custom-secondary);
+        border: 1px solid var(--custom-icon);
+        color: var(--custom-icon);
+        border-radius: 0.25rem;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: auto;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--custom-icon);
+        color: var(--custom-secondary);
+    }
     .folder-link {
         width: 100%;
         padding: 0.5rem 0.75rem;
@@ -253,6 +273,17 @@
         margin: 0 auto;
         background-color: var(--custom-bg-darker) !important;
         border: 1px solid var(--custom-primary);
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        color: var(--bs-modal-color);
+        pointer-events: auto;
+        background-color: var(--bs-modal-bg);
+        background-clip: padding-box;
+        border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
+        border-radius: var(--bs-modal-border-radius);
+        outline: 0;
     }
 
     .modal-header {
@@ -263,13 +294,29 @@
     .modal-body {
         background-color: #161116;
         padding: 0;
-        max-height: calc(90vh - 120px);
+        height: calc(90vh - 120px);
         overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
     }
+    .modal-dialog {
+        max-width: 90vw;
+        max-height: 90vh;
+        margin: 0.5rem auto;
+    }
 
+    .modal-dialog-centered {
+        display: flex;
+        align-items: center;
+        min-height: calc(100% - var(--bs-modal-margin)* 2);
+    }
+    .modal-dialog {
+        position: relative;
+        width: auto;
+        margin: var(--bs-modal-margin);
+        pointer-events: none;
+    }
     .modal-footer {
         border-top-color: var(--custom-primary);
         background-color: var(--custom-bg);
@@ -372,5 +419,105 @@
         .navbar-brand {
             font-size: 0.8rem;
         }
+    }
+
+    /* Sharing Tooltip Styles */
+    .sharing-tooltip-content {
+        padding: 1rem;
+        max-width: 300px;
+        background-color: var(--custom-bg-darker);
+        border: 1px solid var(--custom-primary);
+        border-radius: 0.375rem;
+    }
+
+    .sharing-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .sharing-header .file-name {
+        font-size: 0.9rem;
+        color: var(--custom-icon);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sharing-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .sharing-actions .btn {
+        flex: 1;
+        font-size: 0.8rem;
+        padding: 0.375rem 0.75rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .sharing-actions .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .sharing-footer {
+        margin-top: 0.75rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--custom-icon);
+        opacity: 0.8;
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+        z-index: 1060;
+    }
+
+    .toast {
+        background-color: var(--custom-bg-darker);
+        border: 1px solid var(--custom-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .toast-body {
+        color: var(--custom-icon);
+    }
+
+    .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+
+    /* Tooltip animations */
+    .tooltip.show {
+        opacity: 1;
+    }
+
+    .tooltip-inner {
+        background-color: var(--custom-bg-darker);
+        border: 1px solid var(--custom-primary);
+        padding: 0;
+        max-width: 300px;
+    }
+
+    .bs-tooltip-auto[data-popper-placement^=top] .tooltip-arrow::before,
+    .bs-tooltip-top .tooltip-arrow::before {
+        border-top-color: var(--custom-primary);
+    }
+
+    .bs-tooltip-auto[data-popper-placement^=bottom] .tooltip-arrow::before,
+    .bs-tooltip-bottom .tooltip-arrow::before {
+        border-bottom-color: var(--custom-primary);
+    }
+
+    .bs-tooltip-auto[data-popper-placement^=left] .tooltip-arrow::before,
+    .bs-tooltip-start .tooltip-arrow::before {
+        border-left-color: var(--custom-primary);
+    }
+
+    .bs-tooltip-auto[data-popper-placement^=right] .tooltip-arrow::before,
+    .bs-tooltip-end .tooltip-arrow::before {
+        border-right-color: var(--custom-primary);
     }
 </style>

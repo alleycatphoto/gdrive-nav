@@ -1,442 +1,338 @@
 <?php
 // scripts.php - Contains all JavaScript scripts
 ?>
-<!-- Essential Dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-
-<!-- Custom Scripts -->
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize all Bootstrap tooltips
+        // Initialize all Bootstrap tooltips with enhanced options
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true,
+                delay: { show: 200, hide: 100 },
+                container: 'body'
+            });
         });
 
-        // Initialize all Bootstrap popovers
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
-        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl)
-        });
+        // Initialize sharing tooltips
+        initializeSharingTooltips();
 
-        // Initialize preview modal if elements exist
-        const previewModalElement = document.getElementById('previewModal');
-        if (previewModalElement) {
-            try {
-                const previewModal = new bootstrap.Modal(previewModalElement);
-                const previewImage = document.getElementById('previewImage');
-                const previewVideo = document.getElementById('previewVideo');
-                const pdfContainer = document.getElementById('pdfContainer');
-                const previewPdf = document.getElementById('previewPdf');
-                const pdfDownloadLink = document.getElementById('pdfDownloadLink');
-                const previewFallback = document.getElementById('previewFallback');
-                const fallbackLink = document.getElementById('fallbackLink');
+        // Initialize preview modal
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        const previewImage = document.getElementById('previewImage');
+        const previewVideo = document.getElementById('previewVideo');
+        const pdfContainer = document.getElementById('pdfContainer');
+        const previewPdf = document.getElementById('previewPdf');
+        const pdfDownloadLink = document.getElementById('pdfDownloadLink');
+        const previewFallback = document.getElementById('previewFallback');
+        const fallbackLink = document.getElementById('fallbackLink');
+        const modalElement = document.getElementById('previewModal');
 
-                // Preload management
-                let preloadQueue = [];
-                let isPreloading = false;
-                const maxPreloadQueueSize = 3;
+        // Preload management
+        let preloadQueue = [];
+        let isPreloading = false;
+        const maxPreloadQueueSize = 3;
 
-                function addToPreloadQueue(fileId, mimeType) {
-                    if (!preloadQueue.some(item => item.fileId === fileId) && 
-                        preloadQueue.length < maxPreloadQueueSize) {
-                        preloadQueue.push({ fileId, mimeType });
-                        processPreloadQueue();
-                    }
-                }
-
-                function processPreloadQueue() {
-                    if (isPreloading || preloadQueue.length === 0) return;
-
-                    isPreloading = true;
-                    const { fileId, mimeType } = preloadQueue[0];
-
-                    if (mimeType.startsWith('video/')) {
-                        const preloadVideo = document.createElement('video');
-                        preloadVideo.preload = 'metadata';
-                        preloadVideo.src = getProxyUrl(fileId);
-
-                        preloadVideo.addEventListener('loadedmetadata', () => {
-                            preloadQueue.shift();
-                            isPreloading = false;
-                            processPreloadQueue();
-                        });
-
-                        preloadVideo.addEventListener('error', () => {
-                            preloadQueue.shift();
-                            isPreloading = false;
-                            processPreloadQueue();
-                        });
-                    } else {
-                        preloadQueue.shift();
-                        isPreloading = false;
-                        processPreloadQueue();
-                    }
-                }
-
-                // Add modal close event listener
-                previewModalElement.addEventListener('hidden.bs.modal', function () {
-                    if (previewVideo) {
-                        previewVideo.pause();
-                        previewVideo.currentTime = 0;
-                        previewVideo.src = '';
-                        const videoSource = previewVideo.querySelector('source');
-                        if (videoSource) {
-                            videoSource.src = '';
-                        }
-                    }
-                    if (pdfContainer) {
-                        pdfContainer.innerHTML = '';
-                        pdfContainer.style.display = 'none';
-                    }
-                });
-
-                // Function to get proxy URL for a file
-                function getProxyUrl(fileId) {
-                    return `/proxy/${fileId}`;
-                }
-
-                // Function to extract file ID from Google Drive URL
-                function extractFileId(url) {
-                    if (!url) return null;
-                    const match = url.match(/[-\w]{25,}/);
-                    return match ? match[0] : null;
-                }
-
-                // Make previewFile function globally available
-                window.previewFile = function(props) {
-                    if (typeof props === 'string') {
-                        try {
-                            props = JSON.parse(props);
-                        } catch (e) {
-                            console.error('Error parsing preview properties:', e);
-                            return;
-                        }
-                    }
-
-                    const { thumbnail, name, downloadUrl, mimeType, webViewLink } = props;
-                    const modalTitle = document.getElementById('previewModalLabel');
-                    const downloadLink = document.getElementById('modalDownloadLink');
-                    const fileId = extractFileId(downloadUrl);
-                    const proxyUrl = fileId ? getProxyUrl(fileId) : downloadUrl;
-
-                    modalTitle.textContent = name;
-                    downloadLink.href = downloadUrl;
-
-                    // Reset all preview elements
-                    previewImage.style.display = 'none';
-                    previewVideo.style.display = 'none';
-                    pdfContainer.style.display = 'none';
-                    previewFallback.style.display = 'none';
-
-                    // Reset video element
-                    previewVideo.pause();
-                    previewVideo.currentTime = 0;
-                    previewVideo.src = '';
-                    const videoSource = previewVideo.querySelector('source');
-                    if (videoSource) {
-                        videoSource.src = '';
-                    }
-
-                    // Show modal
-                    previewModal.show();
-
-                    setTimeout(() => {
-                        if (mimeType.startsWith('image/')) {
-                            previewImage.src = thumbnail || '';
-                            previewImage.style.display = 'block';
-                        } else if (mimeType.startsWith('video/')) {
-                            videoSource.src = proxyUrl;
-                            videoSource.type = mimeType;
-                            previewVideo.src = proxyUrl;
-                            previewVideo.style.display = 'block';
-
-                            const loadHandler = function() {
-                                previewVideo.removeEventListener('loadeddata', loadHandler);
-                                previewVideo.play().catch(function(error) {
-                                    console.error('Error playing video:', error);
-                                    previewFallback.style.display = 'block';
-                                    previewVideo.style.display = 'none';
-                                });
-                            };
-
-                            previewVideo.addEventListener('loadeddata', loadHandler);
-                            previewVideo.load();
-                        } else if (mimeType === 'application/pdf') {
-                            const newPdfObject = document.createElement('object');
-                            newPdfObject.id = 'previewPdf';
-                            newPdfObject.data = proxyUrl;
-                            newPdfObject.type = 'application/pdf';
-
-                            pdfContainer.innerHTML = '';
-                            pdfContainer.appendChild(newPdfObject);
-                            pdfContainer.style.display = 'block';
-                        } else {
-                            previewFallback.style.display = 'block';
-                            fallbackLink.href = webViewLink;
-                        }
-                    }, 300);
-                };
-
-                // Add hover event listeners to video thumbnails for preloading
-                document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
-                    thumbnail.addEventListener('mouseenter', function() {
-                        const previewProps = this.closest('[onclick]').getAttribute('onclick');
-                        if (!previewProps) return;
-
-                        const match = previewProps.match(/previewFile\((.*)\)/);
-                        if (!match || !match[1]) return;
-
-                        try {
-                            const props = JSON.parse(match[1]);
-                            const fileId = extractFileId(props.downloadUrl);
-                            if (fileId) {
-                                addToPreloadQueue(fileId, props.mimeType);
-                            }
-                        } catch (e) {
-                            console.error('Error parsing preview properties for preload:', e);
-                        }
-                    });
-                });
-            } catch (error) {
-                console.error('Error initializing preview modal:', error);
+        function addToPreloadQueue(fileId, mimeType) {
+            if (!preloadQueue.some(item => item.fileId === fileId) &&
+                preloadQueue.length < maxPreloadQueueSize) {
+                preloadQueue.push({ fileId, mimeType });
+                processPreloadQueue();
             }
         }
 
-        // Initialize form validation if register form exists
-        const registerForm = document.getElementById('registerForm');
-        if (registerForm) {
-            initializeRegisterFormValidation();
+        function processPreloadQueue() {
+            if (isPreloading || preloadQueue.length === 0) return;
+
+            isPreloading = true;
+            const { fileId, mimeType } = preloadQueue[0];
+
+            if (mimeType.startsWith('video/')) {
+                const preloadVideo = document.createElement('video');
+                preloadVideo.preload = 'metadata';
+                preloadVideo.src = getProxyUrl(fileId);
+
+                preloadVideo.addEventListener('loadedmetadata', () => {
+                    preloadQueue.shift();
+                    isPreloading = false;
+                    processPreloadQueue();
+                });
+
+                preloadVideo.addEventListener('error', () => {
+                    preloadQueue.shift();
+                    isPreloading = false;
+                    processPreloadQueue();
+                });
+            } else {
+                preloadQueue.shift();
+                isPreloading = false;
+                processPreloadQueue();
+            }
         }
+
+        // Add modal close event listener
+        modalElement.addEventListener('hidden.bs.modal', function () {
+            // Stop and reset video if it exists
+            if (previewVideo) {
+                previewVideo.pause();
+                previewVideo.currentTime = 0;
+                previewVideo.src = '';
+                const videoSource = previewVideo.querySelector('source');
+                if (videoSource) {
+                    videoSource.src = '';
+                }
+            }
+            // Reset PDF viewer
+            if (previewPdf) {
+                pdfContainer.innerHTML = ''; //Clear the pdf container
+                pdfContainer.style.display = 'none';
+            }
+        });
+
+        // Function to get proxy URL for a file
+        function getProxyUrl(fileId) {
+            return `/proxy/${fileId}`;
+        }
+
+        // Function to extract file ID from Google Drive URL
+        function extractFileId(url) {
+            if (!url) return null;
+            const match = url.match(/[-\w]{25,}/);
+            return match ? match[0] : null;
+        }
+
+        // Function to preview file - make it globally available
+        window.previewFile = function(props) {
+            if (typeof props === 'string') {
+                try {
+                    props = JSON.parse(props);
+                } catch (e) {
+                    console.error('Error parsing preview properties:', e);
+                    return;
+                }
+            }
+
+            const { thumbnail, name, downloadUrl, mimeType, webViewLink } = props;
+            const modalTitle = document.getElementById('previewModalLabel');
+            const downloadLink = document.getElementById('modalDownloadLink');
+            const fileId = extractFileId(downloadUrl);
+            const proxyUrl = fileId ? getProxyUrl(fileId) : downloadUrl;
+
+            modalTitle.textContent = name;
+            downloadLink.href = downloadUrl;
+
+            // Reset all preview elements
+            previewImage.style.display = 'none';
+            previewVideo.style.display = 'none';
+            pdfContainer.style.display = 'none';
+            previewFallback.style.display = 'none';
+
+            // Reset video element
+            previewVideo.pause();
+            previewVideo.currentTime = 0;
+            previewVideo.src = '';
+            const videoSource = previewVideo.querySelector('source');
+            if (videoSource) {
+                videoSource.src = '';
+            }
+
+            // Show modal
+            previewModal.show();
+
+            setTimeout(() => {
+                if (mimeType.startsWith('image/')) {
+                    previewImage.src = thumbnail || '';
+                    previewImage.style.display = 'block';
+                } else if (mimeType.startsWith('video/')) {
+                    videoSource.src = proxyUrl;
+                    videoSource.type = mimeType;
+                    previewVideo.src = proxyUrl;
+                    previewVideo.style.display = 'block';
+
+                    const loadHandler = function() {
+                        previewVideo.removeEventListener('loadeddata', loadHandler);
+                        previewVideo.play().catch(function(error) {
+                            console.error('Error playing video:', error);
+                            previewFallback.style.display = 'block';
+                            previewVideo.style.display = 'none';
+                        });
+                    };
+
+                    previewVideo.addEventListener('loadeddata', loadHandler);
+                    previewVideo.load();
+                } else if (mimeType === 'application/pdf') {
+                    const newPdfObject = document.createElement('object');
+                    newPdfObject.id = 'previewPdf';
+                    newPdfObject.data = proxyUrl;
+                    newPdfObject.type = 'application/pdf';
+
+                    pdfContainer.innerHTML = '';
+                    pdfContainer.appendChild(newPdfObject);
+                    pdfContainer.style.display = 'block';
+                } else {
+                    previewFallback.style.display = 'block';
+                    fallbackLink.href = webViewLink;
+                }
+            }, 300);
+        };
+
+        // Add hover event listeners to video thumbnails for preloading
+        document.querySelectorAll('.video-thumbnail').forEach(thumbnail => {
+            thumbnail.addEventListener('mouseenter', function() {
+                const previewProps = this.closest('[onclick]').getAttribute('onclick');
+                if (!previewProps) return;
+
+                const match = previewProps.match(/previewFile\((.*)\)/);
+                if (!match || !match[1]) return;
+
+                try {
+                    const props = JSON.parse(match[1]);
+                    const fileId = extractFileId(props.downloadUrl);
+                    if (fileId) {
+                        addToPreloadQueue(fileId, props.mimeType);
+                    }
+                } catch (e) {
+                    console.error('Error parsing preview properties for preload:', e);
+                }
+            });
+        });
     });
 
-    // Shopify Buy Button initialization
-    /*<![CDATA[*/
-    (function () {
-        var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
-        if (window.ShopifyBuy) {
-            if (window.ShopifyBuy.UI) {
-                ShopifyBuyInit();
-            } else {
-                loadScript();
-            }
-        } else {
-            loadScript();
-        }
+    // Initialize sharing tooltips functionality
+    function initializeSharingTooltips() {
+        document.querySelectorAll('[data-sharing-tooltip]').forEach(element => {
+            const fileId = element.dataset.fileId;
+            const fileName = element.dataset.fileName;
+            const fileType = element.dataset.fileType;
 
-        function loadScript() {
-            var script = document.createElement('script');
-            script.async = true;
-            script.src = scriptURL;
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
-            script.onload = ShopifyBuyInit;
-        }
+            // Create tooltip content
+            const tooltipContent = generateSharingTooltipContent(fileId, fileName, fileType);
 
-        function ShopifyBuyInit() {
-            var client = ShopifyBuy.buildClient({
-                domain: 'b570c3-8b.myshopify.com',
-                storefrontAccessToken: '0503f7e334e120cf50858c5491cf8491',
+            // Initialize Bootstrap tooltip with custom content
+            new bootstrap.Tooltip(element, {
+                html: true,
+                title: tooltipContent,
+                placement: 'auto',
+                trigger: 'hover focus',
+                delay: { show: 200, hide: 100 },
+                container: 'body'
             });
-            ShopifyBuy.UI.onReady(client).then(function (ui) {
-                ui.createComponent('collection', {
-                    id: '313578782870',
-                    node: document.getElementById('collection-component-1736831470697'),
-                    moneyFormat: '%24%7B%7Bamount%7D%7D',
-                    options: {
-                        "product": {
-                            "styles": {
-                                "product": {
-                                    "transform": "scale(0.75)",
-                                    "transform-origin": "top center",
-                                    "transition": "transform 0.5s ease-in-out",
-                                    "background-color": "#493849",
-                                    "@media (min-width: 2000px)": {
-                                        "max-width": "calc(25% - 20px)",
-                                        "margin-left": "0px",
-                                        "margin-bottom": "10px"
-                                    }
-                                },
-                                "button": {
-                                    "font-family": "Helvetica Neue, sans-serif",
-                                    "background-color": "var(--custom-primary)",
-                                    ":hover": {
-                                        "background-color": "var(--custom-primary-hover)"
-                                    },
-                                    "border-radius": "6px",
-                                    "padding": "8px 16px"
-                                },
-                                "title": {
-                                    "color": "var(--custom-icon)"
-                                },
-                                "price": {
-                                    "color": "var(--custom-icon)"
-                                }
-                            },
-                            "buttonDestination": "modal",
-                            "contents": {
-                                "options": false
-                            },
-                            "text": {
-                                "button": "View Details"
-                            }
-                        },
-                        "productSet": {
-                            "styles": {
-                                "products": {
-                                    "display": "grid",
-                                    "grid-template-columns": "repeat(auto-fill, minmax(200px, 1fr))",
-                                    "gap": "1rem",
-                                    "@media (min-width: 601px)": {
-                                        "margin-left": "-20px"
-                                    }
-                                }
-                            }
-                        },
-                        "option": {},
-                        "cart": {
-                            "styles": {
-                                "button": {
-                                    "background-color": "var(--custom-primary)",
-                                    ":hover": {
-                                        "background-color": "var(--custom-primary-hover)"
-                                    },
-                                    "border-radius": "6px"
-                                }
-                            }
-                        },
-                        "toggle": {
-                            "styles": {
-                                "toggle": {
-                                    "background-color": "var(--custom-primary)",
-                                    ":hover": {
-                                        "background-color": "var(--custom-primary-hover)"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+
+            // Add event listeners for share actions
+            element.addEventListener('shown.bs.tooltip', () => {
+                const tooltip = bootstrap.Tooltip.getInstance(element);
+                const tooltipElement = tooltip._element;
+
+                // Add click handlers for share buttons
+                const copyLinkBtn = tooltipElement.querySelector('.copy-link-btn');
+                if (copyLinkBtn) {
+                    copyLinkBtn.addEventListener('click', () => copyShareLink(fileId));
+                }
             });
-        }
-    })();
-    /*]]>*/
-
-    // Register form validation initialization
-    function initializeRegisterFormValidation() {
-        const form = document.getElementById('registerForm');
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirmPassword');
-        const submitBtn = document.getElementById('submitBtn');
-        const passwordStrength = document.getElementById('passwordStrength');
-
-        const emailFeedback = document.getElementById('emailFeedback');
-        const passwordFeedback = document.getElementById('passwordFeedback');
-        const confirmPasswordFeedback = document.getElementById('confirmPasswordFeedback');
-
-        function validateEmail() {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            const isValid = emailRegex.test(email.value);
-
-            if (email.value === '') {
-                email.classList.remove('is-valid', 'is-invalid');
-                emailFeedback.textContent = '';
-            } else if (isValid) {
-                email.classList.remove('is-invalid');
-                email.classList.add('is-valid');
-                emailFeedback.textContent = 'Email is valid';
-            } else {
-                email.classList.remove('is-valid');
-                email.classList.add('is-invalid');
-                emailFeedback.textContent = 'Please enter a valid email address';
-            }
-            validateForm();
-        }
-
-        function validatePassword() {
-            const hasMinLength = password.value.length >= 8;
-            const hasUpperCase = /[A-Z]/.test(password.value);
-            const hasLowerCase = /[a-z]/.test(password.value);
-            const hasNumbers = /\d/.test(password.value);
-            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password.value);
-
-            let strength = 0;
-            if (hasMinLength) strength++;
-            if (hasUpperCase) strength++;
-            if (hasLowerCase) strength++;
-            if (hasNumbers) strength++;
-            if (hasSpecialChar) strength++;
-
-            const strengthText = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-            const strengthColor = ['danger', 'warning', 'info', 'primary', 'success'];
-
-            if (password.value === '') {
-                passwordStrength.innerHTML = '';
-                password.classList.remove('is-valid', 'is-invalid');
-                passwordFeedback.textContent = '';
-            } else if (strength < 3) {
-                password.classList.remove('is-valid');
-                password.classList.add('is-invalid');
-                passwordStrength.innerHTML = `
-                    <span class="text-${strengthColor[strength-1]}">
-                        Password Strength: ${strengthText[strength-1]}
-                    </span>
-                `;
-                passwordFeedback.textContent = 'Password must be at least 8 characters long and contain uppercase, lowercase, numbers, and special characters';
-            } else {
-                password.classList.remove('is-invalid');
-                password.classList.add('is-valid');
-                passwordStrength.innerHTML = `
-                    <span class="text-${strengthColor[strength-1]}">
-                        Password Strength: ${strengthText[strength-1]}
-                    </span>
-                `;
-                passwordFeedback.textContent = 'Password meets requirements';
-            }
-            validateConfirmPassword();
-            validateForm();
-        }
-
-        function validateConfirmPassword() {
-            if (confirmPassword.value === '') {
-                confirmPassword.classList.remove('is-valid', 'is-invalid');
-                confirmPasswordFeedback.textContent = '';
-            } else if (password.value === confirmPassword.value) {
-                confirmPassword.classList.remove('is-invalid');
-                confirmPassword.classList.add('is-valid');
-                confirmPasswordFeedback.textContent = 'Passwords match';
-            } else {
-                confirmPassword.classList.remove('is-valid');
-                confirmPassword.classList.add('is-invalid');
-                confirmPasswordFeedback.textContent = 'Passwords do not match';
-            }
-            validateForm();
-        }
-
-        function validateForm() {
-            const isEmailValid = email.classList.contains('is-valid');
-            const isPasswordValid = password.classList.contains('is-valid');
-            const isConfirmPasswordValid = confirmPassword.classList.contains('is-valid');
-
-            submitBtn.disabled = !(isEmailValid && isPasswordValid && isConfirmPasswordValid);
-        }
-
-        if (email) email.addEventListener('input', validateEmail);
-        if (password) password.addEventListener('input', validatePassword);
-        if (confirmPassword) confirmPassword.addEventListener('input', validateConfirmPassword);
-
-        form.addEventListener('submit', function(e) {
-            if (!submitBtn.disabled) {
-                return true;
-            }
-            e.preventDefault();
-            return false;
         });
     }
-</script>
 
-<script type="text/javascript">
+    // Generate tooltip content based on file type and sharing options
+    function generateSharingTooltipContent(fileId, fileName, fileType) {
+        const shareLink = generateShareLink(fileId);
+
+        return `
+            <div class="sharing-tooltip-content">
+                <div class="sharing-header">
+                    <i class="fas ${getFileTypeIcon(fileType)} me-2"></i>
+                    <span class="file-name">${fileName}</span>
+                </div>
+                <div class="sharing-actions mt-2">
+                    <button class="btn btn-sm btn-outline-light copy-link-btn" data-file-id="${fileId}">
+                        <i class="fas fa-link me-1"></i> Copy Link
+                    </button>
+                    <button class="btn btn-sm btn-outline-light share-email-btn ms-2" data-file-id="${fileId}">
+                        <i class="fas fa-envelope me-1"></i> Email
+                    </button>
+                </div>
+                <div class="sharing-footer mt-2">
+                    <small class="text-muted">Click to copy or share</small>
+                </div>
+            </div>
+        `;
+    }
+
+    // Helper function to get appropriate icon for file type
+    function getFileTypeIcon(fileType) {
+        const iconMap = {
+            'pdf': 'fa-file-pdf',
+            'doc': 'fa-file-word',
+            'docx': 'fa-file-word',
+            'xls': 'fa-file-excel',
+            'xlsx': 'fa-file-excel',
+            'jpg': 'fa-file-image',
+            'jpeg': 'fa-file-image',
+            'png': 'fa-file-image',
+            'mp4': 'fa-file-video',
+            'zip': 'fa-file-archive',
+            'default': 'fa-file'
+        };
+
+        return iconMap[fileType.toLowerCase()] || iconMap.default;
+    }
+
+    // Generate shareable link for a file
+    function generateShareLink(fileId) {
+        const baseUrl = window.location.origin;
+        return `${baseUrl}/share/${fileId}`;
+    }
+
+    // Copy share link to clipboard
+    async function copyShareLink(fileId) {
+        const link = generateShareLink(fileId);
+        try {
+            await navigator.clipboard.writeText(link);
+            showToast('Link copied to clipboard!');
+        } catch (err) {
+            console.error('Failed to copy link:', err);
+            showToast('Failed to copy link', 'error');
+        }
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+        const toastElement = document.createElement('div');
+        toastElement.className = `toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0`;
+        toastElement.setAttribute('role', 'alert');
+        toastElement.setAttribute('aria-live', 'assertive');
+        toastElement.setAttribute('aria-atomic', 'true');
+
+        toastElement.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        `;
+
+        toastContainer.appendChild(toastElement);
+        const toast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        toast.show();
+
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+    }
+
+    // Create toast container if it doesn't exist
+    function createToastContainer() {
+        const container = document.createElement('div');
+        container.id = 'toastContainer';
+        container.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+        container.style.zIndex = '1050';
+        document.body.appendChild(container);
+        return container;
+    }
+
+
     /*<![CDATA[*/
     (function () {
         var scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
@@ -468,32 +364,36 @@
                     moneyFormat: '%24%7B%7Bamount%7D%7D',
                     options: {
                         "product": {
+
                             "styles": {
                                 "product": {
-                                    "transform": "scale(0.75)",
+                                    "transform": "scale(0.65)",
                                     "transform-origin": "top center",
                                     "transition": "transform 0.5s ease-in-out",
+                                    "padding": "20px",
+                                    "color": "#ba95b9",
+                                    "border-radius": ".375rem",
+
                                     "background-color": "#493849",
                                     "@media (min-width: 2000px)": {
                                         "max-width": "calc(25% - 20px)",
                                         "margin-left": "0px",
                                         "margin-bottom": "10px"
-                                    }
-                                },
-                                "button": {
-                                    "font-family": "Helvetica Neue, sans-serif",
-                                    "background-color": "var(--custom-primary)",
-                                    ":hover": {
-                                        "background-color": "var(--custom-primary-hover)"
                                     },
-                                    "border-radius": "6px",
-                                    "padding": "8px 16px"
+
                                 },
+
                                 "title": {
-                                    "color": "var(--custom-icon)"
+                                    "color": "#ba95b9"
                                 },
                                 "price": {
-                                    "color": "var(--custom-icon)"
+                                    "font-size": "20px",
+                                    "color": "#9db98d"
+                                },
+                                "description": {
+                                    "margin-top": "30px",
+                                    "line-height": "1.65",
+                                    "color": "#c3aac2"
                                 }
                             },
                             "buttonDestination": "modal",
@@ -508,25 +408,112 @@
                             "styles": {
                                 "products": {
                                     "display": "grid",
-                                    "grid-template-columns": "repeat(auto-fill, minmax(200px, 1fr))",
-                                    "gap": "1rem",
+                                    "grid-template-columns": "repeat(auto-fill, minmax(200px, 0fr))",
                                     "@media (min-width: 601px)": {
-                                        "margin-left": "-20px"
+                                        "margint": "10px"
                                     }
                                 }
                             }
                         },
-                        "option": {},
+                        "modal": {
+                            "styles": {
+                                "modal": {
+                                    "background-color": "#544055"
+                                }
+                            }
+                        },
+                        "option": {
+                            "styles": {
+                                "label": {
+                                    "font-family": "Open Sans, sans-serif",
+                                    "color": "#d2abd4"
+                                },
+                                "select": {
+                                    "font-family": "Open Sans, sans-serif"
+                                }
+                            },
+                            "googleFonts": [
+                                "Open Sans"
+                            ]
+                        },
                         "cart": {
                             "styles": {
                                 "button": {
-                                    "background-color": "var(--custom-primary)",
+                                    "font-family": "Open Sans, sans-serif",
+                                    "font-size": "13px",
+                                    "padding-top": "14.5px",
+                                    "padding-bottom": "14.5px",
+                                    "color": "#efd8f9",
                                     ":hover": {
-                                        "background-color": "var(--custom-primary-hover)"
+                                        "color": "#efd8f9",
+                                        "background-color": "#473348"
                                     },
-                                    "border-radius": "6px"
+                                    "background-color": "#4f3950",
+                                    ":focus": {
+                                        "background-color": "#473348"
+                                    },
+                                    "border-radius": "2px"
+                                },
+                                "title": {
+                                    "color": "#e1e1e1"
+                                },
+                                "header": {
+                                    "color": "#e1e1e1"
+                                },
+                                "lineItems": {
+                                    "color": "#e1e1e1"
+                                },
+                                "subtotalText": {
+                                    "color": "#e1e1e1"
+                                },
+                                "subtotal": {
+                                    "color": "#e1e1e1"
+                                },
+                                "notice": {
+                                    "color": "#e1e1e1"
+                                },
+                                "currency": {
+                                    "color": "#e1e1e1"
+                                },
+                                "close": {
+                                    "color": "#e1e1e1",
+                                    ":hover": {
+                                        "color": "#e1e1e1"
+                                    }
+                                },
+                                "empty": {
+                                    "color": "#e1e1e1"
+                                },
+                                "noteDescription": {
+                                    "color": "#e1e1e1"
+                                },
+                                "discountText": {
+                                    "color": "#e1e1e1"
+                                },
+                                "discountIcon": {
+                                    "fill": "#e1e1e1"
+                                },
+                                "discountAmount": {
+                                    "color": "#e1e1e1"
+                                },
+                                "cart": {
+                                    "background-color": "#544055"
+                                },
+                                "footer": {
+                                    "background-color": "#544055"
                                 }
-                            }
+                            },
+                            "text": {
+                                "total": "Subtotal",
+                                "button": "Checkout"
+                            },
+                            "contents": {
+                                "note": true
+                            },
+                            "popup": false,
+                            "googleFonts": [
+                                "Open Sans"
+                            ]
                         },
                         "toggle": {
                             "styles": {
