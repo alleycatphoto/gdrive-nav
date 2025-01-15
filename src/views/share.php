@@ -25,8 +25,19 @@ try {
     $proxyUrl = "/proxy/" . $fileId;
 
     // Get folder path/name
-    $breadcrumbs = $driveService->getBreadcrumbs($file['parentId'] ?? null);
-    $folderName = count($breadcrumbs) > 1 ? $breadcrumbs[count($breadcrumbs)-1]['name'] : 'Resources';
+    $breadcrumbs = $driveService->getBreadcrumbs($fileId);
+
+    // Find first subfolder after "Home"
+    $folderName = 'Resources';
+    if (count($breadcrumbs) > 1) {
+        // Get the first non-Home folder name
+        foreach ($breadcrumbs as $crumb) {
+            if ($crumb['name'] !== 'Home') {
+                $folderName = $crumb['name'];
+                break;
+            }
+        }
+    }
 
     // Set title and description
     $title = $folderName . " - DNA Distribution";
