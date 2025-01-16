@@ -12,6 +12,9 @@ if (!isset($currentUser)) {
              CUSTOMER RESOURCES
         </a>
         <div class="ms-auto d-flex align-items-center">
+            <button class="btn btn-link theme-toggle me-3" id="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
             <?php if ($currentUser): ?>
                 <div class="dropdown">
                     <button class="btn btn-link nav-link dropdown-toggle d-flex align-items-center gap-2" 
