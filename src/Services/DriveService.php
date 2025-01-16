@@ -264,16 +264,18 @@ class DriveService {
                 $folderId = $this->defaultFolderId;
             }
 
-            // Build the search query to include all files and folders
-            $searchQuery = "name contains '" . str_replace("'", "\\'", $query) . "' ";
-            $searchQuery .= "and trashed = false ";
+            // Escape single quotes and special characters
+            $escapedQuery = str_replace("'", "\\'", $query);
 
-            // If folder ID is provided, search within that folder tree
+            // Build the search query using fullText search for comprehensive results
+            $searchQuery = "fullText contains '{$escapedQuery}' and trashed = false";
+
+            // If folder ID is provided, restrict search to that folder
             if ($folderId) {
-                $searchQuery .= "and '" . $folderId . "' in ancestors ";
+                $searchQuery .= " and '{$folderId}' in parents";
             }
 
-            error_log("Search query: " . $searchQuery);
+            error_log("Built search query: " . $searchQuery);
 
             $optParams = [
                 'pageSize' => 1000,
