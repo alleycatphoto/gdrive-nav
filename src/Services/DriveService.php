@@ -9,6 +9,7 @@ class DriveService {
     private $isSharedDrive;
     private $driveId;
     private $defaultFolderId;
+    private $searchedFoldersCount = 0;
 
     public function __construct() {
         try {
@@ -247,8 +248,13 @@ class DriveService {
         }
     }
 
+    public function getSearchedFoldersCount() {
+        return $this->searchedFoldersCount;
+    }
+
     public function searchFiles($query, $folderId = null) {
         try {
+            $this->searchedFoldersCount = 0;
             $allFiles = [];
             $processedFolders = [];
 
@@ -259,6 +265,7 @@ class DriveService {
             $this->recursiveSearch($query, $folderId, $allFiles, $processedFolders);
 
             error_log("Total files found across all folders: " . count($allFiles));
+            error_log("Total folders searched: " . $this->searchedFoldersCount);
             return $allFiles;
 
         } catch (\Exception $e) {
@@ -273,12 +280,13 @@ class DriveService {
             return;
         }
         $processedFolders[] = $folderId;
+        $this->searchedFoldersCount++;
 
         try {
             $escapedQuery = str_replace("'", "\\'", $query);
             $searchQuery = "name contains '{$escapedQuery}' and trashed = false and '{$folderId}' in parents";
 
-            error_log("Searching in folder {$folderId}");
+            error_log("Searching in folder {$folderId} (Folder #{$this->searchedFoldersCount})");
             error_log("Search query: " . $searchQuery);
 
             $optParams = [

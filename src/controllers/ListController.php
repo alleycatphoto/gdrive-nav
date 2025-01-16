@@ -29,10 +29,21 @@ try {
     $files = $searchQuery ? $driveService->searchFiles($searchQuery, $folderId) : $driveService->listFiles($folderId);
     $breadcrumbs = $driveService->getBreadcrumbs($folderId);
 
+    // Include search status in the response
+    $searchStatus = null;
+    if ($searchQuery) {
+        $searchStatus = [
+            'total_folders_searched' => $driveService->getSearchedFoldersCount(),
+            'total_files_found' => count($files),
+            'search_complete' => true
+        ];
+    }
+
     echo json_encode([
         'success' => true,
         'files' => $files,
         'breadcrumbs' => $breadcrumbs,
+        'search_status' => $searchStatus,
         'debug' => [
             'request_folder_id' => $folderId,
             'search_query' => $searchQuery,

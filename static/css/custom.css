@@ -209,3 +209,42 @@ body {
     width: auto;
     margin-right: 10px;
 }
+
+/* Search progress styling */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+.search-progress {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.search-progress p {
+    margin-bottom: 0.5rem;
+    color: var(--bs-light);
+}
+
+.progress {
+    background-color: var(--custom-bg-darker);
+}
+
+.progress-bar {
+    background-color: var(--custom-primary);
+}
+
+.page-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 1000;
+}
+
+.page-transition-overlay.active {
+    display: block;
+}

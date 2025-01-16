@@ -9,11 +9,20 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.className = 'page-transition-overlay';
     document.body.appendChild(overlay);
 
-    function showLoadingState() {
+    function showLoadingState(message = 'Loading...') {
         overlay.classList.add('active');
         filesContainer.innerHTML = `
-            <div class="loading-spinner">
-                <span class="visually-hidden">Loading...</span>
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div class="search-progress">
+                    <p class="mb-2">${message}</p>
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -22,8 +31,33 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('active');
     }
 
+    function updateSearchProgress(message) {
+        const progressElement = filesContainer.querySelector('.search-progress p');
+        if (progressElement) {
+            progressElement.textContent = message;
+        }
+    }
+
     function loadFiles(folderId = null, searchQuery = null) {
-        showLoadingState();
+        let startTime;
+        let searchTimeout;
+        let longSearchMessage;
+
+        if (searchQuery) {
+            showLoadingState('Searching files...');
+            startTime = Date.now();
+
+            // Show additional messages if search takes longer
+            searchTimeout = setTimeout(() => {
+                updateSearchProgress('Searching through folders... This might take a minute...');
+                longSearchMessage = setInterval(() => {
+                    const seconds = Math.floor((Date.now() - startTime) / 1000);
+                    updateSearchProgress(`Still searching... (${seconds} seconds)`);
+                }, 1000);
+            }, 3000);
+        } else {
+            showLoadingState();
+        }
 
         let url = '/list';
         const params = new URLSearchParams();
@@ -60,6 +94,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
                 hideLoadingState();
+            })
+            .finally(() => {
+                // Clear all timeouts and intervals
+                if (searchTimeout) clearTimeout(searchTimeout);
+                if (longSearchMessage) clearInterval(longSearchMessage);
             });
     }
 
@@ -169,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         breadcrumbContainer.innerHTML = html;
     }
+
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
