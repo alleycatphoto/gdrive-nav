@@ -380,7 +380,6 @@
 
     /* Shopify Buy Button Customization */
     .collection-header {
-        margin-bottom: 2rem;
         padding: 0 1rem;
     }
 
@@ -411,7 +410,6 @@
 
     .shopify-buy__product-img-wrapper {
         position: relative !important;
-        padding-bottom: 75% !important;
         background-color: var(--custom-bg-darker) !important;
         border-radius: 0.25rem 0.25rem 0 0 !important;
         overflow: hidden !important;
@@ -547,5 +545,9 @@
         background-clip: padding-box;
         border: var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);
         border-radius: var(--bs-dropdown-border-radius);
+    }
+    .shopify-buy-frame iframe {
+        width: 100%;
+        height: 300px !important;
     }
 </style>

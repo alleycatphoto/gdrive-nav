@@ -159,7 +159,7 @@ include __DIR__ . '/../includes/header.php';
             echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
         ?>
-
+    </div>
         <div class="container mt-5">
             <div class="collection-header">
                 <h4>Featured Products</h4>
