@@ -264,15 +264,18 @@ class DriveService {
                 $folderId = $this->defaultFolderId;
             }
 
+            // Build the search query
             $searchQuery = "name contains '" . str_replace("'", "\\'", $query) . "' ";
             $searchQuery .= "and trashed = false ";
             if ($folderId) {
                 $searchQuery .= "and '" . $folderId . "' in parents ";
             }
 
+            error_log("Search query: " . $searchQuery);
+
             $optParams = [
                 'pageSize' => 1000,
-                'fields' => 'files(id, name, mimeType, thumbnailLink)',
+                'fields' => 'files(id, name, mimeType, thumbnailLink, parents, webViewLink)',
                 'supportsAllDrives' => true,
                 'includeItemsFromAllDrives' => $this->isSharedDrive,
                 'orderBy' => 'folder,name',
@@ -284,7 +287,6 @@ class DriveService {
                 $optParams['corpora'] = 'drive';
             }
 
-            error_log("Search query: " . $searchQuery);
             error_log("Search parameters: " . json_encode($optParams));
 
             $results = $this->service->files->listFiles($optParams);
@@ -309,12 +311,13 @@ class DriveService {
                 ];
             }
 
+            error_log("Search found " . count($files) . " results");
             return $files;
+
         } catch (\Exception $e) {
             error_log("Error in searchFiles: " . $e->getMessage());
             error_log("Stack trace: " . $e->getTraceAsString());
             throw $e;
         }
     }
-
 }
