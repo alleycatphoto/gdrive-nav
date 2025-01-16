@@ -559,4 +559,8 @@
         border-color: #856087;
         box-shadow: 0 0 0 .25rem #715273a6;
     }
+    .shopify-buy-frame iframe {
+        width: 100%;
+        height: 300px !important;
+    }
 </style>

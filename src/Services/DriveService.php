@@ -282,7 +282,6 @@ class DriveService {
                 'fields' => 'files(id, name, mimeType, thumbnailLink, parents, webViewLink)',
                 'supportsAllDrives' => true,
                 'includeItemsFromAllDrives' => $this->isSharedDrive,
-                'orderBy' => 'folder,name',
                 'q' => $searchQuery
             ];
 

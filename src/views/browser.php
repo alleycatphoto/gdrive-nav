@@ -142,8 +142,16 @@ include __DIR__ . '/../includes/header.php';
             echo '<div class="alert alert-danger">Error: ' . htmlspecialchars($e->getMessage()) . '</div>';
         }
         ?>
+        </div>
     </div>
-
+            <div class="container p-0 mt-4">
+                <div class="row mb-1">
+                    <div class="col-12">
+                        <div id='collection-component-1736831470697'></div>
+                    </div>
+                </div>
+            </div>
+        
     <?php include __DIR__ . '/../includes/scripts.php'; ?>
     <script src="/static/js/browser.js"></script>
 </body>
