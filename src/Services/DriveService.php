@@ -32,7 +32,6 @@ class DriveService {
         }
     }
 
-    // Enhanced method to get file metadata with video support and platform-specific data
     public function getFileMetadata($fileId) {
         try {
             $file = $this->service->files->get($fileId, [
@@ -43,7 +42,6 @@ class DriveService {
             $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
             $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
 
-            // Get video metadata if available
             $videoMetadata = $file->getVideoMediaMetadata();
             $dimensions = [];
             if ($videoMetadata) {
@@ -54,14 +52,11 @@ class DriveService {
                 ];
             }
 
-            // Generate different thumbnail sizes
             $thumbnails = $this->generateThumbnailSizes($file->getThumbnailLink());
 
-            // Get image metadata if available
             $imageMetadata = $file->getImageMediaMetadata();
             $imageInfo = [];
             if ($imageMetadata) {
-                // Safely get metadata properties
                 $imageInfo = [
                     'width' => $imageMetadata->width ?? null,
                     'height' => $imageMetadata->height ?? null,
@@ -89,7 +84,6 @@ class DriveService {
         }
     }
 
-    // Generate social media specific metadata
     private function generateSocialMetadata($file) {
         $title = $file->getName();
         $description = $file->getDescription() ?? "Shared via DNA Distribution";
@@ -117,7 +111,6 @@ class DriveService {
         ];
     }
 
-    // Determine Facebook content type
     private function getFacebookType($mimeType) {
         if (strpos($mimeType, 'video/') === 0) {
             return 'video.other';
@@ -129,7 +122,6 @@ class DriveService {
         return 'website';
     }
 
-    // Determine Twitter card type
     private function getTwitterCardType($mimeType) {
         if (strpos($mimeType, 'video/') === 0) {
             return 'player';
@@ -139,23 +131,20 @@ class DriveService {
         return 'summary';
     }
 
-    // Generate different thumbnail sizes for social platforms
     private function generateThumbnailSizes($thumbnailUrl) {
         if (!$thumbnailUrl) return null;
 
-        // Define thumbnail sizes for different platforms
         $sizes = [
-            'facebook' => ['w' => 1200, 'h' => 630],   // Facebook recommended
-            'twitter' => ['w' => 1200, 'h' => 675],    // Twitter card
-            'linkedin' => ['w' => 1200, 'h' => 627],   // LinkedIn sharing
-            'pinterest' => ['w' => 600, 'h' => 900],   // Pinterest optimal
-            'thumbnail' => ['w' => 320, 'h' => 180],   // Small preview
-            'preview' => ['w' => 1280, 'h' => 720]     // Full preview
+            'facebook' => ['w' => 1200, 'h' => 630],
+            'twitter' => ['w' => 1200, 'h' => 675],
+            'linkedin' => ['w' => 1200, 'h' => 627],
+            'pinterest' => ['w' => 600, 'h' => 900],
+            'thumbnail' => ['w' => 320, 'h' => 180],
+            'preview' => ['w' => 1280, 'h' => 720]
         ];
 
         $thumbnails = [];
         foreach ($sizes as $platform => $dimensions) {
-            // Replace size parameter in Google Drive thumbnail URL
             $thumbnails[$platform] = preg_replace(
                 '/=s\d+/', 
                 "=w{$dimensions['w']}-h{$dimensions['h']}-c", 
@@ -260,22 +249,37 @@ class DriveService {
 
     public function searchFiles($query, $folderId = null) {
         try {
+            $allFiles = [];
+            $processedFolders = [];
+
             if ($folderId === null) {
                 $folderId = $this->defaultFolderId;
             }
 
-            // Escape single quotes and special characters
+            $this->recursiveSearch($query, $folderId, $allFiles, $processedFolders);
+
+            error_log("Total files found across all folders: " . count($allFiles));
+            return $allFiles;
+
+        } catch (\Exception $e) {
+            error_log("Error in searchFiles: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw $e;
+        }
+    }
+
+    private function recursiveSearch($query, $folderId, &$allFiles, &$processedFolders) {
+        if (in_array($folderId, $processedFolders)) {
+            return;
+        }
+        $processedFolders[] = $folderId;
+
+        try {
             $escapedQuery = str_replace("'", "\\'", $query);
+            $searchQuery = "name contains '{$escapedQuery}' and trashed = false and '{$folderId}' in parents";
 
-            // Build the search query using fullText search for comprehensive results
-            $searchQuery = "fullText contains '{$escapedQuery}' and trashed = false";
-
-            // If folder ID is provided, restrict search to that folder
-            if ($folderId) {
-                $searchQuery .= " and '{$folderId}' in parents";
-            }
-
-            error_log("Built search query: " . $searchQuery);
+            error_log("Searching in folder {$folderId}");
+            error_log("Search query: " . $searchQuery);
 
             $optParams = [
                 'pageSize' => 1000,
@@ -290,19 +294,22 @@ class DriveService {
                 $optParams['corpora'] = 'drive';
             }
 
-            error_log("Search parameters: " . json_encode($optParams));
-
             $results = $this->service->files->listFiles($optParams);
-            $files = [];
 
             foreach ($results->getFiles() as $file) {
+                $isFolderType = $file->getMimeType() === 'application/vnd.google-apps.folder';
+
+                if ($isFolderType) {
+                    $this->recursiveSearch($query, $file->getId(), $allFiles, $processedFolders);
+                }
+
                 $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
                 $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
 
                 $thumbnailLink = $file->getThumbnailLink();
                 $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
 
-                $files[] = [
+                $allFiles[] = [
                     'id' => $file->getId(),
                     'name' => $file->getName(),
                     'mimeType' => $file->getMimeType(),
@@ -310,17 +317,22 @@ class DriveService {
                     'highResThumbnail' => $highResThumbnail,
                     'downloadUrl' => $downloadUrl,
                     'webViewLink' => $viewUrl,
-                    'isFolder' => $file->getMimeType() === 'application/vnd.google-apps.folder'
+                    'isFolder' => $isFolderType
                 ];
             }
 
-            error_log("Search found " . count($files) . " results");
-            return $files;
+            $folderQuery = "mimeType = 'application/vnd.google-apps.folder' and '{$folderId}' in parents and trashed = false";
+            $optParams['q'] = $folderQuery;
+
+            $subfolders = $this->service->files->listFiles($optParams);
+            foreach ($subfolders->getFiles() as $folder) {
+                if (!in_array($folder->getId(), $processedFolders)) {
+                    $this->recursiveSearch($query, $folder->getId(), $allFiles, $processedFolders);
+                }
+            }
 
         } catch (\Exception $e) {
-            error_log("Error in searchFiles: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
-            throw $e;
+            error_log("Error in recursiveSearch for folder {$folderId}: " . $e->getMessage());
         }
     }
 }
