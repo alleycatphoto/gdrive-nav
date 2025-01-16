@@ -1,56 +1,5 @@
-<?php
-// Get file ID from URL
-$fileId = isset($_GET['id']) ? $_GET['id'] : null;
-
-if (!$fileId) {
-    header("Location: /");
-    exit;
-}
-
-try {
-    $driveService = new \App\Services\DriveService();
-    $file = $driveService->getFileMetadata($fileId);
-
-    if (!$file) {
-        throw new Exception("File not found");
-    }
-
-    // Determine file type and set appropriate meta tags
-    $mimeType = $file['mimeType'];
-    $isImage = strpos($mimeType, 'image/') === 0;
-    $isVideo = strpos($mimeType, 'video/') === 0;
-    $isPDF = $mimeType === 'application/pdf';
-
-    // Generate proxy URL for media content
-    $proxyUrl = "/proxy/" . $fileId;
-
-    // Get folder path/name
-    $breadcrumbs = $driveService->getBreadcrumbs($fileId);
-
-    // Find first subfolder after "Home"
-    $folderName = 'Resources';
-    if (count($breadcrumbs) > 1) {
-        // Get the first non-Home folder name
-        foreach ($breadcrumbs as $crumb) {
-            if ($crumb['name'] !== 'Home') {
-                $folderName = $crumb['name'];
-                break;
-            }
-        }
-    }
-
-    // Set title and description
-    $title = $folderName . " - DNA Distribution";
-    $description = "DNA Distribution Customer Resources";
-
-} catch (Exception $e) {
-    error_log("Error in share view: " . $e->getMessage());
-    header("Location: /");
-    exit;
-}
-?>
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -98,12 +47,26 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.2/css/all.min.css" rel="stylesheet">
 </head>
-<body class="bg-dark">
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <div class="mx-auto text-center d-flex flex-column align-items-center">
+                <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo" class="mb-2">
+                <span class="navbar-brand">DNA DISTRIBUTION : CUSTOMER RESOURCES</span>
+            </div>
+            <div class="d-flex align-items-center">
+                <button class="btn btn-link theme-toggle me-3" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="text-center mb-4">
-                    <h3 class="text-light"><?php echo htmlspecialchars($folderName); ?></h3>
+                    <h3><?php echo htmlspecialchars($folderName); ?></h3>
                     <p class="text-muted">DNA Distribution</p>
                 </div>
                 <div class="card">
@@ -140,5 +103,33 @@ try {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script>
+        // Theme toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggleBtn = document.getElementById('theme-toggle');
+            const htmlElement = document.documentElement;
+            const themeIcon = themeToggleBtn.querySelector('i');
+
+            // Get saved theme or default to light
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            htmlElement.setAttribute('data-bs-theme', savedTheme);
+            updateThemeIcon(savedTheme);
+
+            themeToggleBtn.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                htmlElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                themeIcon.classList.remove('fa-sun', 'fa-moon');
+                themeIcon.classList.add(theme === 'dark' ? 'fa-sun' : 'fa-moon');
+            }
+        });
+    </script>
 </body>
 </html>
