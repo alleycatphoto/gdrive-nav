@@ -1,28 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
     const filesContainer = document.getElementById('files-container');
     const breadcrumbContainer = document.getElementById('breadcrumb-container');
-    const searchForm = document.getElementById('search-form');
-    const searchInput = document.getElementById('search-input');
 
     // Create page transition overlay
     const overlay = document.createElement('div');
     overlay.className = 'page-transition-overlay';
     document.body.appendChild(overlay);
 
-    function showLoadingState(message = 'Loading...') {
+    function showLoadingState() {
         overlay.classList.add('active');
         filesContainer.innerHTML = `
-            <div class="text-center">
-                <div class="spinner-border text-primary mb-3" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <div class="search-progress">
-                    <p class="mb-2">${message}</p>
-                    <div class="progress" style="height: 5px;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                             role="progressbar" style="width: 100%"></div>
-                    </div>
-                </div>
+            <div class="loading-spinner">
+                <span class="visually-hidden">Loading...</span>
             </div>
         `;
     }
@@ -31,49 +20,10 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.remove('active');
     }
 
-    function updateSearchProgress(message) {
-        const progressElement = filesContainer.querySelector('.search-progress p');
-        if (progressElement) {
-            progressElement.textContent = message;
-        }
-    }
+    function loadFiles(folderId = null) {
+        showLoadingState();
 
-    function loadFiles(folderId = null, searchQuery = null) {
-        let startTime;
-        let searchTimeout;
-        let longSearchMessage;
-
-        if (searchQuery) {
-            showLoadingState('Searching files...');
-            startTime = Date.now();
-
-            // Show additional messages if search takes longer
-            searchTimeout = setTimeout(() => {
-                updateSearchProgress('Searching through folders... This might take a minute...');
-                longSearchMessage = setInterval(() => {
-                    const seconds = Math.floor((Date.now() - startTime) / 1000);
-                    updateSearchProgress(`Still searching... (${seconds} seconds)`);
-                }, 1000);
-            }, 3000);
-        } else {
-            showLoadingState();
-        }
-
-        let url = '/list';
-        const params = new URLSearchParams();
-
-        if (folderId) {
-            params.append('folder', folderId);
-        }
-        if (searchQuery) {
-            params.append('search', searchQuery);
-        }
-
-        if (params.toString()) {
-            url += '?' + params.toString();
-        }
-
-        console.log('Fetching URL:', url); // Debug log
+        const url = '/list' + (folderId ? `?folder=${encodeURIComponent(folderId)}` : '');
 
         fetch(url)
             .then(response => response.json())
@@ -81,7 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!data.success) {
                     throw new Error(data.error || 'Error loading files');
                 }
-                console.log('Received data:', data); // Debug log
                 renderBreadcrumbs(data.breadcrumbs);
                 renderFiles(data.files);
                 hideLoadingState();
@@ -89,106 +38,18 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 filesContainer.innerHTML = `
-                    <div class="alert alert-danger fade-transition">
-                        ${error.message}
+                    <div class="col-12">
+                        <div class="alert alert-danger fade-transition">
+                            ${error.message}
+                        </div>
                     </div>
                 `;
                 hideLoadingState();
-            })
-            .finally(() => {
-                // Clear all timeouts and intervals
-                if (searchTimeout) clearTimeout(searchTimeout);
-                if (longSearchMessage) clearInterval(longSearchMessage);
             });
     }
 
-    // Handle search form submission
-    if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const searchQuery = searchInput.value.trim();
-            if (!searchQuery) return;
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentFolder = urlParams.get('folder');
-
-            console.log('Search submitted:', { searchQuery, currentFolder }); // Debug log
-            loadFiles(currentFolder, searchQuery);
-            updateUrl(currentFolder, searchQuery);
-        });
-    }
-
-    function updateUrl(folderId, searchQuery) {
-        const params = new URLSearchParams();
-        if (folderId) params.set('folder', folderId);
-        if (searchQuery) params.set('search', searchQuery);
-
-        const newUrl = params.toString() ? `/?${params.toString()}` : '/';
-        history.pushState({}, '', newUrl);
-    }
-
-    function renderFiles(files) {
-        if (!files || files.length === 0) {
-            filesContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info fade-transition">
-                        No files found
-                    </div>
-                </div>
-            `;
-            return;
-        }
-
-        const html = files.map((file, index) => `
-            <div class="col-sm-6 col-md-4 col-lg-3" style="--animation-order: ${index}">
-                <div class="card h-100">
-                    ${file.isFolder ? 
-                        `<div class="card-body">
-                            <h6 class="card-title">
-                                <a href="/?folder=${encodeURIComponent(file.id)}"
-                                   class="d-flex align-items-center gap-2 text-decoration-none text-truncate"
-                                   style="color: inherit;">
-                                    <i class="fas fa-folder file-icon"></i>
-                                    <span class="text-truncate" title="${file.name}">
-                                        ${file.name}
-                                    </span>
-                                </a>
-                            </h6>
-                            <a href="/?folder=${encodeURIComponent(file.id)}" class="folder-link">
-                                <i class="fas fa-folder-open"></i> Open
-                            </a>
-                        </div>` :
-                        `<div class="card-body">
-                            ${file.thumbnailLink ? 
-                                `<div class="thumbnail-container">
-                                    <img src="${file.thumbnailLink}" alt="${file.name}" class="card-img-top">
-                                </div>` : 
-                                `<div class="text-center py-3">
-                                    <i class="fas fa-file fa-3x"></i>
-                                </div>`
-                            }
-                            <h6 class="card-title text-truncate" title="${file.name}">
-                                ${file.name}
-                            </h6>
-                            <div class="file-actions">
-                                <a href="${file.webViewLink}" target="_blank" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i> View
-                                </a>
-                                <a href="${file.downloadUrl}" class="btn btn-sm btn-secondary" download>
-                                    <i class="fas fa-download"></i> Download
-                                </a>
-                            </div>
-                        </div>`
-                    }
-                </div>
-            </div>
-        `).join('');
-
-        filesContainer.innerHTML = `<div class="row g-4">${html}</div>`;
-    }
-
     function renderBreadcrumbs(breadcrumbs) {
-        if (!breadcrumbs || !breadcrumbContainer) return;
+        if (!breadcrumbs) return;
 
         const html = `
             <nav aria-label="breadcrumb">
@@ -198,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             style="--animation-order: ${index};">
                             ${index === breadcrumbs.length - 1 ? 
                                 item.name :
-                                `<a href="/?folder=${encodeURIComponent(item.id)}">${item.name}</a>`
+                                `<a href="#" data-folder="${item.id}">${item.name}</a>`
                             }
                         </li>
                     `).join('')}
@@ -207,20 +68,103 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         breadcrumbContainer.innerHTML = html;
+
+        breadcrumbContainer.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const folderId = e.currentTarget.dataset.folder;
+                navigateToFolder(folderId);
+            });
+        });
     }
 
+    function renderFiles(files) {
+        if (!files || files.length === 0) {
+            filesContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info fade-transition show">
+                        No files found in this folder
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        filesContainer.innerHTML = files.map((file, index) => `
+            <div class="col-sm-6 col-md-4 col-lg-3 mb-3" style="--animation-order: ${index}">
+                <div class="card h-100">
+                    ${file.isFolder ? 
+                        `<div class="card-body">
+                            <h5 class="card-title text-truncate" title="${file.name}">
+                                <i class="fas fa-folder fa-3x text-warning"></i>
+                            </h5>
+                            <button type="button" class="btn btn-primary btn-sm w-100 folder-link" 
+                                    data-folder-id="${file.id}">
+                                <i class="fas fa-folder-open me-1"></i> Open
+                            </button>
+                        </div>` :
+                        `<div class="card-body">
+                            ${file.thumbnailLink ? 
+                                `<div class="thumbnail-container">
+                                    <img src="${file.thumbnailLink}" alt="${file.name}" class="card-img-top">
+                                </div>` : 
+                                `<i class="fas fa-file fa-3x text-info"></i>`
+                            }
+                            <h5 class="card-title text-truncate" title="${file.name}">
+                                ${file.name}
+                            </h5>
+                            <a href="${file.webViewLink}" target="_blank" class="btn btn-info btn-sm w-100">
+                                <i class="fas fa-external-link-alt me-1"></i> View
+                            </a>
+                        </div>`
+                    }
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers for folder navigation
+        filesContainer.querySelectorAll('.folder-link').forEach(button => {
+            button.addEventListener('click', function(e) {
+                const folderId = this.dataset.folderId;
+                navigateToFolder(folderId);
+            });
+        });
+    }
+
+    function navigateToFolder(folderId) {
+        // Add slide-out animation
+        filesContainer.classList.add('folder-transition', 'slide-left');
+
+        setTimeout(() => {
+            loadFiles(folderId);
+            updateUrl(folderId);
+
+            // Reset container for slide-in animation
+            filesContainer.classList.remove('slide-left');
+            filesContainer.classList.add('slide-right');
+
+            // Trigger reflow
+            void filesContainer.offsetWidth;
+
+            // Remove slide-right class to animate in
+            filesContainer.classList.remove('slide-right');
+        }, 300);
+    }
+
+    function updateUrl(folderId) {
+        const newUrl = folderId ? `/?folder=${encodeURIComponent(folderId)}` : '/';
+        history.pushState({}, '', newUrl);
+    }
 
     // Handle browser back/forward buttons
     window.addEventListener('popstate', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const folderId = urlParams.get('folder');
-        const searchQuery = urlParams.get('search');
-        loadFiles(folderId, searchQuery);
+        loadFiles(folderId);
     });
 
     // Initial load
     const urlParams = new URLSearchParams(window.location.search);
     const initialFolderId = urlParams.get('folder');
-    const initialSearchQuery = urlParams.get('search');
-    loadFiles(initialFolderId, initialSearchQuery);
+    loadFiles(initialFolderId);
 });

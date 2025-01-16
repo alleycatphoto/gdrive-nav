@@ -104,7 +104,7 @@ try {
             <div class="col-md-8">
                 <div class="text-center mb-4">
                     <h3 class="text-light"><?php echo htmlspecialchars($folderName); ?></h3>
-                    <a class="text-muted" href="https://dnadistribution.us">DNA Distribution</a>
+                    <p class="text-muted">DNA Distribution</p>
                 </div>
                 <div class="card">
                     <div class="card-body">

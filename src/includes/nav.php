@@ -6,10 +6,10 @@ if (!isset($currentUser)) {
 }
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid jusitfy-content-center">
+    <div class="container-fluid">
         <a class="navbar-brand" href="/">
             <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo"><br/>
-             &nbsp;&nbsp;&nbsp;CUSTOMER RESOURCES
+             CUSTOMER RESOURCES
         </a>
         <div class="ms-auto d-flex align-items-center">
             <?php if ($currentUser): ?>

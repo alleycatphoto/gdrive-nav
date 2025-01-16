@@ -8,45 +8,29 @@ header('Content-Type: application/json');
 try {
     $driveService = new DriveService();
 
-    // Get folder ID and search query from parameters
+    // Get folder ID from query parameters, properly handle both GET and URL parameters
     $folderId = null;
-    $searchQuery = null;
-
+    //echo $_GET['folder'];
     if (isset($_GET['folder']) && !empty($_GET['folder'])) {
         $folderId = trim($_GET['folder']);
-    }
-
-    if (isset($_GET['search']) && !empty($_GET['search'])) {
-        $searchQuery = trim($_GET['search']);
     }
 
     error_log("ListController: Processing request");
     error_log("Raw folder parameter: " . print_r($_GET, true));
     error_log("Processed Folder ID: " . ($folderId ?? 'null'));
-    error_log("Search Query: " . ($searchQuery ?? 'null'));
+    error_log("Is Shared Drive: " . $_ENV['GOOGLE_DRIVE_IS_SHARED']);
+    error_log("Drive ID: " . $_ENV['GOOGLE_DRIVE_ROOT_FOLDER']);
 
-    // List files in the requested folder or search results
-    $files = $searchQuery ? $driveService->searchFiles($searchQuery, $folderId) : $driveService->listFiles($folderId);
+    // List files in the requested folder
+    $files = $driveService->listFiles($folderId);
     $breadcrumbs = $driveService->getBreadcrumbs($folderId);
-
-    // Include search status in the response
-    $searchStatus = null;
-    if ($searchQuery) {
-        $searchStatus = [
-            'total_folders_searched' => $driveService->getSearchedFoldersCount(),
-            'total_files_found' => count($files),
-            'search_complete' => true
-        ];
-    }
 
     echo json_encode([
         'success' => true,
         'files' => $files,
         'breadcrumbs' => $breadcrumbs,
-        'search_status' => $searchStatus,
         'debug' => [
             'request_folder_id' => $folderId,
-            'search_query' => $searchQuery,
             'raw_get_params' => $_GET,
             'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'],
             'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
@@ -63,7 +47,6 @@ try {
         'error' => $e->getMessage(),
         'debug' => [
             'request_folder_id' => $_GET['folder'] ?? null,
-            'search_query' => $_GET['search'] ?? null,
             'is_shared_drive' => $_ENV['GOOGLE_DRIVE_IS_SHARED'] ?? false,
             'drive_id' => $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'],
             'timestamp' => date('c'),

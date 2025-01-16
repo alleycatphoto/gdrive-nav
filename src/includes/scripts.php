@@ -569,7 +569,7 @@
                             "styles": {
                                 "products": {
                                     "display": "grid",
-                                    "grid-template-columns": "repeat(auto-fill, minmax(165px, 0fr))",
+                                    "grid-template-columns": "repeat(auto-fill, minmax(200px, 0fr))",
                                     "@media (min-width: 601px)": {
                                         "margint": "10px"
                                     }
