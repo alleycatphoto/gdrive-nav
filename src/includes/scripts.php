@@ -5,37 +5,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {
-        // Theme toggle functionality
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-        const moonIcon = '<i class="fas fa-moon"></i>';
-        const sunIcon = '<i class="fas fa-sun"></i>';
-
-        // Function to set theme
-        function setTheme(isDark) {
-            if (isDark) {
-                htmlElement.setAttribute('data-bs-theme', 'dark');
-                themeToggleBtn.innerHTML = sunIcon;
-                localStorage.setItem('theme', 'dark');
-            } else {
-                htmlElement.setAttribute('data-bs-theme', 'light');
-                themeToggleBtn.innerHTML = moonIcon;
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        // Initialize theme
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        setTheme(savedTheme === 'dark');
-
-        // Theme toggle click handler
-        if (themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                const currentTheme = htmlElement.getAttribute('data-bs-theme');
-                setTheme(currentTheme !== 'dark');
-            });
-        }
-
         // Initialize all Bootstrap tooltips with enhanced options
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
