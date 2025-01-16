@@ -1,4 +1,16 @@
 :root {
+    --custom-bg: #fff;
+    --custom-bg-lighter: #f8f9fa;
+    --custom-bg-darker: #e9ecef;
+    --custom-primary: #39273a;
+    --custom-primary-hover: #856087;
+    --custom-secondary: #6c757d;
+    --custom-secondary-hover: #5a6268;
+    --custom-success: #28a745;
+    --custom-success-hover: #218838;
+}
+
+[data-bs-theme="dark"] {
     --custom-bg: #544055;
     --custom-bg-lighter: #654d66;
     --custom-bg-darker: #443344;
@@ -106,102 +118,30 @@ body {
     border-color: var(--custom-success-hover);
 }
 
-/* Auth pages styling */
-.login-container, .register-container {
-    background-color: var(--custom-bg-lighter);
-    border-radius: 0.5rem;
-    padding: 2rem;
-    max-width: 400px;
-    width: 100%;
-    margin: 2rem auto;
-}
-
-.auth-logo {
-    width: 200px;
-    margin-bottom: 2rem;
-}
-
-.auth-link {
-    text-align: center;
-    margin-top: 1rem;
-}
-
-.auth-link a {
-    color: var(--custom-primary);
-    text-decoration: none;
-}
-
-.auth-link a:hover {
-    color: var(--custom-primary-hover);
-    text-decoration: underline;
-}
-
-/* Password strength and validation feedback */
-.password-strength {
-    font-size: 0.8rem;
-    margin-top: 0.25rem;
-}
-
-.validation-feedback {
-    display: none;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.is-invalid ~ .validation-feedback {
-    display: block;
-    color: var(--bs-danger);
-}
-
-.is-valid ~ .validation-feedback {
-    display: block;
-    color: var(--bs-success);
-}
-
-.btn.disabled, .btn:disabled, fieldset:disabled .btn {
-    color: var(--bs-btn-disabled-color);
-    pointer-events: none;
-    background-color: #554055;
-    border-color: #2f212f;
-    opacity: var(--bs-btn-disabled-opacity);
-}
-
-/* Dashboard specific styles */
-.welcome-container {
-    padding: 2rem;
-    margin-top: 2rem;
-}
-
-.feature-card {
-    background-color: var(--custom-bg-darker);
-    border: none;
-    transition: transform 0.3s ease;
-}
-
-.feature-card:hover {
-    transform: translateY(-5px);
-}
-
-.feature-icon {
-    font-size: 2rem;
-    color: var(--custom-primary);
-    margin-bottom: 1rem;
-}
-
-.user-avatar {
-    width: 100px;
-    height: 100px;
+/* Theme toggle button */
+.theme-toggle {
+    color: var(--bs-body-color);
+    padding: 0.5rem;
     border-radius: 50%;
-    background-color: var(--custom-primary);
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1rem;
+    transition: background-color 0.2s;
 }
 
-.user-avatar i {
-    font-size: 3rem;
-    color: white;
+.theme-toggle:hover {
+    background-color: var(--custom-bg-lighter);
+}
+
+.theme-toggle i {
+    font-size: 1.2rem;
+}
+
+/* Logo and branding */
+.navbar-brand {
+    color: var(--bs-body-color) !important;
 }
 
 .navbar-brand img {

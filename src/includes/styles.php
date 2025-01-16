@@ -550,4 +550,15 @@
         width: 100%;
         height: 300px !important;
     }
+    .form-control {
+        background-color: #392939;
+        border: var(--bs-border-width) solid #836a81;
+    }
+    .form-control:focus {
+        color: var(--bs-body-color);
+        background-color: #2f202e;
+        border-color: #c5afc5;
+        outline: 0;
+        box-shadow: 0 0 0 .25rem #b996b9ad;
+    }
 </style>
