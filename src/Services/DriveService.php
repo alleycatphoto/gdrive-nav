@@ -264,11 +264,13 @@ class DriveService {
                 $folderId = $this->defaultFolderId;
             }
 
-            // Build the search query
+            // Build the search query to include all files and folders
             $searchQuery = "name contains '" . str_replace("'", "\\'", $query) . "' ";
             $searchQuery .= "and trashed = false ";
+
+            // If folder ID is provided, search within that folder tree
             if ($folderId) {
-                $searchQuery .= "and '" . $folderId . "' in parents ";
+                $searchQuery .= "and '" . $folderId . "' in ancestors ";
             }
 
             error_log("Search query: " . $searchQuery);
