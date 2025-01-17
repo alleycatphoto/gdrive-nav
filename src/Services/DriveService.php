@@ -39,15 +39,20 @@ class DriveService {
 
     private function getAllowedFolderIds() {
         $folderIds = [];
+        error_log("Session data: " . print_r($_SESSION, true));
+
         if (isset($_SESSION['access']) && isset($_SESSION['access']['metaobjects'])) {
             foreach ($_SESSION['access']['metaobjects'] as $metaobject) {
+                error_log("Processing metaobject: " . print_r($metaobject, true));
                 foreach ($metaobject['fields'] as $field) {
                     if ($field['key'] === 'folder') {
                         $folderIds[] = $field['value'];
+                        error_log("Added folder ID: " . $field['value']);
                     }
                 }
             }
         }
+        error_log("Final folder IDs: " . print_r($folderIds, true));
         return $folderIds;
     }
 
@@ -231,6 +236,9 @@ class DriveService {
 
             // If we're in the root folder, only show allowed folders
             $isRootFolder = ($folderId === $this->defaultFolderId);
+            error_log("Is root folder: " . ($isRootFolder ? 'true' : 'false'));
+            error_log("Default folder ID: " . $this->defaultFolderId);
+            error_log("Current folder ID: " . $folderId);
 
             $optParams = [
                 'pageSize' => 1000,
@@ -252,23 +260,30 @@ class DriveService {
             $files = [];
 
             foreach ($results->getFiles() as $file) {
+                $fileId = $file->getId();
+                error_log("Processing file: " . $fileId . " - " . $file->getName() . " - " . $file->getMimeType());
+
                 // If in root folder, only include allowed folders
                 if ($isRootFolder) {
-                    $fileId = $file->getId();
-                    if (!in_array($fileId, $this->allowedFolderIds) && 
-                        $file->getMimeType() === 'application/vnd.google-apps.folder') {
-                        continue; // Skip folders not in allowed list
+                    if ($file->getMimeType() === 'application/vnd.google-apps.folder') {
+                        error_log("Checking folder access for: " . $fileId);
+                        error_log("Allowed folders: " . print_r($this->allowedFolderIds, true));
+                        if (!in_array($fileId, $this->allowedFolderIds)) {
+                            error_log("Skipping folder - not in allowed list: " . $fileId);
+                            continue;
+                        }
+                        error_log("Including allowed folder: " . $fileId);
                     }
                 }
 
-                $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
-                $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
+                $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $fileId . "&export=download&authuser=0";
+                $viewUrl = "https://drive.google.com/file/d/" . $fileId . "/view";
 
                 $thumbnailLink = $file->getThumbnailLink();
                 $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
 
                 $files[] = [
-                    'id' => $file->getId(),
+                    'id' => $fileId,
                     'name' => $file->getName(),
                     'mimeType' => $file->getMimeType(),
                     'thumbnailLink' => $thumbnailLink,
