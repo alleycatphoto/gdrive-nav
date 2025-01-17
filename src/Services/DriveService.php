@@ -9,6 +9,7 @@ class DriveService {
     private $isSharedDrive;
     private $driveId;
     private $defaultFolderId;
+    private $allowedFolderIds;
 
     public function __construct() {
         try {
@@ -22,14 +23,32 @@ class DriveService {
             $this->driveId = $_ENV['GOOGLE_DRIVE_ROOT_FOLDER'];
             $this->defaultFolderId = $_ENV['GOOGLE_DRIVE_FOLDER_ID'] ?? $this->driveId;
 
+            // Get allowed folder IDs from session
+            $this->allowedFolderIds = $this->getAllowedFolderIds();
+
             error_log("DriveService initialized with:");
             error_log("Drive ID: " . $this->driveId);
             error_log("Default Folder ID: " . $this->defaultFolderId);
             error_log("Is Shared Drive: " . ($this->isSharedDrive ? 'true' : 'false'));
+            error_log("Allowed Folder IDs: " . print_r($this->allowedFolderIds, true));
         } catch (\Exception $e) {
             error_log("Error initializing DriveService: " . $e->getMessage());
             throw $e;
         }
+    }
+
+    private function getAllowedFolderIds() {
+        $folderIds = [];
+        if (isset($_SESSION['access']) && isset($_SESSION['access']['metaobjects'])) {
+            foreach ($_SESSION['access']['metaobjects'] as $metaobject) {
+                foreach ($metaobject['fields'] as $field) {
+                    if ($field['key'] === 'folder') {
+                        $folderIds[] = $field['value'];
+                    }
+                }
+            }
+        }
+        return $folderIds;
     }
 
     // Enhanced method to get file metadata with video support and platform-specific data
@@ -210,6 +229,9 @@ class DriveService {
 
             error_log("Listing files for folder: " . $folderId);
 
+            // If we're in the root folder, only show allowed folders
+            $isRootFolder = ($folderId === $this->defaultFolderId);
+
             $optParams = [
                 'pageSize' => 1000,
                 'fields' => 'files(id, name, mimeType, thumbnailLink)',
@@ -230,6 +252,15 @@ class DriveService {
             $files = [];
 
             foreach ($results->getFiles() as $file) {
+                // If in root folder, only include allowed folders
+                if ($isRootFolder) {
+                    $fileId = $file->getId();
+                    if (!in_array($fileId, $this->allowedFolderIds) && 
+                        $file->getMimeType() === 'application/vnd.google-apps.folder') {
+                        continue; // Skip folders not in allowed list
+                    }
+                }
+
                 $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $file->getId() . "&export=download&authuser=0";
                 $viewUrl = "https://drive.google.com/file/d/" . $file->getId() . "/view";
 

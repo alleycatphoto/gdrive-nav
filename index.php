@@ -89,6 +89,9 @@ try {
         case '/share':
             require __DIR__ . '/src/views/share.php';
             break;
+        case '/folder':
+            require __DIR__ . '/src/views/folder.php';
+            break;
         default:
             http_response_code(404);
             echo "404 Not Found: " . htmlspecialchars($path);

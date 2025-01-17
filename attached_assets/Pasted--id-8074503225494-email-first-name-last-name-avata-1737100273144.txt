@@ -1,0 +1,109 @@
+(
+    [id] => 8074503225494
+    [email] => 
+    [first_name] => 
+    [last_name] => 
+    [avatar_url] => 
+    [access] => Array
+        (
+            [metafield] => Array
+                (
+                    [value] => ["gid://shopify/Metaobject/93116039318","gid://shopify/Metaobject/93116006550","gid://shopify/Metaobject/93115908246"]
+                    [type] => list.metaobject_reference
+                )
+
+            [metaobjects] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => gid://shopify/Metaobject/93116039318
+                            [fields] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [key] => name
+                                            [value] => NMS® Face
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [key] => folder
+                                            [value] => 11_VjE7xtAHZI27DB-S42gY_r_5DjdihN
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [key] => description
+                                            [value] => Neuro-Muscular Stimulation Facial Treatment (NMS FACE) uses targeted electrical impulses to rejuvenate facial muscles, providing a non-surgical facelift and improving skin firmness with deep Radiofrequency.
+                                            [type] => multi_line_text_field
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => gid://shopify/Metaobject/93116006550
+                            [fields] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [key] => name
+                                            [value] => NMS® Body
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [key] => folder
+                                            [value] => 1GtH2gqPbGWlU4X4FFWUfpYaWXKd_9TXI
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [key] => description
+                                            [value] => Blends electro and electromagnetic stimulation for effective muscle sculpting and fat reduction.
+                                            [type] => multi_line_text_field
+                                        )
+
+                                )
+
+                        )
+
+                    [2] => Array
+                        (
+                            [id] => gid://shopify/Metaobject/93115908246
+                            [fields] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [key] => name
+                                            [value] => Cryoskin® Ultra Plasma
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [key] => folder
+                                            [value] => 1vbaJV_8jlR4ZIteHW87dYZoSQvLILXBz
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [key] => description
+                                            [value] => Utilizing cold atmospheric plasma for both facial imperfection treatment and skin sanitization.
+                                            [type] => multi_line_text_field
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )

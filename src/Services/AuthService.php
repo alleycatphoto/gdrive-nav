@@ -86,6 +86,106 @@ class AuthService {
         return $responseData['customer'] ?? null;
     }
 
+    public function getCustomerMetafieldAndMetaobjects($customerId, $namespace, $key) {
+        // GraphQL query to fetch metafield
+        $metafieldQuery = <<<GRAPHQL
+        query (\$customerId: ID!, \$namespace: String!, \$key: String!) {
+            customer(id: \$customerId) {
+                metafield(namespace: \$namespace, key: \$key) {
+                    value
+                    type
+                }
+            }
+        }
+        GRAPHQL;
+
+        $metafieldVariables = [
+            'customerId' => "gid://shopify/Customer/{$customerId}",
+            'namespace' => $namespace,
+            'key' => $key
+        ];
+
+
+        // Execute the metafield query
+        $metafieldResponse = $this->executeGraphQL($metafieldQuery, $metafieldVariables);
+       
+
+        $metafield = $metafieldResponse['data']['customer']['metafield'] ?? null;
+         //error_log("metafieldQuery: " . $metafieldResponse);
+        if (!$metafield || !isset($metafield['value'])) {
+            return ['error' => 'No metafield found for the specified namespace and key.'];
+        }
+
+        // Parse metaobject GIDs
+        $metaobjectGids = json_decode($metafield['value'], true);
+
+        if (empty($metaobjectGids)) {
+            return ['metafield' => $metafield, 'metaobjects' => []];
+        }
+
+        // GraphQL query to fetch metaobjects
+        $metaobjectQuery = <<<GRAPHQL
+        query (\$ids: [ID!]!) {
+            nodes(ids: \$ids) {
+                ... on Metaobject {
+                    id
+                    fields {
+                        key
+                        value
+                        type
+                    }
+                }
+            }
+        }
+        GRAPHQL;
+
+        $metaobjectVariables = ['ids' => $metaobjectGids];
+        $metaobjectResponse = $this->executeGraphQL($metaobjectQuery, $metaobjectVariables);
+
+        $metaobjects = $metaobjectResponse['data']['nodes'] ?? [];
+
+        // Return a structured result
+        return [
+            'metafield' => $metafield,
+            'metaobjects' => array_map(function ($metaobject) {
+                return [
+                    'id' => $metaobject['id'],
+                    'fields' => $metaobject['fields']
+                ];
+            }, $metaobjects)
+        ];
+    }
+
+    private function executeGraphQL($query, $variables) {
+        $ch = curl_init("{$this->shopifyApiUrl}/api/2023-01/graphql.json");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt(
+            $ch,
+            CURLOPT_HTTPHEADER,
+            [
+                "X-Shopify-Access-Token: {$this->shopifyApiPassword}",
+                'Content-Type: application/json'
+            ]
+        );
+
+
+        $payload = json_encode(['query' => $query, 'variables' => $variables]);
+        //error_log("GraphQL: " . $payload);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+
+        $response = curl_exec($ch);
+        //error_log("GraphQL: " . $response);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200) {
+            error_log("GraphQL API Error: " . $response);
+            return null;
+        }
+
+        return json_decode($response, true);
+    }
     public function validateCredentials($email, $password) {
         // Note: Shopify Admin API doesn't provide direct password validation
         // We'll use customer search to verify the user exists
@@ -107,13 +207,18 @@ class AuthService {
             session_start();
         }
         error_log("User: " . print_r($user, true));
+        $access = $this->getCustomerMetafieldAndMetaobjects($user['id'], 'custom', 'portal_access');
+        
+        
         $_SESSION['user'] = [
             'id' => $user['id'] ?? '',
             'email' => $user['email'] ?? '',
             'first_name' => $user['first_name'] ?? '',
             'last_name' => $user['last_name'] ?? '',
-            'avatar_url' => $user['avatar_url'] ?? null
+            'avatar_url' => $user['avatar_url'] ?? null,
+            'access' => $access ?? null,
         ];
+        error_log("Session: " . print_r($_SESSION['user'], true));
         return true;
     }
 
@@ -135,4 +240,5 @@ class AuthService {
     public function isAuthenticated() {
         return $this->getCurrentUser() !== null;
     }
+
 }

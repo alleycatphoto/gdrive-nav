@@ -550,4 +550,34 @@
         width: 100%;
         height: 300px !important;
     }
+    .form-control:focus {
+        color: var(--bs-body-color);
+        background-color: #2f212d;
+        border-color: #8f758f;
+        outline: 0;
+        box-shadow: 0 0 0 .25rem rgb(119 91 119 / 65%);
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: var(--bs-body-color);
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: #433243;
+        background-clip: padding-box;
+        border: var(--bs-border-width) solid #c397c3ba;
+        border-radius: var(--bs-border-radius);
+        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    }
+    .form-control:-internal-autofill-selected {
+        appearance: menulist-button;
+        background-image: none !important;
+        background-color: light-dark(rgb(147 111 142 / 63%), rgb(150 105 159 / 67%)) !important;
+    }
 </style>
