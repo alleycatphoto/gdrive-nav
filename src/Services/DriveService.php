@@ -113,6 +113,84 @@ class DriveService {
         }
     }
 
+    public function listFiles($folderId = null) {
+        try {
+            if ($folderId === null || empty($folderId)) {
+                $folderId = $this->defaultFolderId;
+            }
+
+            error_log("Listing files for folder: " . $folderId);
+
+            // If we're in the default folder, only show allowed folders
+            $isRootFolder = ($folderId === $this->defaultFolderId);
+            error_log("Is root folder: " . ($isRootFolder ? 'true' : 'false'));
+            error_log("Default folder ID: " . $this->defaultFolderId);
+            error_log("Current folder ID: " . $folderId);
+
+            $optParams = [
+                'pageSize' => 1000,
+                'fields' => 'files(id, name, mimeType, thumbnailLink)',
+                'supportsAllDrives' => true,
+                'includeItemsFromAllDrives' => $this->isSharedDrive,
+                'orderBy' => 'folder,name',
+                'q' => "'$folderId' in parents and trashed = false"
+            ];
+
+            if ($this->isSharedDrive) {
+                $optParams['driveId'] = $this->driveId;
+                $optParams['corpora'] = 'drive';
+            }
+
+            error_log("API Request parameters: " . json_encode($optParams));
+
+            $results = $this->service->files->listFiles($optParams);
+            $files = [];
+
+            foreach ($results->getFiles() as $file) {
+                $fileId = $file->getId();
+                error_log("Processing file: " . $fileId . " - " . $file->getName() . " - " . $file->getMimeType());
+
+                // If in root folder, only include allowed folders
+                if ($isRootFolder) {
+                    if ($file->getMimeType() === 'application/vnd.google-apps.folder') {
+                        error_log("Checking folder access for: " . $fileId);
+                        error_log("Allowed folders: " . print_r($this->allowedFolderIds, true));
+                        if (!in_array($fileId, $this->allowedFolderIds)) {
+                            error_log("Skipping folder - not in allowed list: " . $fileId);
+                            continue;
+                        }
+                        error_log("Including allowed folder: " . $fileId);
+                    }
+                }
+
+                $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $fileId . "&export=download&authuser=0";
+                $viewUrl = "https://drive.google.com/file/d/" . $fileId . "/view";
+
+                $thumbnailLink = $file->getThumbnailLink();
+                $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
+
+                $files[] = [
+                    'id' => $fileId,
+                    'name' => $file->getName(),
+                    'mimeType' => $file->getMimeType(),
+                    'thumbnailLink' => $thumbnailLink,
+                    'highResThumbnail' => $highResThumbnail,
+                    'downloadUrl' => $downloadUrl,
+                    'webViewLink' => $viewUrl,
+                    'isFolder' => $file->getMimeType() === 'application/vnd.google-apps.folder'
+                ];
+            }
+
+            error_log("Found " . count($files) . " files");
+            return $files;
+
+        } catch (\Exception $e) {
+            error_log("Error in listFiles: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+            throw $e;
+        }
+    }
+
     // Generate social media specific metadata
     private function generateSocialMetadata($file) {
         $title = $file->getName();
@@ -223,84 +301,6 @@ class DriveService {
         } catch (\Exception $e) {
             error_log("Error getting breadcrumbs: " . $e->getMessage());
             return [['id' => $this->defaultFolderId, 'name' => 'Home']];
-        }
-    }
-
-    public function listFiles($folderId = null) {
-        try {
-            if ($folderId === null || empty($folderId)) {
-                $folderId = $this->defaultFolderId;
-            }
-
-            error_log("Listing files for folder: " . $folderId);
-
-            // If we're in the root folder, only show allowed folders
-            $isRootFolder = ($folderId === $this->defaultFolderId);
-            error_log("Is root folder: " . ($isRootFolder ? 'true' : 'false'));
-            error_log("Default folder ID: " . $this->defaultFolderId);
-            error_log("Current folder ID: " . $folderId);
-
-            $optParams = [
-                'pageSize' => 1000,
-                'fields' => 'files(id, name, mimeType, thumbnailLink)',
-                'supportsAllDrives' => true,
-                'includeItemsFromAllDrives' => $this->isSharedDrive,
-                'orderBy' => 'folder,name',
-                'q' => "'$folderId' in parents and trashed = false"
-            ];
-
-            if ($this->isSharedDrive) {
-                $optParams['driveId'] = $this->driveId;
-                $optParams['corpora'] = 'drive';
-            }
-
-            error_log("API Request parameters: " . json_encode($optParams));
-
-            $results = $this->service->files->listFiles($optParams);
-            $files = [];
-
-            foreach ($results->getFiles() as $file) {
-                $fileId = $file->getId();
-                error_log("Processing file: " . $fileId . " - " . $file->getName() . " - " . $file->getMimeType());
-
-                // If in root folder, only include allowed folders
-                if ($isRootFolder) {
-                    if ($file->getMimeType() === 'application/vnd.google-apps.folder') {
-                        error_log("Checking folder access for: " . $fileId);
-                        error_log("Allowed folders: " . print_r($this->allowedFolderIds, true));
-                        if (!in_array($fileId, $this->allowedFolderIds)) {
-                            error_log("Skipping folder - not in allowed list: " . $fileId);
-                            continue;
-                        }
-                        error_log("Including allowed folder: " . $fileId);
-                    }
-                }
-
-                $downloadUrl = "https://drive.usercontent.google.com/download?id=" . $fileId . "&export=download&authuser=0";
-                $viewUrl = "https://drive.google.com/file/d/" . $fileId . "/view";
-
-                $thumbnailLink = $file->getThumbnailLink();
-                $highResThumbnail = $thumbnailLink ? preg_replace('/=s\d+$/', '=s1024', $thumbnailLink) : null;
-
-                $files[] = [
-                    'id' => $fileId,
-                    'name' => $file->getName(),
-                    'mimeType' => $file->getMimeType(),
-                    'thumbnailLink' => $thumbnailLink,
-                    'highResThumbnail' => $highResThumbnail,
-                    'downloadUrl' => $downloadUrl,
-                    'webViewLink' => $viewUrl,
-                    'isFolder' => $file->getMimeType() === 'application/vnd.google-apps.folder'
-                ];
-            }
-
-            error_log("Found " . count($files) . " files");
-            return $files;
-
-        } catch (\Exception $e) {
-            error_log("Error in listFiles: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
-            throw $e;
         }
     }
 }

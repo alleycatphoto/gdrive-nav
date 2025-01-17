@@ -1,0 +1,81 @@
+(
+    [id] => 7391365628054
+    [email] => 
+    [first_name] => 
+    [last_name] => 
+    [avatar_url] => 
+    [access] => Array
+        (
+            [metafield] => Array
+                (
+                    [value] => ["gid://shopify/Metaobject/93115875478","gid://shopify/Metaobject/93115809942"]
+                    [type] => list.metaobject_reference
+                )
+
+            [metaobjects] => Array
+                (
+                    [0] => Array
+                        (
+                            [id] => gid://shopify/Metaobject/93115875478
+                            [fields] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [key] => name
+                                            [value] => Cryoskin® Ultra Lipo
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [key] => folder
+                                            [value] => 1mzBP0qIms73WMeeusDq6OEefIMsbqqIq
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [key] => description
+                                            [value] => Using ultrasonic waves, this procedure liquefies fat in specific areas like knees, neck, chin, feet, and ankles for effective removal.
+                                            [type] => multi_line_text_field
+                                        )
+
+                                )
+
+                        )
+
+                    [1] => Array
+                        (
+                            [id] => gid://shopify/Metaobject/93115809942
+                            [fields] => Array
+                                (
+                                    [0] => Array
+                                        (
+                                            [key] => name
+                                            [value] => Cryoskin® Revolution
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [1] => Array
+                                        (
+                                            [key] => folder
+                                            [value] => 1LgaGjnCeSdW5WrgdKNDTlOO17Sj2xr9z
+                                            [type] => single_line_text_field
+                                        )
+
+                                    [2] => Array
+                                        (
+                                            [key] => description
+                                            [value] => Utilizes advanced fat-freezing technology for precise body sculpting, providing effective and non-invasive solutions to redefine physique.
+                                            [type] => multi_line_text_field
+                                        )
+
+                                )
+
+                        )
+
+                )
+
+        )
+
+)
