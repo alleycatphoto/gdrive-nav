@@ -41,8 +41,8 @@ class DriveService {
         $folderIds = [];
         error_log("Session data: " . print_r($_SESSION, true));
 
-        if (isset($_SESSION['access']) && isset($_SESSION['access']['metaobjects'])) {
-            foreach ($_SESSION['access']['metaobjects'] as $metaobject) {
+        if (isset($_SESSION['user']) && isset($_SESSION['user']['access']) && isset($_SESSION['user']['access']['metaobjects'])) {
+            foreach ($_SESSION['user']['access']['metaobjects'] as $metaobject) {
                 error_log("Processing metaobject: " . print_r($metaobject, true));
                 foreach ($metaobject['fields'] as $field) {
                     if ($field['key'] === 'folder') {
