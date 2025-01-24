@@ -1,4 +1,9 @@
 <?php
+
+<?php
+ini_set('memory_limit', '512M'); // Increase memory limit to 512MB
+
+
 // Enable error reporting only in non-production
 if (!filter_var($_ENV['PRODUCTION'] ?? 'false', FILTER_VALIDATE_BOOLEAN)) {
     error_reporting(E_ALL);
