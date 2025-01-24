@@ -5,7 +5,7 @@ include __DIR__ . '/../includes/header.php';
 <body>
     <?php include __DIR__ . '/../includes/nav.php'; ?>
 
-    <div class="container mx-auto" style="width: 30vw;">
+    <div class="container mx-auto" style="width: 80vw; max-width: 400px;">">
         <div class="login-container mx-auto">
             <div class="text-center mb-4">
                 <img src="/attached_assets/logo.png" alt="DNA Distribution Logo" class="logo">

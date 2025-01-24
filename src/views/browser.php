@@ -40,7 +40,7 @@ include __DIR__ . '/../includes/header.php';
             $files = $driveService->listFiles($currentFolderId);
 
             if (empty($files)) {
-                echo '<div class="alert alert-info">No files found in this folder</div>';
+                echo '<div class="alert alert-info text-center">You currently have no devices assigned to your account<br/>Please contact <a href="mailto:arty@dnadistribution.us">arty@dnadistribution.us</a> to get access to these resources.</div>';
             } else {
                 echo '<div class="row g-4">';
                 foreach ($files as $file) {

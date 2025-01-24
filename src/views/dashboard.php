@@ -18,10 +18,9 @@ include __DIR__ . '/../includes/header.php';
                     <i class="fas fa-user"></i>
                 <?php endif; ?>
             </div>
-            <h1 class="display-4 mb-4">Welcome, <?php echo htmlspecialchars($currentUser['first_name'] ?: 'Valued Customer'); ?>!</h1>
             <p class="lead mb-5">Thank you for joining DNA Distribution. Here's what you can do:</p>
 
-            <div class="row g-4">
+            <div class="row g-4 justified-content-center">
                 <div class="col-md-4">
                     <div class="card feature-card h-100">
                         <div class="card-body text-center">
@@ -35,20 +34,10 @@ include __DIR__ . '/../includes/header.php';
                 <div class="col-md-4">
                     <div class="card feature-card h-100">
                         <div class="card-body text-center">
-                            <i class="fas fa-search feature-icon"></i>
-                            <h5 class="card-title">Search Content</h5>
-                            <p class="card-text">Find the exact resources you need.</p>
-                            <a href="/?search=true" class="folder-link">Search Now</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card feature-card h-100">
-                        <div class="card-body text-center">
                             <i class="fas fa-user-cog feature-icon"></i>
                             <h5 class="card-title">Manage Profile</h5>
                             <p class="card-text">Update your account settings and preferences.</p>
-                            <a href="#" class="folder-link">View Profile</a>
+                            <a href="https://account.dnadistribution.us/profile" class="folder-link">View Profile</a>
                         </div>
                     </div>
                 </div>

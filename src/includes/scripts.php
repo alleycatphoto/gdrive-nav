@@ -528,31 +528,39 @@
 
                             "styles": {
                                 "product": {
-                                    "transform": "scale(0.65)",
-                                    "transform-origin": "top center",
-                                    "transition": "transform 0.5s ease-in-out",
-                                    "padding": "20px",
-                                    "color": "#ba95b9",
+                                    "min-width": "140px !important",
+                                    "width": "140px !important",
+                                    "padding": "0px",
+                                    "color": "#584057",
                                     "border-radius": ".375rem",
-
-                                    "background-color": "#493849",
+                                    "border": "1px solid #584057",
+                                    "background-color": "#7f6b7fc2",
+                                    "margin-top": "0",
                                     "@media (min-width: 2000px)": {
-                                        "max-width": "calc(25% - 20px)",
                                         "margin-left": "0px",
-                                        "margin-bottom": "10px"
+                                        "margin-bottom": "0px"
                                     },
 
                                 },
-
+                                "button": {
+                                    "font-size": "12px",
+                                    "background-color": "#78b657",
+                                    "padding": "5px 10px",
+                                    "margin": "10px !important"
+                                },
+                                "button-wrapper": {
+                                    "margin": "10px"
+                                },
                                 "title": {
-                                    "color": "#ba95b9"
+                                    "color": "#432b42",
+                                    "font-size": "12px"
                                 },
                                 "price": {
-                                    "font-size": "20px",
-                                    "color": "#9db98d"
+                                    "font-size": "16px",
+                                    "color": "#85cf57"
                                 },
                                 "description": {
-                                    "margin-top": "30px",
+                                    "margin-top": "10px",
                                     "line-height": "1.65",
                                     "color": "#c3aac2"
                                 }
@@ -568,10 +576,9 @@
                         "productSet": {
                             "styles": {
                                 "products": {
-                                    "display": "grid",
-                                    "grid-template-columns": "repeat(auto-fill, minmax(160px, 0fr))",
+
                                     "@media (min-width: 601px)": {
-                                        "margint": "10px"
+                                        "margin-top": "0px"
                                     }
                                 }
                             }
@@ -579,7 +586,8 @@
                         "modal": {
                             "styles": {
                                 "modal": {
-                                    "background-color": "#544055"
+                                    "background-color": "#544055",
+                                    "height": "100%" 
                                 }
                             }
                         },

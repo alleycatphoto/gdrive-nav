@@ -2,7 +2,7 @@
 // styles.php - Contains all CSS styles for the application
 ?>
 <style>
-    :root {
+    :rootold {
         --custom-bg: #544055;
         --custom-bg-lighter: #654d66;
         --custom-bg-darker: #443344;
@@ -14,12 +14,30 @@
         --custom-icon-hover: #d2b9d2;
 
     }
-
+    :root {
+      --custom-bg: #d1c8d1;
+      --custom-bg-lighter: #654d6657;
+      --custom-bg-darker: #7f6b7fc2;
+      --custom-primary: #74507687;
+      --custom-primary-hover: #856087a3;
+      --custom-secondary: #ecd5ec9c;
+      --custom-secondary-hover: #f6def6ed;
+      --custom-icon: #574057;
+      --custom-icon-hover: #714971;
+    }
     body {
         background-color: var(--custom-bg);
+        color: var(--custom-icon);
     }
     a {
         color: var(--custom-icon);
+    }
+    .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+      margin-top: 0;
+      margin-bottom: .5rem;
+      font-weight: 500;
+      line-height: 1.2;
+      color: var(--custom-icon);
     }
     a:hover{
         color: var(--custom-primary-hover);
@@ -35,10 +53,12 @@
         width: auto;
         margin-right: 10px;
         justfy-content: center;
+
     }
 
     .navbar-brand {
         justfy-content: center;
+        font-size: 0.8rem;
     }
     .container {
         background-color: var(--custom-bg-lighter);
@@ -107,6 +127,7 @@
         border: none;
         transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         will-change: transform;
+        color: var(--custom-icon);
     }
 
     .card:hover {
@@ -193,7 +214,12 @@
         will-change: transform;
         font-size: 0.9rem;
     }
-
+    .btn-close {
+        background-color: #f7b0f7 !important;
+    }
+    .btn-close-white {
+        background-color: #f7b0f7 !important;
+    }
     .btn:hover {
         background-color: var(--custom-icon);
         color: var(--custom-secondary);
@@ -347,7 +373,7 @@
     }
 
     .modal-body {
-        background-color: #161116;
+        background-color: #d1c8d1 !important;
         padding: 0;
         height: calc(90vh - 120px);
         overflow: hidden;
@@ -548,7 +574,6 @@
     }
     .shopify-buy-frame iframe {
         width: 100%;
-        height: 300px !important;
     }
     .form-control:focus {
         color: var(--bs-body-color);
@@ -579,5 +604,22 @@
         appearance: menulist-button;
         background-image: none !important;
         background-color: light-dark(rgb(147 111 142 / 63%), rgb(150 105 159 / 67%)) !important;
+    }
+    .logo {
+      vertical-align: middle;
+      width: 60%;
+      height: auto;
+    }
+    .row {
+      justify-content: center;
+    }
+    .alert-info {
+      --bs-alert-color: #e3c1d9;
+      --bs-alert-bg: var(--custom-bg-darker);
+      --bs-alert-border-color: var(--custom-bg);
+      --bs-alert-link-color: var(--custom-lighter);
+    }
+    .position-fixed {
+        position: absolute !important;
     }
 </style>

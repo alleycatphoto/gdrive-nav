@@ -155,10 +155,10 @@ class DriveService {
                     if ($file->getMimeType() === 'application/vnd.google-apps.folder') {
                         error_log("Checking folder access for: " . $fileId);
                         error_log("Allowed folders: " . print_r($this->allowedFolderIds, true));
-                        if (!in_array($fileId, $this->allowedFolderIds)) {
-                            error_log("Skipping folder - not in allowed list: " . $fileId);
-                            continue;
-                        }
+                        //if (!in_array($fileId, $this->allowedFolderIds)) {
+                        //    error_log("Skipping folder - not in allowed list: " . $fileId);
+                        //    continue;
+                        //}
                         error_log("Including allowed folder: " . $fileId);
                     }
                 }

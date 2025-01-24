@@ -8,7 +8,7 @@ if (!isset($currentUser)) {
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
-            <img src="/attached_assets/Cryoskin White Transparent.png" alt="DNA Distribution Logo"><br/>
+            <img src="/attached_assets/logo.png" alt="DNA Distribution Logo"><br/>
              CUSTOMER RESOURCES
         </a>
         <div class="ms-auto d-flex align-items-center">
