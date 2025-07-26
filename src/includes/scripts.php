@@ -553,7 +553,7 @@
                                 },
                                 "title": {
                                     "color": "#432b42",
-                                    "font-size": "12px"
+                                    "font-size": "14px"
                                 },
                                 "price": {
                                     "font-size": "16px",
@@ -587,7 +587,9 @@
                             "styles": {
                                 "modal": {
                                     "background-color": "#544055",
-                                    "height": "100%" 
+                                },
+                                "image-wrapper": {
+                                    "max-width": "60%"
                                 }
                             }
                         },
@@ -612,12 +614,12 @@
                                     "font-size": "13px",
                                     "padding-top": "14.5px",
                                     "padding-bottom": "14.5px",
-                                    "color": "#efd8f9",
+                                    "color": "#554055",
                                     ":hover": {
                                         "color": "#efd8f9",
                                         "background-color": "#473348"
                                     },
-                                    "background-color": "#4f3950",
+                                    "background-color": "#ad9ead",
                                     ":focus": {
                                         "background-color": "#473348"
                                     },
@@ -670,6 +672,10 @@
                                 },
                                 "footer": {
                                     "background-color": "#544055"
+                                },
+                                "quantityInput": {
+                                    "color": "#d4bfd3",
+                                    "border": "1px solid #d1c8d1"
                                 }
                             },
                             "text": {
@@ -684,16 +690,70 @@
                                 "Open Sans"
                             ]
                         },
-                        "toggle": {
+                         "toggle": {
+                            "sticky": true,
                             "styles": {
-                                "toggle": {
-                                    "background-color": "var(--custom-primary)",
-                                    ":hover": {
-                                        "background-color": "var(--custom-primary-hover)"
-                                    }
+                              "toggle": {
+                                "font-family": "Arial, sans-serif",
+                                "background-color": "#584057",
+                                ":hover": {
+                                  "background-color": "#937592"
+                                },
+                                ":focus": {
+                                  "background-color": "#937592"
                                 }
+                              },
+                              "count": {
+                                "font-size": "12px",
+                                "color": "#e1e1e1",
+                                ":hover": {
+                                  "color": "#e1e1e1"
+                                }
+                              },
+                              "iconPath": {
+                              "icon": '<svg xmlns="https://cdn.shopify.com/s/files/1/0565/6425/2845/files/bag.png?v=1620071971"/>',
+                                "fill": "#e1e1e1"
+                              }
                             }
-                        }
+                          },
+                          "lineItem": {
+                            "styles": {
+                              "variantTitle": {
+                                "color": "#e1e1e1"
+                              },
+                              "title": {
+                                "color": "#e1e1e1"
+                              },
+                              "price": {
+                                "color": "#e1e1e1"
+                              },
+                              "fullPrice": {
+                                "color": "#e1e1e1"
+                              },
+                              "discount": {
+                                "color": "#e1e1e1"
+                              },
+                              "discountIcon": {
+                                "fill": "#e1e1e1"
+                              },
+                              "quantity": {
+                                "color": "#e1e1e1"
+                              },
+                              "quantityIncrement": {
+                                "color": "#e1e1e1",
+                                "border-color": "#e1e1e1"
+                              },
+                              "quantityDecrement": {
+                                "color": "#e1e1e1",
+                                "border-color": "#e1e1e1"
+                              },
+                              "quantityInput": {
+                                "color": "#e1e1e1",
+                                "border-color": "#e1e1e1"
+                              }
+                            }
+                          }
+
                     }
                 });
             });

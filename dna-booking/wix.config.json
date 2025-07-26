@@ -1,0 +1,5 @@
+{
+  "$schema": "https://dev.wix.com/wix-cli/schemas/wix-config.json",
+  "appId": "1f2aac68-8d7b-4fc0-ac01-bc65d1e33bc5",
+  "projectId": "dna-booking"
+}

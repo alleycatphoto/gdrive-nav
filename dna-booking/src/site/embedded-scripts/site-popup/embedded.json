@@ -1,0 +1,7 @@
+{
+    "$schema": "https://dev.wix.com/wix-cli/schemas/embedded-script.json",
+    "id": "c9dede50-dff2-43fc-9c48-de48f3ae6dbe",
+    "name": "Site Popup",
+    "scriptType": "FUNCTIONAL",
+    "placement": "BODY_START"
+}

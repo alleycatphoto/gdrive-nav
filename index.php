@@ -1,7 +1,5 @@
 <?php
-
-<?php
-ini_set('memory_limit', '512M'); // Increase memory limit to 512MB
+ini_set('memory_limit', '1024M'); // Increase memory limit to 512MB
 
 
 // Enable error reporting only in non-production

@@ -1,6 +1,6 @@
 <?php
 namespace App\Controllers;
-
+ini_set('memory_limit', '1024M');
 use App\Services\DriveService;
 
 class ProxyController {
